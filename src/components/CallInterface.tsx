@@ -78,7 +78,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             width: '100px',
             height: '100px',
             borderRadius: '50%',
-            backgroundColor: primaryColor,
+            backgroundColor: logoUrl ? 'transparent' : primaryColor,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
