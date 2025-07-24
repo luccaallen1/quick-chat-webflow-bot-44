@@ -17,7 +17,7 @@ export const CDNDemo = () => {
   const [title, setTitle] = useState('Chat Support');
   const [placeholder, setPlaceholder] = useState('Type your message...');
   const [position, setPosition] = useState<'bottom-right' | 'bottom-left'>('bottom-right');
-  const [primaryColor, setPrimaryColor] = useState('#3b82f6');
+  const [primaryColor, setPrimaryColor] = useState('#1f75ff');
   const [secondaryColor, setSecondaryColor] = useState('#f3f4f6');
   const [botTextColor, setBotTextColor] = useState('#1f2937');
   const [userTextColor, setUserTextColor] = useState('#ffffff');
@@ -29,8 +29,8 @@ export const CDNDemo = () => {
   const [isElevenLabsEnabled, setIsElevenLabsEnabled] = useState(false);
   const [elevenLabsAgentId, setElevenLabsAgentId] = useState('agent_01k04zwwq3fv5acgzdwmbvfk8k');
   const [gradientColor, setGradientColor] = useState('rgba(59, 130, 246, 0.9)');
-  const [headerGradientColor, setHeaderGradientColor] = useState('#667eea');
-  const [headerMainColor, setHeaderMainColor] = useState('#3b82f6');
+  const [headerGradientColor, setHeaderGradientColor] = useState('#002fff');
+  const [headerMainColor, setHeaderMainColor] = useState('#428bff');
   const [logoBackgroundColor, setLogoBackgroundColor] = useState('transparent');
   const [logoBorderColor, setLogoBorderColor] = useState('#e5e7eb');
   const [fontFamily, setFontFamily] = useState('Inter');
