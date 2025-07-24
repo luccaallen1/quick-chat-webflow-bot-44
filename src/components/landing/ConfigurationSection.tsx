@@ -29,8 +29,8 @@ interface ConfigurationSectionProps {
   setUserTextColor: (color: string) => void;
   chatBackground: string;
   setChatBackground: (color: string) => void;
-  logoUrl: string;
-  setLogoUrl: (url: string) => void;
+  logoFile: File | null;
+  setLogoFile: (file: File | null) => void;
   welcomeMessage: string;
   setWelcomeMessage: (message: string) => void;
   admin: boolean;
@@ -58,8 +58,8 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   setUserTextColor,
   chatBackground,
   setChatBackground,
-  logoUrl,
-  setLogoUrl,
+  logoFile,
+  setLogoFile,
   welcomeMessage,
   setWelcomeMessage,
   admin,
@@ -84,7 +84,7 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       welcomeMessage,
       admin,
       isVoiceEnabled,
-      logoUrl
+      logoFile: logoFile ? logoFile.name : null
     };
 
     const configString = `{
@@ -99,8 +99,8 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     chatBackground: '${baseConfig.chatBackground}',
     welcomeMessage: '${baseConfig.welcomeMessage}',
     admin: ${baseConfig.admin},
-    isVoiceEnabled: ${baseConfig.isVoiceEnabled}${baseConfig.logoUrl ? `,
-    logoUrl: '${baseConfig.logoUrl}'` : ''}
+    isVoiceEnabled: ${baseConfig.isVoiceEnabled}${baseConfig.logoFile ? `,
+    logoFile: '${baseConfig.logoFile}'` : ''}
   }`;
 
     switch (language) {
@@ -365,7 +365,7 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         ViewBag.WebhookUrl = "${baseConfig.webhookUrl}";
-        ViewBag.LogoUrl = "${baseConfig.logoUrl}";
+        ViewBag.LogoFile = "${baseConfig.logoFile}";
         ViewBag.ChatTitle = "${baseConfig.title}";
         ViewBag.WelcomeMessage = "${baseConfig.welcomeMessage}";
         return View();
@@ -374,7 +374,7 @@ public class HomeController : Controller
 
 Then in your view, you can use:
 webhookUrl: '@ViewBag.WebhookUrl',
-logoUrl: '@ViewBag.LogoUrl',
+logoFile: '@ViewBag.LogoFile',
 title: '@ViewBag.ChatTitle',
 welcomeMessage: '@ViewBag.WelcomeMessage'
 *@`;
@@ -589,14 +589,33 @@ export class AppComponent {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="logoUrl" className="text-sm font-medium">Logo URL (optional)</Label>
-                <Input 
-                  id="logoUrl" 
-                  value={logoUrl} 
-                  onChange={e => setLogoUrl(e.target.value)} 
-                  placeholder="https://media.licdn.com/dms/image/v2/D4E0BAQFRPXC4w25iOw/company-logo_200_200/B4EZVtx7beHgAI-/0/1741303560536?e=2147483647&v=beta&t=IMfviElZP1Vi86km2p9hrP-uuXQZxo1Ux_BvQ9-o0l4" 
-                  className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" 
-                />
+                <Label htmlFor="logoFile" className="text-sm font-medium">Logo Image (optional)</Label>
+                <div className="space-y-2">
+                  <input
+                    id="logoFile"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setLogoFile(file);
+                    }}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                  {logoFile && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>{logoFile.name}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setLogoFile(null)}
+                        className="h-6 w-6 p-0"
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-4">

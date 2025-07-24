@@ -22,7 +22,7 @@ export const CDNDemo = () => {
   const [textColor, setTextColor] = useState('#1f2937');
   const [userTextColor, setUserTextColor] = useState('#ffffff');
   const [chatBackground, setChatBackground] = useState('#ffffff');
-  const [logoUrl, setLogoUrl] = useState('https://media.licdn.com/dms/image/v2/D4E0BAQFRPXC4w25iOw/company-logo_200_200/B4EZVtx7beHgAI-/0/1741303560536?e=2147483647&v=beta&t=IMfviElZP1Vi86km2p9hrP-uuXQZxo1Ux_BvQ9-o0l4');
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [welcomeMessage, setWelcomeMessage] = useState('Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?');
   const [admin, setAdmin] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
@@ -132,8 +132,8 @@ export const CDNDemo = () => {
         setUserTextColor={setUserTextColor}
         chatBackground={chatBackground}
         setChatBackground={setChatBackground}
-        logoUrl={logoUrl}
-        setLogoUrl={setLogoUrl}
+        logoFile={logoFile}
+        setLogoFile={setLogoFile}
         welcomeMessage={welcomeMessage}
         setWelcomeMessage={setWelcomeMessage}
         admin={admin}
@@ -153,7 +153,7 @@ export const CDNDemo = () => {
         textColor={textColor}
         userTextColor={userTextColor}
         chatBackground={chatBackground}
-        logoUrl={logoUrl}
+        logoFile={logoFile}
         welcomeMessage={welcomeMessage}
         admin={admin}
         isVoiceEnabled={isVoiceEnabled}
