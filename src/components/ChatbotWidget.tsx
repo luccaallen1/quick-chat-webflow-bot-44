@@ -34,6 +34,7 @@ interface ChatbotWidgetProps {
   admin?: boolean;
   isVoiceEnabled?: boolean;
   elevenLabsAgentId?: string;
+  logoBackgroundColor?: string;
 }
 
 // Helper function to render text with line breaks
@@ -101,7 +102,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   welcomeMessage = 'Hello! How can I help you today?',
   admin = false,
   isVoiceEnabled = false,
-  elevenLabsAgentId = 'agent_01k04zwwq3fv5acgzdwmbvfk8k'
+  elevenLabsAgentId = 'agent_01k04zwwq3fv5acgzdwmbvfk8k',
+  logoBackgroundColor = 'transparent'
 }) => {
   // Create logo URL from file if provided
   const [logoSrc, setLogoSrc] = useState<string>(logoUrl);
@@ -389,6 +391,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       container.style.setProperty('--chatbot-user-text', userTextColor);
       container.style.setProperty('--chatbot-header-gradient', headerGradientColor);
       container.style.setProperty('--chatbot-header-main', headerMainColor);
+      container.style.setProperty('--chatbot-logo-background', logoBackgroundColor);
 
       // Also apply to the root element to ensure they cascade properly
       document.documentElement.style.setProperty('--chatbot-primary', primaryColor);
@@ -398,6 +401,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       document.documentElement.style.setProperty('--chatbot-user-text', userTextColor);
       document.documentElement.style.setProperty('--chatbot-header-gradient', headerGradientColor);
       document.documentElement.style.setProperty('--chatbot-header-main', headerMainColor);
+      document.documentElement.style.setProperty('--chatbot-logo-background', logoBackgroundColor);
 
       // Force a reflow to ensure styles are applied
       container.offsetHeight;
@@ -413,7 +417,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     } else {
       console.warn('Chatbot container not found. Styles not applied.');
     }
-  }, [primaryColor, secondaryColor, chatBackground, botTextColor, userTextColor, headerGradientColor, headerMainColor]);
+  }, [primaryColor, secondaryColor, chatBackground, botTextColor, userTextColor, headerGradientColor, headerMainColor, logoBackgroundColor]);
   const scrollToBottom = () => {
     // Double-timeout technique for optimal mobile scrolling
     setTimeout(() => {

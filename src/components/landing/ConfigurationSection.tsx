@@ -49,6 +49,8 @@ interface ConfigurationSectionProps {
   setHeaderGradientColor: (color: string) => void;
   headerMainColor: string;
   setHeaderMainColor: (color: string) => void;
+  logoBackgroundColor: string;
+  setLogoBackgroundColor: (color: string) => void;
 }
 
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
@@ -87,7 +89,9 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   headerGradientColor,
   setHeaderGradientColor,
   headerMainColor,
-  setHeaderMainColor
+  setHeaderMainColor,
+  logoBackgroundColor,
+  setLogoBackgroundColor
 }) => {
   const { toast } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
@@ -683,6 +687,38 @@ export class AppComponent {
                       </Button>
                     </div>
                   )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="logoBackgroundColor" className="text-sm font-medium">Logo Background Color</Label>
+                  <div className="flex gap-2 items-center">
+                    <Input
+                      id="logoBackgroundColor"
+                      type="color"
+                      value={logoBackgroundColor === 'transparent' ? '#ffffff' : logoBackgroundColor}
+                      onChange={(e) => setLogoBackgroundColor(e.target.value)}
+                      className="w-16 h-10 p-1 border rounded"
+                    />
+                    <div className="flex-1">
+                      <Input
+                        type="text"
+                        value={logoBackgroundColor}
+                        onChange={(e) => setLogoBackgroundColor(e.target.value)}
+                        placeholder="Enter color or 'transparent'"
+                        className="text-sm"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setLogoBackgroundColor('transparent')}
+                      className="text-xs"
+                    >
+                      Transparent
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500">Background color for transparent logo images</p>
                 </div>
               </div>
 

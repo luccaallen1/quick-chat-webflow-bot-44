@@ -31,6 +31,7 @@ export const CDNDemo = () => {
   const [gradientColor, setGradientColor] = useState('rgba(59, 130, 246, 0.9)');
   const [headerGradientColor, setHeaderGradientColor] = useState('#667eea');
   const [headerMainColor, setHeaderMainColor] = useState('#3b82f6');
+  const [logoBackgroundColor, setLogoBackgroundColor] = useState('transparent');
 
   // Apply dark mode to document
   useEffect(() => {
@@ -156,6 +157,8 @@ export const CDNDemo = () => {
         setHeaderGradientColor={setHeaderGradientColor}
         headerMainColor={headerMainColor}
         setHeaderMainColor={setHeaderMainColor}
+        logoBackgroundColor={logoBackgroundColor}
+        setLogoBackgroundColor={setLogoBackgroundColor}
       />
 
       {/* The actual chatbot widget */}
@@ -171,6 +174,7 @@ export const CDNDemo = () => {
         chatBackground={chatBackground}
         headerGradientColor={headerGradientColor}
         headerMainColor={headerMainColor}
+        logoBackgroundColor={logoBackgroundColor}
         logoFile={logoFile}
         welcomeMessage={welcomeMessage}
         admin={admin}
