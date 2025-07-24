@@ -293,23 +293,6 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   color: inherit !important;
 }
 
-/* Voice call button with gradient */
-.chatbot-widget-voice-call-btn {
-  background: linear-gradient(135deg, var(--chatbot-primary) 0%, var(--chatbot-gradient, rgba(59, 130, 246, 0.9)) 50%, var(--chatbot-primary) 100%) !important;
-  border: none !important;
-  color: white !important;
-  padding: 0 !important;
-  border-radius: 50% !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 48px !important;
-  height: 48px !important;
-  margin-right: 8px !important;
-}
-
 .chatbot-widget-button:hover {
   background: rgba(255, 255, 255, 0.1) !important;
 }
@@ -706,6 +689,8 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 }
 
 .chatbot-widget-voice-button {
+  background: linear-gradient(135deg, var(--chatbot-primary) 0%, var(--chatbot-gradient, rgba(59, 130, 246, 0.9)) 50%, var(--chatbot-primary) 100%) !important;
+  color: white !important;
   transition: all 0.2s ease !important;
   outline: none !important;
 }
