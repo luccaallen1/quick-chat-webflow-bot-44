@@ -1141,7 +1141,12 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                   e.currentTarget.style.display = 'none';
                 }} />}
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ 
+                    flex: 1, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    marginLeft: '12px' 
+                  }}>
                     {welcomeTooltipMessage}
                   </div>
                   <button
