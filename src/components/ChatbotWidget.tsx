@@ -848,26 +848,12 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             </div>
             <div className="chatbot-widget-header-actions">
               {/* NEW: Voice Agent Call Button */}
-              <button className="chatbot-widget-button" onClick={() => setIsCallMode(true)} title="Start a call" style={{
-            marginRight: '8px',
-            width: '48px',
-            height: '48px',
-            padding: '0',
-            display: 'flex !important',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'transparent',
-            border: 'none',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            opacity: '1',
-            visibility: 'visible'
-          }}>
+              <button className="chatbot-widget-voice-call-btn" onClick={() => setIsCallMode(true)} title="Start a call">
                 <Phone style={{
               width: '26px',
               height: '26px',
-              color: '#1f2937 !important'
-            }} className="bg-transparent" />
+              color: 'white'
+            }} />
               </button>
               
               <button className="chatbot-widget-button" onClick={() => setIsOpen(false)}>
