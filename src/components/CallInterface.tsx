@@ -89,20 +89,6 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             transition: 'all 0.3s ease'
           }}
         >
-          {/* Outer pulse ring when active */}
-          {isCallActive && (
-            <div 
-              style={{
-                position: 'absolute',
-                width: '120px',
-                height: '120px',
-                borderRadius: '50%',
-                border: `3px solid ${primaryColor}`,
-                opacity: 0.6,
-                animation: 'voiceRipple 1.5s ease-out infinite'
-              }}
-            />
-          )}
           
           {logoUrl ? (
             <img 
