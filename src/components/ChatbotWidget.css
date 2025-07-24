@@ -81,12 +81,14 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   font-weight: 600 !important;
   font-size: 1.1rem !important;
   line-height: 1.5 !important;
+  color: var(--chatbot-header-button-color, #ffffff) !important;
 }
 
 .chatbot-widget-header-subtitle {
-  font-size: 1rem !important;
-  opacity: 0.8 !important;
+  font-size: 0.8rem !important;
+  opacity: 0.9 !important;
   font-weight: 400 !important;
+  color: var(--chatbot-header-button-color, #ffffff) !important;
 }
 
 .chatbot-widget-header-actions {
