@@ -825,15 +825,9 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 }
 /* Header image as rounded avatar */
 .chatbot-widget-header-avatar {
-  width: 4.5rem !important;
-  height: 4.5rem !important;
-  border-radius: 50% !important;
-  overflow: hidden !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  /* background: #fff !important; */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
   margin-right: 0.75rem !important;
 }
 .chatbot-widget-header-avatar img {
