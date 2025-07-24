@@ -828,7 +828,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  margin-left: 1rem !important;
+  margin-left: 0.75rem !important;
   margin-right: 0.75rem !important;
 }
 .chatbot-widget-header-avatar img {
