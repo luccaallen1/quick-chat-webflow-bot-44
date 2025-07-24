@@ -812,7 +812,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 }
 /* Header image as rounded avatar */
 .chatbot-widget-header-avatar-tooltip {
-  width: 9rem !important;
+  width: 3rem !important;
   height: 3rem !important;
   border-radius: 50% !important;
   overflow: hidden !important;
@@ -827,7 +827,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 .chatbot-widget-header-avatar-tooltip img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 50%;
 }
 /* Header image as rounded avatar */

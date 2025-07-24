@@ -1141,9 +1141,31 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                   e.currentTarget.style.display = 'none';
                 }} />}
                   </div>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     {welcomeTooltipMessage}
                   </div>
+                  <button
+                    onClick={() => setShowWelcomeTooltip(false)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '2px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '20px',
+                      height: '20px',
+                      marginLeft: '8px',
+                      opacity: 0.6,
+                      transition: 'opacity 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                    onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
+                  >
+                    <X style={{ width: '14px', height: '14px', color: botTextColor }} />
+                  </button>
                 </div>
                 <div style={{
               position: 'absolute',
