@@ -97,8 +97,8 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 
 /* Circular logo styling */
 .chatbot-widget-logo {
-  width: 3.75rem !important;
-  height: 3.75rem !important;
+  width: 3.1875rem !important;
+  height: 3.1875rem !important;
   object-fit: cover !important;
   object-position: center !important;
   border-radius: 50% !important;
