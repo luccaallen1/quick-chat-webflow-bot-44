@@ -59,7 +59,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 /* Clean header design with customizable gradient */
 .chatbot-widget-header {
   padding: 0.6rem 0.6rem !important;
-  background: linear-gradient(135deg, var(--chatbot-primary) 0%, var(--chatbot-gradient, rgba(59, 130, 246, 0.9)) 50%, var(--chatbot-primary) 100%) !important;
+  background: linear-gradient(135deg, #667eea 0%, #4285f4 100%) !important;
   color: white !important;
   display: flex !important;
   align-items: center !important;
@@ -109,6 +109,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   overflow-y: auto !important;
   position: relative !important;
   min-height: 0 !important;
+  background: linear-gradient(135deg, #fefefe 0%, #f8f9fa 100%) !important;
 }
 
 .chatbot-widget-messages-content {
@@ -138,20 +139,21 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   border-radius: 18px !important;
   position: relative !important;
   word-wrap: break-word !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
 }
 
 .chatbot-widget-message-bubble-user {
-  background: var(--chatbot-primary);
-  color: var(--chatbot-user-text);
+  background: linear-gradient(135deg, #4285f4 0%, #3b78e7 100%) !important;
+  color: #ffffff !important;
   border-bottom-right-radius: 4px !important;
+  box-shadow: 0 1px 3px rgba(66, 133, 244, 0.2) !important;
 }
 
 .chatbot-widget-message-bubble-bot {
-  background: var(--chatbot-secondary);
-  color: var(--chatbot-text);
+  background: linear-gradient(135deg, #f0f4ff 0%, #e1ecff 100%) !important;
+  color: #1f2937 !important;
   border-bottom-left-radius: 4px !important;
-  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
 }
 
 .chatbot-widget-message-text {
@@ -226,7 +228,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   color: white !important;
   width: 2.5rem !important;
   height: 2.5rem !important;
-  background: var(--chatbot-primary);
+  background: linear-gradient(135deg, #4285f4 0%, #1a73e8 100%) !important;
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2) !important;
 }
 
@@ -236,7 +238,8 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 }
 
 .chatbot-widget-send-button:hover:not(:disabled) {
-  transform: scale(1.05) !important;
+  background: linear-gradient(135deg, #5a95f5 0%, #2b7de9 100%) !important;
+  transform: translateY(-1px) !important;
   box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3) !important;
 }
 

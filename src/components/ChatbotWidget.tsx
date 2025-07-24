@@ -1066,11 +1066,22 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                       {!messages.some(msg => msg.sender === 'user') && (
                         <button 
                           onClick={() => setIsCallMode(true)}
-                          className="w-full mb-3 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                          className="w-full mb-3 py-3 px-4 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
                           style={{
-                            backgroundColor: primaryColor,
+                            background: 'linear-gradient(135deg, #4285f4 0%, #1a73e8 100%)',
                             fontSize: '16px',
-                            fontWeight: '600'
+                            fontWeight: '600',
+                            transition: 'all 0.2s ease',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #5a95f5 0%, #2b7de9 100%)';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #4285f4 0%, #1a73e8 100%)';
+                            e.currentTarget.style.transform = 'translateY(0)';
                           }}
                         >
                           <Phone style={{ width: '20px', height: '20px' }} />
