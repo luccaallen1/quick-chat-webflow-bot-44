@@ -52,6 +52,8 @@ interface ConfigurationSectionProps {
   setLogoBackgroundColor: (color: string) => void;
   logoBorderColor: string;
   setLogoBorderColor: (color: string) => void;
+  fontFamily: string;
+  setFontFamily: (font: string) => void;
 }
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   webhookUrl,
@@ -93,7 +95,9 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   logoBackgroundColor,
   setLogoBackgroundColor,
   logoBorderColor,
-  setLogoBorderColor
+  setLogoBorderColor,
+  fontFamily,
+  setFontFamily
 }) => {
   const {
     toast
@@ -604,6 +608,28 @@ export class AppComponent {
                     <option value="bottom-right">Bottom Right</option>
                     <option value="bottom-left">Bottom Left</option>
                   </select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="fontFamily" className="text-sm font-medium">Font Family</Label>
+                  <Select value={fontFamily} onValueChange={setFontFamily}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a font" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Inter">Inter</SelectItem>
+                      <SelectItem value="Roboto">Roboto</SelectItem>
+                      <SelectItem value="Open Sans">Open Sans</SelectItem>
+                      <SelectItem value="Lato">Lato</SelectItem>
+                      <SelectItem value="Montserrat">Montserrat</SelectItem>
+                      <SelectItem value="Nunito">Nunito</SelectItem>
+                      <SelectItem value="Poppins">Poppins</SelectItem>
+                      <SelectItem value="Source Sans Pro">Source Sans Pro</SelectItem>
+                      <SelectItem value="Ubuntu">Ubuntu</SelectItem>
+                      <SelectItem value="Work Sans">Work Sans</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500">Choose the font for the chatbot text</p>
                 </div>
               </div>
               

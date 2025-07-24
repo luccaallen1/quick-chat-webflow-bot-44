@@ -33,6 +33,7 @@ export const CDNDemo = () => {
   const [headerMainColor, setHeaderMainColor] = useState('#3b82f6');
   const [logoBackgroundColor, setLogoBackgroundColor] = useState('transparent');
   const [logoBorderColor, setLogoBorderColor] = useState('#e5e7eb');
+  const [fontFamily, setFontFamily] = useState('Inter');
 
   // Apply dark mode to document
   useEffect(() => {
@@ -43,7 +44,7 @@ export const CDNDemo = () => {
     }
   }, [isDarkMode]);
 
-  // Apply custom CSS variables for the chatbot widget colors
+  // Apply custom CSS variables for the chatbot widget colors and font
   useEffect(() => {
     const style = document.createElement('style');
     style.id = 'chatbot-custom-colors';
@@ -55,6 +56,7 @@ export const CDNDemo = () => {
         --chatbot-user-text: ${userTextColor} !important;
         --chatbot-background: ${chatBackground} !important;
         --chatbot-gradient: ${gradientColor} !important;
+        --chatbot-font-family: '${fontFamily}', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
       }
     `;
     
@@ -74,7 +76,7 @@ export const CDNDemo = () => {
         styleToRemove.remove();
       }
     };
-  }, [primaryColor, secondaryColor, botTextColor, userTextColor, chatBackground, gradientColor]);
+  }, [primaryColor, secondaryColor, botTextColor, userTextColor, chatBackground, gradientColor, fontFamily]);
 
   const handleViewExample = () => {
     window.open('https://chirodashboard-chat.onrender.com/cdn-example.html', '_blank');
@@ -162,6 +164,8 @@ export const CDNDemo = () => {
         setLogoBackgroundColor={setLogoBackgroundColor}
         logoBorderColor={logoBorderColor}
         setLogoBorderColor={setLogoBorderColor}
+        fontFamily={fontFamily}
+        setFontFamily={setFontFamily}
       />
 
       {/* The actual chatbot widget */}
@@ -179,6 +183,7 @@ export const CDNDemo = () => {
         headerMainColor={headerMainColor}
         logoBackgroundColor={logoBackgroundColor}
         logoBorderColor={logoBorderColor}
+        fontFamily={fontFamily}
         logoFile={logoFile}
         welcomeMessage={welcomeMessage}
         admin={admin}

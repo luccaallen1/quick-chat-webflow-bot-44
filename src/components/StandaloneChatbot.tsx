@@ -38,6 +38,7 @@ class ChatbotManager {
     clinicId?: string;
     logoBackgroundColor?: string;
     logoBorderColor?: string;
+    fontFamily?: string;
   }) {
     // Clean up existing instance
     this.destroy();
@@ -68,7 +69,8 @@ class ChatbotManager {
       clinicName: config.clinicName,
       clinicId: config.clinicId,
       logoBackgroundColor: config.logoBackgroundColor,
-      logoBorderColor: config.logoBorderColor
+      logoBorderColor: config.logoBorderColor,
+      fontFamily: config.fontFamily
     }));
 
     console.log('ChatbotWidget initialized with suggestion buttons and line break support');

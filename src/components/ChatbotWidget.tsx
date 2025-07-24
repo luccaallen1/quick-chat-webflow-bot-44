@@ -36,6 +36,7 @@ interface ChatbotWidgetProps {
   elevenLabsAgentId?: string;
   logoBackgroundColor?: string;
   logoBorderColor?: string;
+  fontFamily?: string;
 }
 
 // Helper function to render text with line breaks
