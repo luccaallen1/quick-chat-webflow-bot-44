@@ -8,10 +8,11 @@
   pointer-events: auto !important;
   --chatbot-primary: #3b82f6;
   --chatbot-secondary: #f3f4f6;
-  --chatbot-header: #667eea;
-  --chatbot-text: #1f2937;
-  --chatbot-user-text: #ffffff;
   --chatbot-background: #ffffff;
+  --chatbot-bot-text: #1f2937;
+  --chatbot-user-text: #ffffff;
+  --chatbot-header-gradient: #667eea;
+  --chatbot-header-main: #3b82f6;
   --chatbot-vh: 100vh;
   --chatbot-mobile-vh: 100vh;
   
@@ -60,7 +61,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 /* Clean header design with customizable gradient */
 .chatbot-widget-header {
   padding: 0.6rem 0.6rem !important;
-  background: linear-gradient(135deg, var(--chatbot-header) 0%, var(--chatbot-primary) 100%) !important;
+  background: linear-gradient(135deg, var(--chatbot-header-gradient) 0%, var(--chatbot-header-main) 100%) !important;
   color: white !important;
   display: flex !important;
   align-items: center !important;
@@ -150,7 +151,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 
 .chatbot-widget-message-bubble-bot {
   background: var(--chatbot-secondary);
-  color: var(--chatbot-text);
+  color: var(--chatbot-bot-text);
   border-bottom-left-radius: 4px !important;
   border: 1px solid #e2e8f0 !important;
 }

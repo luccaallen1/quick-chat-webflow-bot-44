@@ -26,10 +26,11 @@ class ChatbotManager {
     position?: 'bottom-right' | 'bottom-left';
     primaryColor?: string;
     secondaryColor?: string;
-    headerColor?: string;
-    textColor?: string;
-    userTextColor?: string;
     chatBackground?: string;
+    botTextColor?: string;
+    userTextColor?: string;
+    headerGradientColor?: string;
+    headerMainColor?: string;
     logoUrl?: string;
     welcomeMessage?: string;
     userId?: string;
@@ -54,10 +55,11 @@ class ChatbotManager {
       position: config.position,
       primaryColor: config.primaryColor,
       secondaryColor: config.secondaryColor,
-      headerColor: config.headerColor,
-      textColor: config.textColor,
-      userTextColor: config.userTextColor,
       chatBackground: config.chatBackground,
+      botTextColor: config.botTextColor,
+      userTextColor: config.userTextColor,
+      headerGradientColor: config.headerGradientColor,
+      headerMainColor: config.headerMainColor,
       logoUrl: config.logoUrl,
       welcomeMessage: config.welcomeMessage,
       userId: config.userId,

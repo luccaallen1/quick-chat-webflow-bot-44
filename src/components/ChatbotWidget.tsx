@@ -20,10 +20,11 @@ interface ChatbotWidgetProps {
   position?: 'bottom-right' | 'bottom-left';
   primaryColor?: string;
   secondaryColor?: string;
-  headerColor?: string;
-  textColor?: string;
-  userTextColor?: string;
   chatBackground?: string;
+  botTextColor?: string;
+  userTextColor?: string;
+  headerGradientColor?: string;
+  headerMainColor?: string;
   userId?: string;
   clinicName?: string;
   clinicId?: string;
@@ -86,10 +87,11 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   position = 'bottom-right',
   primaryColor = '#3b82f6',
   secondaryColor = '#f1f5f9',
-  headerColor = '#667eea',
-  textColor = '#1f2937',
-  userTextColor = '#ffffff',
   chatBackground = '#ffffff',
+  botTextColor = '#1f2937',
+  userTextColor = '#ffffff',
+  headerGradientColor = '#667eea',
+  headerMainColor = '#3b82f6',
   userId = 'anonymous',
   // Keep as fallback but won't be used for webhook
   clinicName = 'Gadsden',
@@ -382,33 +384,36 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       // Apply variables to the container
       container.style.setProperty('--chatbot-primary', primaryColor);
       container.style.setProperty('--chatbot-secondary', secondaryColor);
-      container.style.setProperty('--chatbot-header', headerColor);
-      container.style.setProperty('--chatbot-text', textColor);
-      container.style.setProperty('--chatbot-user-text', userTextColor);
       container.style.setProperty('--chatbot-background', chatBackground);
+      container.style.setProperty('--chatbot-bot-text', botTextColor);
+      container.style.setProperty('--chatbot-user-text', userTextColor);
+      container.style.setProperty('--chatbot-header-gradient', headerGradientColor);
+      container.style.setProperty('--chatbot-header-main', headerMainColor);
 
       // Also apply to the root element to ensure they cascade properly
       document.documentElement.style.setProperty('--chatbot-primary', primaryColor);
       document.documentElement.style.setProperty('--chatbot-secondary', secondaryColor);
-      document.documentElement.style.setProperty('--chatbot-header', headerColor);
-      document.documentElement.style.setProperty('--chatbot-text', textColor);
-      document.documentElement.style.setProperty('--chatbot-user-text', userTextColor);
       document.documentElement.style.setProperty('--chatbot-background', chatBackground);
+      document.documentElement.style.setProperty('--chatbot-bot-text', botTextColor);
+      document.documentElement.style.setProperty('--chatbot-user-text', userTextColor);
+      document.documentElement.style.setProperty('--chatbot-header-gradient', headerGradientColor);
+      document.documentElement.style.setProperty('--chatbot-header-main', headerMainColor);
 
       // Force a reflow to ensure styles are applied
       container.offsetHeight;
       console.log('Chatbot styles updated:', {
         primaryColor,
         secondaryColor,
-        headerColor,
-        textColor,
+        chatBackground,
+        botTextColor,
         userTextColor,
-        chatBackground
+        headerGradientColor,
+        headerMainColor
       });
     } else {
       console.warn('Chatbot container not found. Styles not applied.');
     }
-  }, [primaryColor, secondaryColor, headerColor, textColor, userTextColor, chatBackground]);
+  }, [primaryColor, secondaryColor, chatBackground, botTextColor, userTextColor, headerGradientColor, headerMainColor]);
   const scrollToBottom = () => {
     // Double-timeout technique for optimal mobile scrolling
     setTimeout(() => {
@@ -885,7 +890,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
           </div>
           
           {/* NEW: Conditional rendering for Call Interface or Regular Chat */}
-        {isCallMode ? <CallInterface primaryColor={primaryColor} secondaryColor={secondaryColor} textColor={textColor} chatBackground={chatBackground} logoUrl={logoUrl} agentId={elevenLabsAgentId} onBackToChat={() => setIsCallMode(false)} /> : <>
+        {isCallMode ? <CallInterface primaryColor={primaryColor} secondaryColor={secondaryColor} textColor={botTextColor} chatBackground={chatBackground} logoUrl={logoUrl} agentId={elevenLabsAgentId} onBackToChat={() => setIsCallMode(false)} /> : <>
               {/* Messages */}
               {hasError ? <div className="chatbot-widget-messages chatbot-widget-scrollbar" style={{
           backgroundColor: chatBackground,
@@ -909,7 +914,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                         {messages.map(message => <div key={message.id} className={`chatbot-widget-message ${message.sender === 'user' ? 'chatbot-widget-message-user' : 'chatbot-widget-message-bot'} ${editingMessageId === message.id ? 'editing' : ''}`}>
                             <div className={`chatbot-widget-message-bubble ${message.sender === 'user' ? 'chatbot-widget-message-bubble-user' : 'chatbot-widget-message-bubble-bot'} ${editingMessageId === message.id ? 'editing' : ''}`} style={{
                   backgroundColor: message.sender === 'user' ? primaryColor : secondaryColor,
-                  color: message.sender === 'user' ? userTextColor : textColor,
+                  color: message.sender === 'user' ? userTextColor : botTextColor,
                   border: message.sender === 'bot' ? `1px solid ${secondaryColor === '#f1f5f9' ? '#e2e8f0' : 'rgba(0,0,0,0.1)'}` : 'none'
                 }}>
                               {editingMessageId === message.id ? <div style={{
@@ -922,14 +927,14 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                         setEditingText(e.target.value);
                         setEditingError('');
                       }} onKeyDown={e => handleEditKeyPress(e, message.id)} className={`chatbot-widget-textarea full-width ${editingError ? 'error' : ''}`} style={{
-                        color: textColor,
+                        color: botTextColor,
                         backgroundColor: chatBackground
                       }} placeholder="Edit your message..." />
                                     {editingError && <div className="chatbot-widget-error">{editingError}</div>}
                                   </div>
                                   <div className="chatbot-widget-edit-controls">
                                     <button onClick={() => handleSaveEdit(message.id)} disabled={!isEditingTextValid} className="chatbot-widget-button" style={{
-                        color: textColor,
+                        color: botTextColor,
                         opacity: !isEditingTextValid ? 0.5 : 1,
                         cursor: !isEditingTextValid ? 'not-allowed' : 'pointer'
                       }}>
@@ -939,7 +944,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                         }} />
                                     </button>
                                     <button onClick={handleCancelEdit} className="chatbot-widget-button" style={{
-                        color: textColor
+                        color: botTextColor
                       }}>
                                       <X style={{
                           width: '14px',
@@ -1033,7 +1038,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                                   </span>
                                   {message.sender === 'bot' && admin && <div className="chatbot-widget-message-actions">
                                       <button onClick={() => handleEditMessage(message)} className="chatbot-widget-button" style={{
-                        color: textColor
+                        color: botTextColor
                       }}>
                                         <Edit style={{
                           width: '12px',
@@ -1049,7 +1054,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                         {isTyping && <div className="chatbot-widget-message chatbot-widget-message-bot">
                             <div className="chatbot-widget-message-bubble chatbot-widget-message-bubble-bot" style={{
                   backgroundColor: secondaryColor,
-                  color: textColor,
+                  color: botTextColor,
                   border: `1px solid ${secondaryColor === '#f1f5f9' ? '#e2e8f0' : 'rgba(0,0,0,0.1)'}`
                 }}>
                               <div className="chatbot-widget-typing">
@@ -1085,7 +1090,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                       
                       <div className="chatbot-widget-input-container">
                         <input ref={inputRef} value={inputMessage} onChange={e => setInputMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder={isVoiceEnabled && isRecording ? 'Listening...' : isVoiceEnabled && isProcessing ? 'Processing...' : placeholder} disabled={isLoading || isVoiceEnabled && (isRecording || isProcessing)} className="chatbot-widget-input-field" style={{
-                color: textColor,
+                color: botTextColor,
                 opacity: isVoiceEnabled && (isRecording || isProcessing) ? 0.7 : 1
               }} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" />
                         
@@ -1132,7 +1137,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               </TooltipTrigger>
               <TooltipContent side="left" align="end" className="chatbot-welcome-tooltip" style={{
             backgroundColor: '#ffffff',
-            color: textColor,
+            color: botTextColor,
             border: `1px solid ${secondaryColor === '#f1f5f9' ? '#e2e8f0' : 'rgba(0,0,0,0.1)'}`,
             borderRadius: '18px',
             padding: '12px 16px',

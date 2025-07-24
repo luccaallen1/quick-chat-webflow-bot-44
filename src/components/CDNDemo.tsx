@@ -19,7 +19,7 @@ export const CDNDemo = () => {
   const [position, setPosition] = useState<'bottom-right' | 'bottom-left'>('bottom-right');
   const [primaryColor, setPrimaryColor] = useState('#3b82f6');
   const [secondaryColor, setSecondaryColor] = useState('#f3f4f6');
-  const [textColor, setTextColor] = useState('#1f2937');
+  const [botTextColor, setBotTextColor] = useState('#1f2937');
   const [userTextColor, setUserTextColor] = useState('#ffffff');
   const [chatBackground, setChatBackground] = useState('#ffffff');
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -47,7 +47,7 @@ export const CDNDemo = () => {
       .chatbot-widget-container {
         --chatbot-primary: ${primaryColor} !important;
         --chatbot-secondary: ${secondaryColor} !important;
-        --chatbot-text: ${textColor} !important;
+        --chatbot-bot-text: ${botTextColor} !important;
         --chatbot-user-text: ${userTextColor} !important;
         --chatbot-background: ${chatBackground} !important;
         --chatbot-gradient: ${gradientColor} !important;
@@ -70,7 +70,7 @@ export const CDNDemo = () => {
         styleToRemove.remove();
       }
     };
-  }, [primaryColor, secondaryColor, textColor, userTextColor, chatBackground, gradientColor]);
+  }, [primaryColor, secondaryColor, botTextColor, userTextColor, chatBackground, gradientColor]);
 
   const handleViewExample = () => {
     window.open('https://chirodashboard-chat.onrender.com/cdn-example.html', '_blank');
@@ -130,8 +130,8 @@ export const CDNDemo = () => {
         setPrimaryColor={setPrimaryColor}
         secondaryColor={secondaryColor}
         setSecondaryColor={setSecondaryColor}
-        textColor={textColor}
-        setTextColor={setTextColor}
+        textColor={botTextColor}
+        setTextColor={setBotTextColor}
         userTextColor={userTextColor}
         setUserTextColor={setUserTextColor}
         chatBackground={chatBackground}
@@ -160,7 +160,7 @@ export const CDNDemo = () => {
         position={position}
         primaryColor={primaryColor}
         secondaryColor={secondaryColor}
-        textColor={textColor}
+        botTextColor={botTextColor}
         userTextColor={userTextColor}
         chatBackground={chatBackground}
         logoFile={logoFile}
