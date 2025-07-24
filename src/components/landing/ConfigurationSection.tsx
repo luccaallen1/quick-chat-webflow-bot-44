@@ -627,6 +627,22 @@ export class AppComponent {
                       <SelectItem value="Source Sans Pro">Source Sans Pro</SelectItem>
                       <SelectItem value="Ubuntu">Ubuntu</SelectItem>
                       <SelectItem value="Work Sans">Work Sans</SelectItem>
+                      <SelectItem value="Playfair Display">Playfair Display</SelectItem>
+                      <SelectItem value="Merriweather">Merriweather</SelectItem>
+                      <SelectItem value="Oswald">Oswald</SelectItem>
+                      <SelectItem value="Raleway">Raleway</SelectItem>
+                      <SelectItem value="Libre Baskerville">Libre Baskerville</SelectItem>
+                      <SelectItem value="Crimson Text">Crimson Text</SelectItem>
+                      <SelectItem value="Fira Sans">Fira Sans</SelectItem>
+                      <SelectItem value="Noto Sans">Noto Sans</SelectItem>
+                      <SelectItem value="PT Sans">PT Sans</SelectItem>
+                      <SelectItem value="Quicksand">Quicksand</SelectItem>
+                      <SelectItem value="Rubik">Rubik</SelectItem>
+                      <SelectItem value="Barlow">Barlow</SelectItem>
+                      <SelectItem value="DM Sans">DM Sans</SelectItem>
+                      <SelectItem value="Space Grotesk">Space Grotesk</SelectItem>
+                      <SelectItem value="Lexend">Lexend</SelectItem>
+                      <SelectItem value="Plus Jakarta Sans">Plus Jakarta Sans</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-gray-500">Choose the font for the chatbot text</p>
