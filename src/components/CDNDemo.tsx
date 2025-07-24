@@ -29,6 +29,8 @@ export const CDNDemo = () => {
   const [isElevenLabsEnabled, setIsElevenLabsEnabled] = useState(false);
   const [elevenLabsAgentId, setElevenLabsAgentId] = useState('agent_01k04zwwq3fv5acgzdwmbvfk8k');
   const [gradientColor, setGradientColor] = useState('rgba(59, 130, 246, 0.9)');
+  const [headerGradientColor, setHeaderGradientColor] = useState('#667eea');
+  const [headerMainColor, setHeaderMainColor] = useState('#3b82f6');
 
   // Apply dark mode to document
   useEffect(() => {
@@ -150,6 +152,10 @@ export const CDNDemo = () => {
         setElevenLabsAgentId={setElevenLabsAgentId}
         gradientColor={gradientColor}
         setGradientColor={setGradientColor}
+        headerGradientColor={headerGradientColor}
+        setHeaderGradientColor={setHeaderGradientColor}
+        headerMainColor={headerMainColor}
+        setHeaderMainColor={setHeaderMainColor}
       />
 
       {/* The actual chatbot widget */}
@@ -163,6 +169,8 @@ export const CDNDemo = () => {
         botTextColor={botTextColor}
         userTextColor={userTextColor}
         chatBackground={chatBackground}
+        headerGradientColor={headerGradientColor}
+        headerMainColor={headerMainColor}
         logoFile={logoFile}
         welcomeMessage={welcomeMessage}
         admin={admin}

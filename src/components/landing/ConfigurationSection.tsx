@@ -45,6 +45,10 @@ interface ConfigurationSectionProps {
   setElevenLabsAgentId: (agentId: string) => void;
   gradientColor: string;
   setGradientColor: (color: string) => void;
+  headerGradientColor: string;
+  setHeaderGradientColor: (color: string) => void;
+  headerMainColor: string;
+  setHeaderMainColor: (color: string) => void;
 }
 
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
@@ -79,7 +83,11 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   elevenLabsAgentId,
   setElevenLabsAgentId,
   gradientColor,
-  setGradientColor
+  setGradientColor,
+  headerGradientColor,
+  setHeaderGradientColor,
+  headerMainColor,
+  setHeaderMainColor
 }) => {
   const { toast } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
@@ -795,10 +803,16 @@ export class AppComponent {
               setter: setUserTextColor,
               desc: 'Text color for user messages'
             }, {
-              id: 'gradientColor',
+              id: 'headerGradientColor',
               label: 'Header Gradient Color',
-              value: gradientColor,
-              setter: setGradientColor,
+              value: headerGradientColor,
+              setter: setHeaderGradientColor,
+              desc: 'Start and end color for the header gradient'
+            }, {
+              id: 'headerMainColor',
+              label: 'Header Main Color',
+              value: headerMainColor,
+              setter: setHeaderMainColor,
               desc: 'Middle color for the header gradient effect'
             }].map((color, index) => <div key={color.id} className="space-y-2 animate-fade-in" style={{
               animationDelay: `${index * 100}ms`
