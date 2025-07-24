@@ -836,6 +836,8 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Voice Agent Animations */
