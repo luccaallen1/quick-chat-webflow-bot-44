@@ -26,6 +26,7 @@ class ChatbotManager {
     position?: 'bottom-right' | 'bottom-left';
     primaryColor?: string;
     secondaryColor?: string;
+    headerColor?: string;
     textColor?: string;
     userTextColor?: string;
     chatBackground?: string;
@@ -53,6 +54,7 @@ class ChatbotManager {
       position: config.position,
       primaryColor: config.primaryColor,
       secondaryColor: config.secondaryColor,
+      headerColor: config.headerColor,
       textColor: config.textColor,
       userTextColor: config.userTextColor,
       chatBackground: config.chatBackground,

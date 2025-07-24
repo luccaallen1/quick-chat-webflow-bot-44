@@ -20,6 +20,7 @@ interface ChatbotWidgetProps {
   position?: 'bottom-right' | 'bottom-left';
   primaryColor?: string;
   secondaryColor?: string;
+  headerColor?: string;
   textColor?: string;
   userTextColor?: string;
   chatBackground?: string;
@@ -85,6 +86,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   position = 'bottom-right',
   primaryColor = '#3b82f6',
   secondaryColor = '#f1f5f9',
+  headerColor = '#667eea',
   textColor = '#1f2937',
   userTextColor = '#ffffff',
   chatBackground = '#ffffff',
@@ -380,6 +382,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       // Apply variables to the container
       container.style.setProperty('--chatbot-primary', primaryColor);
       container.style.setProperty('--chatbot-secondary', secondaryColor);
+      container.style.setProperty('--chatbot-header', headerColor);
       container.style.setProperty('--chatbot-text', textColor);
       container.style.setProperty('--chatbot-user-text', userTextColor);
       container.style.setProperty('--chatbot-background', chatBackground);
@@ -387,6 +390,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       // Also apply to the root element to ensure they cascade properly
       document.documentElement.style.setProperty('--chatbot-primary', primaryColor);
       document.documentElement.style.setProperty('--chatbot-secondary', secondaryColor);
+      document.documentElement.style.setProperty('--chatbot-header', headerColor);
       document.documentElement.style.setProperty('--chatbot-text', textColor);
       document.documentElement.style.setProperty('--chatbot-user-text', userTextColor);
       document.documentElement.style.setProperty('--chatbot-background', chatBackground);
@@ -396,6 +400,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       console.log('Chatbot styles updated:', {
         primaryColor,
         secondaryColor,
+        headerColor,
         textColor,
         userTextColor,
         chatBackground
@@ -403,7 +408,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     } else {
       console.warn('Chatbot container not found. Styles not applied.');
     }
-  }, [primaryColor, secondaryColor, textColor, userTextColor, chatBackground]);
+  }, [primaryColor, secondaryColor, headerColor, textColor, userTextColor, chatBackground]);
   const scrollToBottom = () => {
     // Double-timeout technique for optimal mobile scrolling
     setTimeout(() => {
