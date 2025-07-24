@@ -38,6 +38,7 @@ export const CDNDemo = () => {
   const [headerButtonColor, setHeaderButtonColor] = useState('#ffffff');
   const [fontFamily, setFontFamily] = useState('Inter');
   const [copySuccessMessage, setCopySuccessMessage] = useState('Code Copied!');
+  const [welcomeTooltipMessage, setWelcomeTooltipMessage] = useState('Click to start chatting with our AI assistant!');
 
   // Apply dark mode to document
   useEffect(() => {
@@ -188,6 +189,8 @@ export const CDNDemo = () => {
         setFontFamily={setFontFamily}
         copySuccessMessage={copySuccessMessage}
         setCopySuccessMessage={setCopySuccessMessage}
+        welcomeTooltipMessage={welcomeTooltipMessage}
+        setWelcomeTooltipMessage={setWelcomeTooltipMessage}
       />
 
       {/* The actual chatbot widget */}
@@ -211,6 +214,7 @@ export const CDNDemo = () => {
         logoFile={logoFile}
         logoUrl={logoFile ? undefined : defaultLogoUrl}
         welcomeMessage={welcomeMessage}
+        welcomeTooltipMessage={welcomeTooltipMessage}
         admin={admin}
         isVoiceEnabled={isVoiceEnabled}
         elevenLabsAgentId={elevenLabsAgentId}

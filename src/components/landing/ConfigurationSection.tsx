@@ -60,6 +60,8 @@ interface ConfigurationSectionProps {
   setFontFamily: (font: string) => void;
   copySuccessMessage: string;
   setCopySuccessMessage: (message: string) => void;
+  welcomeTooltipMessage: string;
+  setWelcomeTooltipMessage: (message: string) => void;
 }
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   webhookUrl,
@@ -109,7 +111,9 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   fontFamily,
   setFontFamily,
   copySuccessMessage,
-  setCopySuccessMessage
+  setCopySuccessMessage,
+  welcomeTooltipMessage,
+  setWelcomeTooltipMessage
 }) => {
   const {
     toast
@@ -689,6 +693,12 @@ export class AppComponent {
                 <Label htmlFor="copySuccessMessage" className="text-sm font-medium">Copy Success Message</Label>
                 <Input id="copySuccessMessage" value={copySuccessMessage} onChange={e => setCopySuccessMessage(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="Code Copied!" />
                 <p className="text-xs text-gray-500">Message shown when integration code is copied</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="welcomeTooltipMessage" className="text-sm font-medium">Welcome Tooltip Message</Label>
+                <Input id="welcomeTooltipMessage" value={welcomeTooltipMessage} onChange={e => setWelcomeTooltipMessage(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="Click to start chatting with our AI assistant!" />
+                <p className="text-xs text-gray-500">Tooltip message that appears on the chat button</p>
               </div>
               
               <div className="space-y-2">

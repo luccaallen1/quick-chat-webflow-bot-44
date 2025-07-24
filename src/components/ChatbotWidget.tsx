@@ -32,6 +32,7 @@ interface ChatbotWidgetProps {
   logoUrl?: string;
   logoFile?: File;
   welcomeMessage?: string;
+  welcomeTooltipMessage?: string;
   admin?: boolean;
   isVoiceEnabled?: boolean;
   elevenLabsAgentId?: string;
@@ -105,6 +106,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   logoUrl = 'https://media.licdn.com/dms/image/v2/D4E0BAQFRPXC4w25iOw/company-logo_200_200/B4EZVtx7beHgAI-/0/1741303560536?e=2147483647&v=beta&t=IMfviElZP1Vi86km2p9hrP-uuXQZxo1Ux_BvQ9-o0l4',
   logoFile,
   welcomeMessage = 'Hello! How can I help you today?',
+  welcomeTooltipMessage = 'Click to start chatting with our AI assistant!',
   admin = false,
   isVoiceEnabled = false,
   elevenLabsAgentId = 'agent_01k04zwwq3fv5acgzdwmbvfk8k',
@@ -484,26 +486,24 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     }
   }, [isOpen]);
 
-  // Add state for tooltip visibility with timer
-  const [showWelcomeTooltip, setShowWelcomeTooltip] = useState(true);
+  // Add state for tooltip visibility with 2-second delay
+  const [showWelcomeTooltip, setShowWelcomeTooltip] = useState(false);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Enhanced tooltip management with auto-hide after 15 seconds
+  // Show tooltip after 2 seconds on mount, no auto-hide
   useEffect(() => {
-    if (showWelcomeTooltip && !isOpen) {
-      // Start 15-second timer to auto-hide tooltip
-      // tooltipTimeoutRef.current = setTimeout(() => {
-      //   setShowWelcomeTooltip(false);
-      // }, 15000);
-    }
+    // Show tooltip after 2 seconds
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setShowWelcomeTooltip(true);
+    }, 2000);
 
-    // Clear timeout when component unmounts or tooltip is manually hidden
+    // Clear timeout when component unmounts
     return () => {
       if (tooltipTimeoutRef.current) {
         clearTimeout(tooltipTimeoutRef.current);
       }
     };
-  }, [showWelcomeTooltip, isOpen]);
+  }, []);
 
   // Hide tooltip when chat opens
   useEffect(() => {
@@ -514,37 +514,6 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       }
     }
   }, [isOpen]);
-
-  // Add scroll event listener to hide tooltip after scrolling
-  useEffect(() => {
-    let scrollTimeout: NodeJS.Timeout | null = null;
-    let scrollTimer = 0;
-    const handleScroll = () => {
-      if (showWelcomeTooltip) {
-        // Clear existing timeout
-        if (scrollTimeout) {
-          clearTimeout(scrollTimeout);
-        }
-
-        // Start/restart the 15-second timer on scroll
-        scrollTimeout = setTimeout(() => {
-          setShowWelcomeTooltip(false);
-        }, 15000);
-        scrollTimer = Date.now();
-      }
-    };
-
-    // Add scroll listener to window
-    window.addEventListener('scroll', handleScroll, {
-      passive: true
-    });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
-    };
-  }, [showWelcomeTooltip]);
 
   // Add state for chat button click
   const [chatButtonClickCount, setChatButtonClickCount] = useState(0);
@@ -1173,7 +1142,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 }} />}
                   </div>
                   <div>
-                    {welcomeMessage}
+                    {welcomeTooltipMessage}
                   </div>
                 </div>
                 <div style={{
