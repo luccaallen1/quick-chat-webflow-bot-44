@@ -22,6 +22,7 @@ class ChatbotManager {
   init(config: {
     webhookUrl?: string;
     title?: string;
+    bio?: string;
     placeholder?: string;
     position?: 'bottom-right' | 'bottom-left';
     primaryColor?: string;
@@ -38,6 +39,7 @@ class ChatbotManager {
     clinicId?: string;
     logoBackgroundColor?: string;
     logoBorderColor?: string;
+    headerButtonColor?: string;
     fontFamily?: string;
   }) {
     // Clean up existing instance
@@ -54,6 +56,7 @@ class ChatbotManager {
     this.root.render(React.createElement(ChatbotWidget, {
       webhookUrl: config.webhookUrl,
       title: config.title,
+      bio: config.bio,
       placeholder: config.placeholder,
       position: config.position,
       primaryColor: config.primaryColor,
@@ -70,6 +73,7 @@ class ChatbotManager {
       clinicId: config.clinicId,
       logoBackgroundColor: config.logoBackgroundColor,
       logoBorderColor: config.logoBorderColor,
+      headerButtonColor: config.headerButtonColor,
       fontFamily: config.fontFamily
     }));
 

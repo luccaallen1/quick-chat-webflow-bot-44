@@ -294,7 +294,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   align-items: center !important;
   justify-content: center !important;
   transition: background-color 0.2s ease !important;
-  color: inherit !important;
+  color: var(--chatbot-header-button-color, #ffffff) !important;
 }
 
 .chatbot-widget-button:hover {

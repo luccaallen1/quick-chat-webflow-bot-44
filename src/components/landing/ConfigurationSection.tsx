@@ -16,6 +16,8 @@ interface ConfigurationSectionProps {
   setWebhookUrl: (url: string) => void;
   title: string;
   setTitle: (title: string) => void;
+  bio: string;
+  setBio: (bio: string) => void;
   placeholder: string;
   setPlaceholder: (placeholder: string) => void;
   position: 'bottom-right' | 'bottom-left';
@@ -52,6 +54,8 @@ interface ConfigurationSectionProps {
   setLogoBackgroundColor: (color: string) => void;
   logoBorderColor: string;
   setLogoBorderColor: (color: string) => void;
+  headerButtonColor: string;
+  setHeaderButtonColor: (color: string) => void;
   fontFamily: string;
   setFontFamily: (font: string) => void;
 }
@@ -60,6 +64,8 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   setWebhookUrl,
   title,
   setTitle,
+  bio,
+  setBio,
   placeholder,
   setPlaceholder,
   position,
@@ -96,6 +102,8 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   setLogoBackgroundColor,
   logoBorderColor,
   setLogoBorderColor,
+  headerButtonColor,
+  setHeaderButtonColor,
   fontFamily,
   setFontFamily
 }) => {
@@ -597,10 +605,15 @@ export class AppComponent {
             </CardHeader>
             <CardContent className="space-y-6 p-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title" className="text-sm font-medium">Widget Title</Label>
-                  <Input id="title" value={title} onChange={e => setTitle(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-sm font-medium">Widget Title</Label>
+                <Input id="title" value={title} onChange={e => setTitle(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bio" className="text-sm font-medium">Widget Bio</Label>
+                <Input id="bio" value={bio} onChange={e => setBio(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="e.g., Online now, Available 24/7" />
+              </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="position" className="text-sm font-medium">Position</Label>
@@ -839,6 +852,12 @@ export class AppComponent {
               value: headerMainColor,
               setter: setHeaderMainColor,
               desc: 'Middle color for the header gradient effect'
+            }, {
+              id: 'headerButtonColor',
+              label: 'Header Button Color',
+              value: headerButtonColor,
+              setter: setHeaderButtonColor,
+              desc: 'Color for buttons and icons in the header'
             }].map((color, index) => <div key={color.id} className="space-y-2 animate-fade-in" style={{
               animationDelay: `${index * 100}ms`
             }}>

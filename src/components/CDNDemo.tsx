@@ -15,6 +15,7 @@ export const CDNDemo = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [webhookUrl, setWebhookUrl] = useState('https://luccatora.app.n8n.cloud/webhook/webbot');
   const [title, setTitle] = useState('Chat Support');
+  const [bio, setBio] = useState('Online now');
   const [placeholder, setPlaceholder] = useState('Type your message...');
   const [position, setPosition] = useState<'bottom-right' | 'bottom-left'>('bottom-right');
   const [primaryColor, setPrimaryColor] = useState('#1f75ff');
@@ -34,6 +35,7 @@ export const CDNDemo = () => {
   const [headerMainColor, setHeaderMainColor] = useState('#428bff');
   const [logoBackgroundColor, setLogoBackgroundColor] = useState('transparent');
   const [logoBorderColor, setLogoBorderColor] = useState('none');
+  const [headerButtonColor, setHeaderButtonColor] = useState('#ffffff');
   const [fontFamily, setFontFamily] = useState('Inter');
 
   // Apply dark mode to document
@@ -62,6 +64,7 @@ export const CDNDemo = () => {
         --chatbot-font-family: '${fontFamily}', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
         --chatbot-logo-background: ${logoBackgroundColor} !important;
         --chatbot-logo-border: ${borderStyle} !important;
+        --chatbot-header-button-color: ${headerButtonColor} !important;
       }
       
       .chatbot-widget-container *,
@@ -88,7 +91,7 @@ export const CDNDemo = () => {
         styleToRemove.remove();
       }
     };
-  }, [primaryColor, secondaryColor, botTextColor, userTextColor, chatBackground, gradientColor, fontFamily, logoBackgroundColor, logoBorderColor]);
+  }, [primaryColor, secondaryColor, botTextColor, userTextColor, chatBackground, gradientColor, fontFamily, logoBackgroundColor, logoBorderColor, headerButtonColor]);
 
   const handleViewExample = () => {
     window.open('https://chirodashboard-chat.onrender.com/cdn-example.html', '_blank');
@@ -140,6 +143,8 @@ export const CDNDemo = () => {
         setWebhookUrl={setWebhookUrl}
         title={title}
         setTitle={setTitle}
+        bio={bio}
+        setBio={setBio}
         placeholder={placeholder}
         setPlaceholder={setPlaceholder}
         position={position}
@@ -176,6 +181,8 @@ export const CDNDemo = () => {
         setLogoBackgroundColor={setLogoBackgroundColor}
         logoBorderColor={logoBorderColor}
         setLogoBorderColor={setLogoBorderColor}
+        headerButtonColor={headerButtonColor}
+        setHeaderButtonColor={setHeaderButtonColor}
         fontFamily={fontFamily}
         setFontFamily={setFontFamily}
       />
@@ -184,6 +191,7 @@ export const CDNDemo = () => {
       <ChatbotWidget
         webhookUrl={webhookUrl}
         title={title}
+        bio={bio}
         placeholder={placeholder}
         position={position}
         primaryColor={primaryColor}
@@ -195,6 +203,7 @@ export const CDNDemo = () => {
         headerMainColor={headerMainColor}
         logoBackgroundColor={logoBackgroundColor}
         logoBorderColor={logoBorderColor}
+        headerButtonColor={headerButtonColor}
         fontFamily={fontFamily}
         logoFile={logoFile}
         logoUrl={logoFile ? undefined : defaultLogoUrl}

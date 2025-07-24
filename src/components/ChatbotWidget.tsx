@@ -16,6 +16,7 @@ interface Message {
 interface ChatbotWidgetProps {
   webhookUrl?: string;
   title?: string;
+  bio?: string;
   placeholder?: string;
   position?: 'bottom-right' | 'bottom-left';
   primaryColor?: string;
@@ -36,6 +37,7 @@ interface ChatbotWidgetProps {
   elevenLabsAgentId?: string;
   logoBackgroundColor?: string;
   logoBorderColor?: string;
+  headerButtonColor?: string;
   fontFamily?: string;
 }
 
@@ -86,6 +88,7 @@ const handleGlobalError = (error: Error) => {
 export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   webhookUrl = '',
   title = 'Chat Support',
+  bio = 'Online now',
   placeholder = 'Type your message...',
   position = 'bottom-right',
   primaryColor = '#3b82f6',
@@ -106,7 +109,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   isVoiceEnabled = false,
   elevenLabsAgentId = 'agent_01k04zwwq3fv5acgzdwmbvfk8k',
   logoBackgroundColor = 'transparent',
-  logoBorderColor = '#e5e7eb'
+  logoBorderColor = '#e5e7eb',
+  headerButtonColor = '#ffffff'
 }) => {
   // Create logo URL from file if provided
   const [logoSrc, setLogoSrc] = useState<string>(logoUrl);
@@ -857,7 +861,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               <div>
                 <h3 className="chatbot-widget-header-title">{title}</h3>
                 <p className="chatbot-widget-header-subtitle">
-                  ID: {displaySessionId}
+                  {bio}
                   {isVoiceEnabled && isVoiceMode && <span style={{
                 marginLeft: '8px',
                 fontSize: '10px'
