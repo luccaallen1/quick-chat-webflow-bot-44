@@ -26,6 +26,8 @@ export const CDNDemo = () => {
   const [welcomeMessage, setWelcomeMessage] = useState('Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?');
   const [admin, setAdmin] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
+  const [isElevenLabsEnabled, setIsElevenLabsEnabled] = useState(false);
+  const [elevenLabsAgentId, setElevenLabsAgentId] = useState('agent_01k04zwwq3fv5acgzdwmbvfk8k');
 
   // Apply dark mode to document
   useEffect(() => {
@@ -140,6 +142,10 @@ export const CDNDemo = () => {
         setAdmin={setAdmin}
         isVoiceEnabled={isVoiceEnabled}
         setIsVoiceEnabled={setIsVoiceEnabled}
+        isElevenLabsEnabled={isElevenLabsEnabled}
+        setIsElevenLabsEnabled={setIsElevenLabsEnabled}
+        elevenLabsAgentId={elevenLabsAgentId}
+        setElevenLabsAgentId={setElevenLabsAgentId}
       />
 
       {/* The actual chatbot widget */}

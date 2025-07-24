@@ -39,6 +39,10 @@ interface ConfigurationSectionProps {
   setAdmin: (admin: boolean) => void;
   isVoiceEnabled: boolean;
   setIsVoiceEnabled: (enabled: boolean) => void;
+  isElevenLabsEnabled: boolean;
+  setIsElevenLabsEnabled: (enabled: boolean) => void;
+  elevenLabsAgentId: string;
+  setElevenLabsAgentId: (agentId: string) => void;
 }
 
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
@@ -67,7 +71,11 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   admin,
   setAdmin,
   isVoiceEnabled,
-  setIsVoiceEnabled
+  setIsVoiceEnabled,
+  isElevenLabsEnabled,
+  setIsElevenLabsEnabled,
+  elevenLabsAgentId,
+  setElevenLabsAgentId
 }) => {
   const { toast } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
@@ -87,7 +95,9 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       welcomeMessage,
       admin,
       isVoiceEnabled,
-      logoFile: logoFile ? logoFile.name : null
+      logoFile: logoFile ? logoFile.name : null,
+      isElevenLabsEnabled,
+      elevenLabsAgentId
     };
 
     const configString = `{
@@ -106,6 +116,12 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     logoFile: '${baseConfig.logoFile}'` : ''}
   }`;
 
+    const elevenLabsEmbed = isElevenLabsEnabled ? `
+
+<!-- ElevenLabs Voice Bot Integration -->
+<elevenlabs-convai agent-id="${elevenLabsAgentId}"></elevenlabs-convai>
+<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>` : '';
+
     switch (language) {
       case 'html':
         return `/* 
@@ -114,6 +130,7 @@ INTEGRATION INSTRUCTIONS FOR HTML:
 2. Replace 'YOUR_WEBHOOK_URL' with your actual webhook endpoint
 3. The chatbot widget will automatically appear on your website
 4. You can customize the configuration object below to match your branding
+${isElevenLabsEnabled ? '5. The ElevenLabs voice bot will also be available alongside the text chatbot' : ''}
 */
 
 <!-- Add this to your website's <head> section -->
@@ -124,7 +141,7 @@ INTEGRATION INSTRUCTIONS FOR HTML:
 <script>
   const instance = new window.ChatbotWidget.ChatbotManager();
   instance.init(${configString});
-</script>`;
+</script>${elevenLabsEmbed}`;
 
       case 'react-ts':
         return `/*
@@ -676,6 +693,32 @@ export class AppComponent {
                     </Label>
                   </div>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="isElevenLabsEnabled" className="text-sm font-medium">ElevenLabs Voice Bot</Label>
+                  <div className="flex items-center space-x-2">
+                    <input type="checkbox" id="isElevenLabsEnabled" checked={isElevenLabsEnabled} onChange={e => setIsElevenLabsEnabled(e.target.checked)} className="rounded border-input focus:ring-2 focus:ring-orange-500/20" />
+                    <Label htmlFor="isElevenLabsEnabled" className="text-sm text-muted-foreground">
+                      Enable ElevenLabs conversational AI
+                    </Label>
+                  </div>
+                </div>
+
+                {isElevenLabsEnabled && (
+                  <div className="space-y-2">
+                    <Label htmlFor="elevenLabsAgentId" className="text-sm font-medium">ElevenLabs Agent ID</Label>
+                    <Input 
+                      id="elevenLabsAgentId" 
+                      value={elevenLabsAgentId} 
+                      onChange={e => setElevenLabsAgentId(e.target.value)} 
+                      placeholder="agent_01k04zwwq3fv5acgzdwmbvfk8k" 
+                      className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" 
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Your ElevenLabs agent ID from the conversational AI dashboard
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Integration Code Generator */}
