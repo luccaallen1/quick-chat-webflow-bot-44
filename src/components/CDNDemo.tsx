@@ -46,6 +46,7 @@ export const CDNDemo = () => {
 
   // Apply custom CSS variables for the chatbot widget colors and font
   useEffect(() => {
+    console.log('Updating font family to:', fontFamily);
     const style = document.createElement('style');
     style.id = 'chatbot-custom-colors';
     style.textContent = `
@@ -57,6 +58,13 @@ export const CDNDemo = () => {
         --chatbot-background: ${chatBackground} !important;
         --chatbot-gradient: ${gradientColor} !important;
         --chatbot-font-family: '${fontFamily}', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+      }
+      
+      .chatbot-widget-container *,
+      .chatbot-widget-container input,
+      .chatbot-widget-container textarea,
+      .chatbot-widget-container button {
+        font-family: var(--chatbot-font-family) !important;
       }
     `;
     
