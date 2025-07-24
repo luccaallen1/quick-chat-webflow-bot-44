@@ -590,7 +590,7 @@ export class AppComponent {
               
               <div className="space-y-2">
                 <Label htmlFor="logoFile" className="text-sm font-medium">Logo Image (optional)</Label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <input
                     id="logoFile"
                     type="file"
@@ -602,16 +602,28 @@ export class AppComponent {
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                   {logoFile && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{logoFile.name}</span>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
+                          <img
+                            src={URL.createObjectURL(logoFile)}
+                            alt="Logo preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-600 truncate">{logoFile.name}</p>
+                        <p className="text-xs text-gray-400">Preview of how your logo will appear</p>
+                      </div>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => setLogoFile(null)}
-                        className="h-6 w-6 p-0"
+                        className="flex-shrink-0"
                       >
-                        ×
+                        Remove
                       </Button>
                     </div>
                   )}
