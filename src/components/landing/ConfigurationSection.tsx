@@ -559,10 +559,14 @@ export class AppComponent {
   const copyCode = (language: string) => {
     const code = generateCodeForLanguage(language);
     navigator.clipboard.writeText(code);
-    toast({
-      title: copySuccessMessage,
-      description: `${getLanguageDisplayName(language)} integration code copied to clipboard`
-    });
+    
+    // Show toast after 2 seconds delay
+    setTimeout(() => {
+      toast({
+        title: copySuccessMessage,
+        description: `${getLanguageDisplayName(language)} integration code copied to clipboard`
+      });
+    }, 2000);
   };
   const getLanguageDisplayName = (language: string) => {
     switch (language) {
