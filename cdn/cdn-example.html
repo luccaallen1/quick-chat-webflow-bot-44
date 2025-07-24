@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDN Chatbot Widget Example</title>
+    <link rel="stylesheet" href="./chatbot-widget.css">
+    <script src="./chatbot-widget.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .status.warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CDN Chatbot Widget Live Example</h1>
+        <p>This page demonstrates the CDN chatbot widget running with your exact configuration.</p>
+        
+        <div class="status success">
+            <strong>✅ Widget Status:</strong> <span id="widget-status">Loading...</span>
+        </div>
+        
+        <h2>Current Configuration:</h2>
+        <div class="code-block">
+            <code>
+&lt;script src="https://chirodashboard-chat.onrender.com/chatbot-widget.js"&gt;&lt;/script&gt;<br>
+&lt;script&gt;<br>
+&nbsp;&nbsp;window.ChatbotWidget.init({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;webhookUrl: 'https://luccatora.app.n8n.cloud/webhook/webbot',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;title: 'Chat Support',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;placeholder: 'Type your message...',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;position: 'bottom-right',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;primaryColor: '#3b82f6',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;secondaryColor: '#f3f4f6',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;textColor: '#1f2937',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;userTextColor: '#ffffff',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;chatBackground: '#ffffff',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;welcomeMessage: 'Hello! How can I help you today?',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;logoUrl: 'https://conversion-metrics-view.lovable.app/lovable-uploads/460f8654-9a04-4cac-a568-cd5421a2911e.png'<br>
+&nbsp;&nbsp;});<br>
+&lt;/script&gt;
+            </code>
+        </div>
+        
+        <h2>What You Should See</h2>
+        <ul>
+            <li>A chat widget in the bottom-right corner of this page</li>
+            <li>Custom logo in the chat header</li>
+            <li>Blue primary color theme (#3b82f6)</li>
+            <li>Welcome message when opened</li>
+            <li>Working webhook integration (if endpoint is live)</li>
+        </ul>
+        
+        <h2>Integration Steps</h2>
+        <ol>
+            <li><strong>Include the script:</strong> Add the chatbot-widget.js script to your page</li>
+            <li><strong>Initialize:</strong> Call window.ChatbotWidget.init() with your configuration</li>
+            <li><strong>Customize:</strong> Adjust colors, position, and messages to match your brand</li>
+            <li><strong>Test:</strong> Verify the widget appears and webhook responses work</li>
+        </ol>
+        
+        <div class="status warning">
+            <strong>⚠️ Note:</strong> Make sure your webhook endpoint is configured to handle POST requests and return the expected JSON format.
+        </div>
+        
+        <h2>Troubleshooting</h2>
+        <p>If the widget doesn't appear:</p>
+        <ul>
+            <li>Check browser console for errors</li>
+            <li>Verify the script loads successfully (check Network tab)</li>
+            <li>Ensure window.ChatbotWidget.init is called after script loads</li>
+            <li>Test webhook endpoint separately</li>
+        </ul>
+    </div>
+
+    <!-- CDN Widget Integration -->
+    
+    <script>
+        // Wait for script to load, then initialize
+        let initializationAttempts = 0;
+        const maxAttempts = 50; // 5 seconds max wait time
+
+        function initializeChatbot() {
+            initializationAttempts++;
+            
+            if (window.ChatbotWidget && window.ChatbotWidget) {
+              const instance = new window.ChatbotWidget.ChatbotManager();
+                try {
+                    instance.init({
+                        webhookUrl: 'https://luccatora.app.n8n.cloud/webhook/webbot',
+                        title: 'Chat Support',
+                        placeholder: 'Type your message...',
+                        position: 'bottom-right',
+                        primaryColor: '#3b82f6',
+                        secondaryColor: '#f3f4f6',
+                        textColor: '#1f2937',
+                        userTextColor: '#ffffff',
+                        chatBackground: '#ffffff',
+                        welcomeMessage: 'Hello! How can I help you today?',
+                        logoUrl: 'https://conversion-metrics-view.lovable.app/lovable-uploads/460f8654-9a04-4cac-a568-cd5421a2911e.png'
+                    });
+                    document.getElementById('widget-status').textContent = 'Widget initialized successfully';
+                    document.querySelector('.status').className = 'status success';
+                    console.log('ChatbotWidget initialized successfully');
+                } catch (error) {
+                    document.getElementById('widget-status').textContent = 'Error initializing widget: ' + error.message;
+                    document.querySelector('.status').className = 'status error';
+                    console.error('Chatbot initialization error:', error);
+                }
+            } else if (initializationAttempts < maxAttempts) {
+                document.getElementById('widget-status').textContent = `Waiting for script to load... (${initializationAttempts}/${maxAttempts})`;
+                setTimeout(initializeChatbot, 100);
+            } else {
+                document.getElementById('widget-status').textContent = 'Failed to load chatbot script. Please check the console for errors.';
+                document.querySelector('.status').className = 'status error';
+                console.error('ChatbotWidget failed to load after maximum attempts');
+            }
+        }
+
+        // Start initialization when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeChatbot);
+        } else {
+            initializeChatbot();
+        }
+
+        // Also check for script load events
+        const scripts = document.querySelectorAll('script[src*="chatbot-widget"]');
+        scripts.forEach(script => {
+            script.addEventListener('load', () => {
+                console.log('Chatbot script loaded successfully');
+                if (!window.ChatbotWidget) {
+                    setTimeout(initializeChatbot, 100);
+                }
+            });
+            script.addEventListener('error', (e) => {
+                console.error('Failed to load chatbot script:', e);
+                document.getElementById('widget-status').textContent = 'Failed to load chatbot script from CDN';
+                document.querySelector('.status').className = 'status error';
+            });
+        });
+    </script>
+</body>
+</html>

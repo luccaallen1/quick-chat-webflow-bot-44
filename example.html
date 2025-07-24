@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Widget Example</title>
+</head>
+<body>
+  <h1>Chatbot Widget Example</h1>
+  <p>This page demonstrates how to properly load and initialize the chatbot widget.</p>
+
+  <!-- First load the chatbot widget script -->
+  <script src="cdn/chatbot-widget.js"></script>
+  
+  <!-- Then load our initialization script -->
+  <script src="init-chatbot.js"></script>
+  
+  <!-- Alternative manual initialization method -->
+  <script>
+    // An alternative method to initialize the chatbot directly
+    function manualInitChatbot() {
+      // Wait a moment to ensure the widget is loaded
+      setTimeout(function() {
+        // Check if ChatbotWidget is available
+        if (window.ChatbotWidget && typeof window.ChatbotWidget.ChatbotManager === 'function') {
+          try {
+            // Create a new instance of the ChatbotManager
+            const chatbotInstance = new window.ChatbotWidget.ChatbotManager();
+            
+            // Initialize the chatbot instance with configuration
+            chatbotInstance.init({
+              webhookUrl: 'YOUR_WEBHOOK_URL',
+              title: 'Chat with us',
+              placeholder: 'Type your message here...',
+              position: 'right', // 'right' or 'left'
+              primaryColor: '#4F46E5',
+              secondaryColor: '#FFFFFF'
+              // Add any other required configuration parameters
+            });
+            console.log('Chatbot manually initialized');
+          } catch (error) {
+            console.error('Error initializing chatbot:', error);
+          }
+        } else {
+          console.error('Failed to initialize chatbot - ChatbotManager constructor not available');
+        }
+      }, 500);
+    }
+    
+    // Uncomment the line below to use the manual initialization method
+    // Instead of using the init-chatbot.js approach
+    // manualInitChatbot();
+  </script>
+</body>
+</html> 
