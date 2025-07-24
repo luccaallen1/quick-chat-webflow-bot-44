@@ -56,11 +56,10 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   background: #ffffff;
 }
 
-/* Clean header design with gradient */
+/* Clean header design with subtle white gradient */
 .chatbot-widget-header {
   padding: 0.6rem 0.6rem !important;
-  background: linear-gradient(135deg, var(--chatbot-primary), var(--chatbot-primary)) !important;
-  background: linear-gradient(135deg, var(--chatbot-primary) 0%, rgba(59, 130, 246, 0.9) 50%, var(--chatbot-primary) 100%) !important;
+  background: linear-gradient(135deg, var(--chatbot-primary) 0%, rgba(255, 255, 255, 0.1) 50%, var(--chatbot-primary) 100%) !important;
   color: white !important;
   display: flex !important;
   align-items: center !important;
