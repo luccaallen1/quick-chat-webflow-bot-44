@@ -84,7 +84,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             justifyContent: 'center',
             margin: '0 auto 1rem',
             position: 'relative',
-            boxShadow: isCallActive ? '0 0 30px rgba(59, 130, 246, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.15)',
+            boxShadow: logoUrl ? 'none' : (isCallActive ? '0 0 30px rgba(59, 130, 246, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.15)'),
             animation: isCallActive ? 'voicePulse 1.5s ease-in-out infinite' : 'none',
             transition: 'all 0.3s ease'
           }}
