@@ -28,6 +28,7 @@ export const CDNDemo = () => {
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
   const [isElevenLabsEnabled, setIsElevenLabsEnabled] = useState(false);
   const [elevenLabsAgentId, setElevenLabsAgentId] = useState('agent_01k04zwwq3fv5acgzdwmbvfk8k');
+  const [gradientColor, setGradientColor] = useState('rgba(59, 130, 246, 0.9)');
 
   // Apply dark mode to document
   useEffect(() => {
@@ -49,6 +50,7 @@ export const CDNDemo = () => {
         --chatbot-text: ${textColor} !important;
         --chatbot-user-text: ${userTextColor} !important;
         --chatbot-background: ${chatBackground} !important;
+        --chatbot-gradient: ${gradientColor} !important;
       }
     `;
     
@@ -68,7 +70,7 @@ export const CDNDemo = () => {
         styleToRemove.remove();
       }
     };
-  }, [primaryColor, secondaryColor, textColor, userTextColor, chatBackground]);
+  }, [primaryColor, secondaryColor, textColor, userTextColor, chatBackground, gradientColor]);
 
   const handleViewExample = () => {
     window.open('https://chirodashboard-chat.onrender.com/cdn-example.html', '_blank');
@@ -146,6 +148,8 @@ export const CDNDemo = () => {
         setIsElevenLabsEnabled={setIsElevenLabsEnabled}
         elevenLabsAgentId={elevenLabsAgentId}
         setElevenLabsAgentId={setElevenLabsAgentId}
+        gradientColor={gradientColor}
+        setGradientColor={setGradientColor}
       />
 
       {/* The actual chatbot widget */}

@@ -43,6 +43,8 @@ interface ConfigurationSectionProps {
   setIsElevenLabsEnabled: (enabled: boolean) => void;
   elevenLabsAgentId: string;
   setElevenLabsAgentId: (agentId: string) => void;
+  gradientColor: string;
+  setGradientColor: (color: string) => void;
 }
 
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
@@ -75,7 +77,9 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   isElevenLabsEnabled,
   setIsElevenLabsEnabled,
   elevenLabsAgentId,
-  setElevenLabsAgentId
+  setElevenLabsAgentId,
+  gradientColor,
+  setGradientColor
 }) => {
   const { toast } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
@@ -97,7 +101,8 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       isVoiceEnabled,
       logoFile: logoFile ? logoFile.name : null,
       isElevenLabsEnabled,
-      elevenLabsAgentId
+      elevenLabsAgentId,
+      gradientColor
     };
 
     const configString = `{
@@ -789,6 +794,12 @@ export class AppComponent {
               value: userTextColor,
               setter: setUserTextColor,
               desc: 'Text color for user messages'
+            }, {
+              id: 'gradientColor',
+              label: 'Header Gradient Color',
+              value: gradientColor,
+              setter: setGradientColor,
+              desc: 'Middle color for the header gradient effect'
             }].map((color, index) => <div key={color.id} className="space-y-2 animate-fade-in" style={{
               animationDelay: `${index * 100}ms`
             }}>
