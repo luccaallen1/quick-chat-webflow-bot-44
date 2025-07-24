@@ -1106,7 +1106,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       position: 'relative'
     }}>
           <TooltipProvider>
-            <Tooltip open={showWelcomeTooltip} onOpenChange={setShowWelcomeTooltip}>
+            <Tooltip open={showWelcomeTooltip} onOpenChange={() => {}}>
               <TooltipTrigger asChild>
                 <button onClick={handleChatButtonClick} className="chatbot-widget-toggle" style={{
               backgroundColor: primaryColor
