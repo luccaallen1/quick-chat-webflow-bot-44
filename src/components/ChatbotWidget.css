@@ -93,11 +93,13 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   gap: 0.5rem !important;
 }
 
-/* Simple logo styling */
+/* Circular logo styling */
 .chatbot-widget-logo {
   width: 2rem !important;
   height: 2rem !important;
-  object-fit: contain !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Clean messages area */

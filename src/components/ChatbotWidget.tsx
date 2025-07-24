@@ -27,6 +27,7 @@ interface ChatbotWidgetProps {
   clinicName?: string;
   clinicId?: string;
   logoUrl?: string;
+  logoFile?: File;
   welcomeMessage?: string;
   admin?: boolean;
   isVoiceEnabled?: boolean;
@@ -91,10 +92,23 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   clinicName = 'Gadsden',
   clinicId = '104',
   logoUrl = 'https://media.licdn.com/dms/image/v2/D4E0BAQFRPXC4w25iOw/company-logo_200_200/B4EZVtx7beHgAI-/0/1741303560536?e=2147483647&v=beta&t=IMfviElZP1Vi86km2p9hrP-uuXQZxo1Ux_BvQ9-o0l4',
+  logoFile,
   welcomeMessage = 'Hello! How can I help you today?',
   admin = false,
   isVoiceEnabled = false
 }) => {
+  // Create logo URL from file if provided
+  const [logoSrc, setLogoSrc] = useState<string>(logoUrl);
+  
+  useEffect(() => {
+    if (logoFile) {
+      const url = URL.createObjectURL(logoFile);
+      setLogoSrc(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setLogoSrc(logoUrl);
+    }
+  }, [logoFile, logoUrl]);
   // Voice functionality - only initialize if voice is enabled
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [autoPlayResponses, setAutoPlayResponses] = useState(true);
@@ -812,17 +826,11 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       }}>
             <div className="chatbot-widget-header-content">
               <div className="chatbot-widget-header-avatar">
-                {logoUrl && <img src={logoUrl} alt="Logo" style={{
-              width: '60px',
-              height: '60px',
-              objectFit: 'cover',
-              borderRadius: '50%',
-              border: '2px solid rgba(255, 255, 255, 0.2)'
-            }} onError={e => {
-              console.error('Logo failed to load:', logoUrl);
+                {logoSrc && <img src={logoSrc} alt="Logo" className="chatbot-widget-logo" onError={e => {
+              console.error('Logo failed to load:', logoSrc);
               e.currentTarget.style.display = 'none';
             }} onLoad={() => {
-              console.log('Logo loaded successfully:', logoUrl);
+              console.log('Logo loaded successfully:', logoSrc);
             }} />}
               </div>
               <div>
@@ -1134,13 +1142,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               gap: '8px'
             }}>
                   <div className="chatbot-widget-header-avatar-tooltip">
-                    {logoUrl && <img src={logoUrl} alt="Logo" style={{
-                  width: '40px',
-                  height: '40px',
-                  objectFit: 'cover',
-                  borderRadius: '50%'
-                }} onError={e => {
-                  console.error('Tooltip logo failed to load:', logoUrl);
+                    {logoSrc && <img src={logoSrc} alt="Logo" className="chatbot-widget-logo" onError={e => {
+                  console.error('Tooltip logo failed to load:', logoSrc);
                   e.currentTarget.style.display = 'none';
                 }} />}
                   </div>
