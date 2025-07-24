@@ -6,9 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, Palette, Settings } from 'lucide-react';
+import { Copy, Palette, Settings, Upload, Edit3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ImageCropper } from '@/components/ui/image-cropper';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 interface ConfigurationSectionProps {
   webhookUrl: string;
@@ -69,6 +71,7 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
 }) => {
   const { toast } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
+  const [isCropperOpen, setIsCropperOpen] = useState(false);
 
   const generateCodeForLanguage = (language: string) => {
     const baseConfig = {
@@ -591,16 +594,30 @@ export class AppComponent {
               <div className="space-y-2">
                 <Label htmlFor="logoFile" className="text-sm font-medium">Logo Image (optional)</Label>
                 <div className="space-y-3">
-                  <input
-                    id="logoFile"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] || null;
-                      setLogoFile(file);
-                    }}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  />
+                  <Dialog open={isCropperOpen} onOpenChange={setIsCropperOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full h-10 flex items-center justify-center gap-2"
+                      >
+                        <Upload className="h-4 w-4" />
+                        {logoFile ? 'Change Logo' : 'Upload & Crop Logo'}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <ImageCropper
+                        onCrop={(croppedFile) => {
+                          setLogoFile(croppedFile);
+                          setIsCropperOpen(false);
+                        }}
+                        onCancel={() => setIsCropperOpen(false)}
+                        initialImage={logoFile}
+                        size={200}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                  
                   {logoFile && (
                     <div className="flex items-center gap-4">
                       <div className="flex-shrink-0">
@@ -614,8 +631,17 @@ export class AppComponent {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-gray-600 truncate">{logoFile.name}</p>
-                        <p className="text-xs text-gray-400">Preview of how your logo will appear</p>
+                        <p className="text-xs text-gray-400">Cropped logo preview</p>
                       </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsCropperOpen(true)}
+                        className="flex-shrink-0"
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </Button>
                       <Button
                         type="button"
                         variant="ghost"
