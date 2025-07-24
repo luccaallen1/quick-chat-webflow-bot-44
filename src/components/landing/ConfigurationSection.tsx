@@ -58,6 +58,8 @@ interface ConfigurationSectionProps {
   setHeaderButtonColor: (color: string) => void;
   fontFamily: string;
   setFontFamily: (font: string) => void;
+  copySuccessMessage: string;
+  setCopySuccessMessage: (message: string) => void;
 }
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   webhookUrl,
@@ -105,7 +107,9 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   headerButtonColor,
   setHeaderButtonColor,
   fontFamily,
-  setFontFamily
+  setFontFamily,
+  copySuccessMessage,
+  setCopySuccessMessage
 }) => {
   const {
     toast
@@ -556,7 +560,7 @@ export class AppComponent {
     const code = generateCodeForLanguage(language);
     navigator.clipboard.writeText(code);
     toast({
-      title: "Code Copied!",
+      title: copySuccessMessage,
       description: `${getLanguageDisplayName(language)} integration code copied to clipboard`
     });
   };
@@ -675,6 +679,12 @@ export class AppComponent {
               <div className="space-y-2">
                 <Label htmlFor="welcomeMessage" className="text-sm font-medium">Welcome Message</Label>
                 <Textarea id="welcomeMessage" value={welcomeMessage} onChange={e => setWelcomeMessage(e.target.value)} rows={2} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?" />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="copySuccessMessage" className="text-sm font-medium">Copy Success Message</Label>
+                <Input id="copySuccessMessage" value={copySuccessMessage} onChange={e => setCopySuccessMessage(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="Code Copied!" />
+                <p className="text-xs text-gray-500">Message shown when integration code is copied</p>
               </div>
               
               <div className="space-y-2">

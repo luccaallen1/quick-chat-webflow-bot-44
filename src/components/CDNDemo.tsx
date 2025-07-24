@@ -37,6 +37,7 @@ export const CDNDemo = () => {
   const [logoBorderColor, setLogoBorderColor] = useState('none');
   const [headerButtonColor, setHeaderButtonColor] = useState('#ffffff');
   const [fontFamily, setFontFamily] = useState('Inter');
+  const [copySuccessMessage, setCopySuccessMessage] = useState('Code Copied!');
 
   // Apply dark mode to document
   useEffect(() => {
@@ -185,6 +186,8 @@ export const CDNDemo = () => {
         setHeaderButtonColor={setHeaderButtonColor}
         fontFamily={fontFamily}
         setFontFamily={setFontFamily}
+        copySuccessMessage={copySuccessMessage}
+        setCopySuccessMessage={setCopySuccessMessage}
       />
 
       {/* The actual chatbot widget */}
