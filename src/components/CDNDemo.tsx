@@ -23,6 +23,7 @@ export const CDNDemo = () => {
   const [userTextColor, setUserTextColor] = useState('#ffffff');
   const [chatBackground, setChatBackground] = useState('#ffffff');
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [defaultLogoUrl] = useState('/lovable-uploads/e21c3d80-4ad8-46f7-8892-faf21f128773.png');
   const [welcomeMessage, setWelcomeMessage] = useState('Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?');
   const [admin, setAdmin] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
@@ -32,7 +33,7 @@ export const CDNDemo = () => {
   const [headerGradientColor, setHeaderGradientColor] = useState('#002fff');
   const [headerMainColor, setHeaderMainColor] = useState('#428bff');
   const [logoBackgroundColor, setLogoBackgroundColor] = useState('transparent');
-  const [logoBorderColor, setLogoBorderColor] = useState('#e5e7eb');
+  const [logoBorderColor, setLogoBorderColor] = useState('none');
   const [fontFamily, setFontFamily] = useState('Inter');
 
   // Apply dark mode to document
@@ -47,6 +48,7 @@ export const CDNDemo = () => {
   // Apply custom CSS variables for the chatbot widget colors and font
   useEffect(() => {
     console.log('Updating font family to:', fontFamily);
+    const borderStyle = logoBorderColor === 'none' ? 'none' : `1px solid ${logoBorderColor}`;
     const style = document.createElement('style');
     style.id = 'chatbot-custom-colors';
     style.textContent = `
@@ -58,6 +60,8 @@ export const CDNDemo = () => {
         --chatbot-background: ${chatBackground} !important;
         --chatbot-gradient: ${gradientColor} !important;
         --chatbot-font-family: '${fontFamily}', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+        --chatbot-logo-background: ${logoBackgroundColor} !important;
+        --chatbot-logo-border: ${borderStyle} !important;
       }
       
       .chatbot-widget-container *,
@@ -84,7 +88,7 @@ export const CDNDemo = () => {
         styleToRemove.remove();
       }
     };
-  }, [primaryColor, secondaryColor, botTextColor, userTextColor, chatBackground, gradientColor, fontFamily]);
+  }, [primaryColor, secondaryColor, botTextColor, userTextColor, chatBackground, gradientColor, fontFamily, logoBackgroundColor, logoBorderColor]);
 
   const handleViewExample = () => {
     window.open('https://chirodashboard-chat.onrender.com/cdn-example.html', '_blank');
@@ -193,6 +197,7 @@ export const CDNDemo = () => {
         logoBorderColor={logoBorderColor}
         fontFamily={fontFamily}
         logoFile={logoFile}
+        logoUrl={logoFile ? undefined : defaultLogoUrl}
         welcomeMessage={welcomeMessage}
         admin={admin}
         isVoiceEnabled={isVoiceEnabled}

@@ -103,7 +103,7 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
   object-position: center !important;
   border-radius: 50% !important;
   background-color: var(--chatbot-logo-background, transparent) !important;
-  border: 1px solid var(--chatbot-logo-border, #e5e7eb) !important;
+  border: var(--chatbot-logo-border, none) !important;
 }
 
 /* Clean messages area */

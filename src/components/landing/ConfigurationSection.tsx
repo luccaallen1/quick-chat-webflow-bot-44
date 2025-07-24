@@ -718,12 +718,15 @@ export class AppComponent {
                 <div className="space-y-2">
                   <Label htmlFor="logoBorderColor" className="text-sm font-medium">Logo Border Color</Label>
                   <div className="flex gap-2 items-center">
-                    <Input id="logoBorderColor" type="color" value={logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} className="w-16 h-10 p-1 border rounded" />
+                    <Input id="logoBorderColor" type="color" value={logoBorderColor === 'none' ? '#e5e7eb' : logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} className="w-16 h-10 p-1 border rounded" />
                     <div className="flex-1">
-                      <Input type="text" value={logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} placeholder="Enter border color" className="text-sm" />
+                      <Input type="text" value={logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} placeholder="Enter border color or 'none'" className="text-sm" />
                     </div>
+                    <Button type="button" variant="outline" size="sm" onClick={() => setLogoBorderColor('none')} className="text-xs">
+                      No Border
+                    </Button>
                   </div>
-                  <p className="text-xs text-gray-500">Slim border color around the logo</p>
+                  <p className="text-xs text-gray-500">Border around the logo (set to 'none' for no border)</p>
                 </div>
               </div>
 
