@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageCropper } from '@/components/ui/image-cropper';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-
 interface ConfigurationSectionProps {
   webhookUrl: string;
   setWebhookUrl: (url: string) => void;
@@ -54,7 +53,6 @@ interface ConfigurationSectionProps {
   logoBorderColor: string;
   setLogoBorderColor: (color: string) => void;
 }
-
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   webhookUrl,
   setWebhookUrl,
@@ -97,10 +95,11 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   logoBorderColor,
   setLogoBorderColor
 }) => {
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
   const [isCropperOpen, setIsCropperOpen] = useState(false);
-
   const generateCodeForLanguage = (language: string) => {
     const baseConfig = {
       webhookUrl: webhookUrl || 'YOUR_WEBHOOK_URL',
@@ -120,7 +119,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       elevenLabsAgentId,
       gradientColor
     };
-
     const configString = `{
     webhookUrl: '${baseConfig.webhookUrl}',
     title: '${baseConfig.title}',
@@ -136,13 +134,11 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     isVoiceEnabled: ${baseConfig.isVoiceEnabled}${baseConfig.logoFile ? `,
     logoFile: '${baseConfig.logoFile}'` : ''}
   }`;
-
     const elevenLabsEmbed = isElevenLabsEnabled ? `
 
 <!-- ElevenLabs Voice Bot Integration -->
 <elevenlabs-convai agent-id="${elevenLabsAgentId}"></elevenlabs-convai>
 <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>` : '';
-
     switch (language) {
       case 'html':
         return `/* 
@@ -163,7 +159,6 @@ ${isElevenLabsEnabled ? '5. The ElevenLabs voice bot will also be available alon
   const instance = new window.ChatbotWidget.ChatbotManager();
   instance.init(${configString});
 </script>${elevenLabsEmbed}`;
-
       case 'react-ts':
         return `/*
 INTEGRATION INSTRUCTIONS FOR REACT TYPESCRIPT:
@@ -227,7 +222,6 @@ function App() {
   );
 }
 */`;
-
       case 'react-js':
         return `/*
 INTEGRATION INSTRUCTIONS FOR REACT JAVASCRIPT:
@@ -291,7 +285,6 @@ function App() {
   );
 }
 */`;
-
       case 'vue':
         return `<!--
 INTEGRATION INSTRUCTIONS FOR VUE.JS:
@@ -371,7 +364,6 @@ export default {
   </div>
 </template>
 -->`;
-
       case 'dotnet':
         return `/*
 INTEGRATION INSTRUCTIONS FOR .NET:
@@ -419,7 +411,6 @@ logoFile: '@ViewBag.LogoFile',
 title: '@ViewBag.ChatTitle',
 welcomeMessage: '@ViewBag.WelcomeMessage'
 *@`;
-
       case 'angular':
         return `/*
 INTEGRATION INSTRUCTIONS FOR ANGULAR:
@@ -545,12 +536,10 @@ export class AppComponent {
 2. Or add it to your app.component.html:
 <app-chatbot-integration></app-chatbot-integration>
 */`;
-
       default:
         return '';
     }
   };
-
   const copyCode = (language: string) => {
     const code = generateCodeForLanguage(language);
     navigator.clipboard.writeText(code);
@@ -559,21 +548,25 @@ export class AppComponent {
       description: `${getLanguageDisplayName(language)} integration code copied to clipboard`
     });
   };
-
   const getLanguageDisplayName = (language: string) => {
     switch (language) {
-      case 'html': return 'HTML';
-      case 'react-ts': return 'React TypeScript';
-      case 'react-js': return 'React JavaScript';
-      case 'vue': return 'Vue.js';
-      case 'dotnet': return '.NET';
-      case 'angular': return 'Angular';
-      default: return language.charAt(0).toUpperCase() + language.slice(1);
+      case 'html':
+        return 'HTML';
+      case 'react-ts':
+        return 'React TypeScript';
+      case 'react-js':
+        return 'React JavaScript';
+      case 'vue':
+        return 'Vue.js';
+      case 'dotnet':
+        return '.NET';
+      case 'angular':
+        return 'Angular';
+      default:
+        return language.charAt(0).toUpperCase() + language.slice(1);
     }
   };
-
-  return (
-    <div className="py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950">
+  return <div className="py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in">
           <Badge className="mb-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
@@ -634,91 +627,46 @@ export class AppComponent {
                 <div className="space-y-3">
                   <Dialog open={isCropperOpen} onOpenChange={setIsCropperOpen}>
                     <DialogTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full h-10 flex items-center justify-center gap-2"
-                      >
+                      <Button type="button" variant="outline" className="w-full h-10 flex items-center justify-center gap-2">
                         <Upload className="h-4 w-4" />
                         {logoFile ? 'Change Logo' : 'Upload & Crop Logo'}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-lg">
-                      <ImageCropper
-                        onCrop={(croppedFile) => {
-                          setLogoFile(croppedFile);
-                          setIsCropperOpen(false);
-                        }}
-                        onCancel={() => setIsCropperOpen(false)}
-                        initialImage={logoFile}
-                        size={200}
-                      />
+                      <ImageCropper onCrop={croppedFile => {
+                      setLogoFile(croppedFile);
+                      setIsCropperOpen(false);
+                    }} onCancel={() => setIsCropperOpen(false)} initialImage={logoFile} size={200} />
                     </DialogContent>
                   </Dialog>
                   
-                  {logoFile && (
-                    <div className="flex items-center gap-4">
+                  {logoFile && <div className="flex items-center gap-4">
                       <div className="flex-shrink-0">
                         <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
-                          <img
-                            src={URL.createObjectURL(logoFile)}
-                            alt="Logo preview"
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={URL.createObjectURL(logoFile)} alt="Logo preview" className="w-full h-full object-cover" />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-gray-600 truncate">{logoFile.name}</p>
                         <p className="text-xs text-gray-400">Cropped logo preview</p>
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsCropperOpen(true)}
-                        className="flex-shrink-0"
-                      >
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setIsCropperOpen(true)} className="flex-shrink-0">
                         <Edit3 className="h-4 w-4" />
                       </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setLogoFile(null)}
-                        className="flex-shrink-0"
-                      >
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setLogoFile(null)} className="flex-shrink-0">
                         Remove
                       </Button>
-                    </div>
-                  )}
+                    </div>}
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="logoBackgroundColor" className="text-sm font-medium">Logo Background Color</Label>
                   <div className="flex gap-2 items-center">
-                    <Input
-                      id="logoBackgroundColor"
-                      type="color"
-                      value={logoBackgroundColor === 'transparent' ? '#ffffff' : logoBackgroundColor}
-                      onChange={(e) => setLogoBackgroundColor(e.target.value)}
-                      className="w-16 h-10 p-1 border rounded"
-                    />
+                    <Input id="logoBackgroundColor" type="color" value={logoBackgroundColor === 'transparent' ? '#ffffff' : logoBackgroundColor} onChange={e => setLogoBackgroundColor(e.target.value)} className="w-16 h-10 p-1 border rounded" />
                     <div className="flex-1">
-                      <Input
-                        type="text"
-                        value={logoBackgroundColor}
-                        onChange={(e) => setLogoBackgroundColor(e.target.value)}
-                        placeholder="Enter color or 'transparent'"
-                        className="text-sm"
-                      />
+                      <Input type="text" value={logoBackgroundColor} onChange={e => setLogoBackgroundColor(e.target.value)} placeholder="Enter color or 'transparent'" className="text-sm" />
                     </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setLogoBackgroundColor('transparent')}
-                      className="text-xs"
-                    >
+                    <Button type="button" variant="outline" size="sm" onClick={() => setLogoBackgroundColor('transparent')} className="text-xs">
                       Transparent
                     </Button>
                   </div>
@@ -728,21 +676,9 @@ export class AppComponent {
                 <div className="space-y-2">
                   <Label htmlFor="logoBorderColor" className="text-sm font-medium">Logo Border Color</Label>
                   <div className="flex gap-2 items-center">
-                    <Input
-                      id="logoBorderColor"
-                      type="color"
-                      value={logoBorderColor}
-                      onChange={(e) => setLogoBorderColor(e.target.value)}
-                      className="w-16 h-10 p-1 border rounded"
-                    />
+                    <Input id="logoBorderColor" type="color" value={logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} className="w-16 h-10 p-1 border rounded" />
                     <div className="flex-1">
-                      <Input
-                        type="text"
-                        value={logoBorderColor}
-                        onChange={(e) => setLogoBorderColor(e.target.value)}
-                        placeholder="Enter border color"
-                        className="text-sm"
-                      />
+                      <Input type="text" value={logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} placeholder="Enter border color" className="text-sm" />
                     </div>
                   </div>
                   <p className="text-xs text-gray-500">Slim border color around the logo</p>
@@ -760,15 +696,7 @@ export class AppComponent {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="isVoiceEnabled" className="text-sm font-medium">Voice Features</Label>
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="isVoiceEnabled" checked={isVoiceEnabled} onChange={e => setIsVoiceEnabled(e.target.checked)} className="rounded border-input focus:ring-2 focus:ring-orange-500/20" />
-                    <Label htmlFor="isVoiceEnabled" className="text-sm text-muted-foreground">
-                      Enable voice recording and text-to-speech
-                    </Label>
-                  </div>
-                </div>
+                
 
                 <div className="space-y-2">
                   <Label htmlFor="isElevenLabsEnabled" className="text-sm font-medium">ElevenLabs Voice Bot</Label>
@@ -780,21 +708,13 @@ export class AppComponent {
                   </div>
                 </div>
 
-                {isElevenLabsEnabled && (
-                  <div className="space-y-2">
+                {isElevenLabsEnabled && <div className="space-y-2">
                     <Label htmlFor="elevenLabsAgentId" className="text-sm font-medium">ElevenLabs Agent ID</Label>
-                    <Input 
-                      id="elevenLabsAgentId" 
-                      value={elevenLabsAgentId} 
-                      onChange={e => setElevenLabsAgentId(e.target.value)} 
-                      placeholder="agent_01k04zwwq3fv5acgzdwmbvfk8k" 
-                      className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" 
-                    />
+                    <Input id="elevenLabsAgentId" value={elevenLabsAgentId} onChange={e => setElevenLabsAgentId(e.target.value)} placeholder="agent_01k04zwwq3fv5acgzdwmbvfk8k" className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" />
                     <p className="text-xs text-muted-foreground">
                       Your ElevenLabs agent ID from the conversational AI dashboard
                     </p>
-                  </div>
-                )}
+                  </div>}
               </div>
 
               {/* Integration Code Generator */}
@@ -814,10 +734,7 @@ export class AppComponent {
                       <SelectItem value="angular">Angular</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button 
-                    onClick={() => copyCode(selectedLanguage)} 
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-300 hover:scale-105"
-                  >
+                  <Button onClick={() => copyCode(selectedLanguage)} className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-300 hover:scale-105">
                     <Copy className="w-4 h-4 mr-2" />
                     Copy {getLanguageDisplayName(selectedLanguage)} Integration Code
                   </Button>
@@ -891,6 +808,5 @@ export class AppComponent {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
