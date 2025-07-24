@@ -32,6 +32,7 @@ export const CDNDemo = () => {
   const [headerGradientColor, setHeaderGradientColor] = useState('#667eea');
   const [headerMainColor, setHeaderMainColor] = useState('#3b82f6');
   const [logoBackgroundColor, setLogoBackgroundColor] = useState('transparent');
+  const [logoBorderColor, setLogoBorderColor] = useState('#e5e7eb');
 
   // Apply dark mode to document
   useEffect(() => {
@@ -159,6 +160,8 @@ export const CDNDemo = () => {
         setHeaderMainColor={setHeaderMainColor}
         logoBackgroundColor={logoBackgroundColor}
         setLogoBackgroundColor={setLogoBackgroundColor}
+        logoBorderColor={logoBorderColor}
+        setLogoBorderColor={setLogoBorderColor}
       />
 
       {/* The actual chatbot widget */}
@@ -175,6 +178,7 @@ export const CDNDemo = () => {
         headerGradientColor={headerGradientColor}
         headerMainColor={headerMainColor}
         logoBackgroundColor={logoBackgroundColor}
+        logoBorderColor={logoBorderColor}
         logoFile={logoFile}
         welcomeMessage={welcomeMessage}
         admin={admin}
