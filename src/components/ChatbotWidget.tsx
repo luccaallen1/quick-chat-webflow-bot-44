@@ -1066,9 +1066,9 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                       {!messages.some(msg => msg.sender === 'user') && (
                         <button 
                           onClick={() => setIsCallMode(true)}
-                          className="w-full mb-3 py-3 px-4 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+                          className="w-full mb-3 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
                           style={{
-                            background: `linear-gradient(90deg, var(--chatbot-primary) 0%, var(--chatbot-gradient, rgba(59, 130, 246, 0.9)) 100%)`,
+                            backgroundColor: primaryColor,
                             fontSize: '16px',
                             fontWeight: '600'
                           }}
