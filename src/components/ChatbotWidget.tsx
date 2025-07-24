@@ -31,6 +31,7 @@ interface ChatbotWidgetProps {
   welcomeMessage?: string;
   admin?: boolean;
   isVoiceEnabled?: boolean;
+  elevenLabsAgentId?: string;
 }
 
 // Helper function to render text with line breaks
@@ -95,7 +96,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   logoFile,
   welcomeMessage = 'Hello! How can I help you today?',
   admin = false,
-  isVoiceEnabled = false
+  isVoiceEnabled = false,
+  elevenLabsAgentId = 'agent_01k04zwwq3fv5acgzdwmbvfk8k'
 }) => {
   // Create logo URL from file if provided
   const [logoSrc, setLogoSrc] = useState<string>(logoUrl);
@@ -878,7 +880,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
           </div>
           
           {/* NEW: Conditional rendering for Call Interface or Regular Chat */}
-        {isCallMode ? <CallInterface primaryColor={primaryColor} secondaryColor={secondaryColor} textColor={textColor} chatBackground={chatBackground} logoUrl={logoUrl} onBackToChat={() => setIsCallMode(false)} /> : <>
+        {isCallMode ? <CallInterface primaryColor={primaryColor} secondaryColor={secondaryColor} textColor={textColor} chatBackground={chatBackground} logoUrl={logoUrl} agentId={elevenLabsAgentId} onBackToChat={() => setIsCallMode(false)} /> : <>
               {/* Messages */}
               {hasError ? <div className="chatbot-widget-messages chatbot-widget-scrollbar" style={{
           backgroundColor: chatBackground,

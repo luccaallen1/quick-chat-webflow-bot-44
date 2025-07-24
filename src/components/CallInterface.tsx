@@ -8,6 +8,7 @@ interface CallInterfaceProps {
   textColor: string;
   chatBackground: string;
   logoUrl?: string;
+  agentId: string;
   onBackToChat: () => void;
 }
 
@@ -17,6 +18,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
   textColor,
   chatBackground,
   logoUrl,
+  agentId,
   onBackToChat
 }) => {
   const [isCallActive, setIsCallActive] = useState(false);
@@ -41,7 +43,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
   const startCall = async () => {
     try {
       await conversation.startSession({ 
-        agentId: "agent_01k04zwwq3fv5acgzdwmbvfk8k" 
+        agentId: agentId 
       });
     } catch (error) {
       console.error('Failed to start call:', error);

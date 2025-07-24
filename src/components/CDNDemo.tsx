@@ -163,6 +163,7 @@ export const CDNDemo = () => {
         welcomeMessage={welcomeMessage}
         admin={admin}
         isVoiceEnabled={isVoiceEnabled}
+        elevenLabsAgentId={elevenLabsAgentId}
       />
     </div>
   );
