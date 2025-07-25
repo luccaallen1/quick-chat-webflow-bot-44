@@ -563,7 +563,7 @@ export class AppComponent {
   const copyCode = (language: string) => {
     const code = generateCodeForLanguage(language);
     navigator.clipboard.writeText(code);
-    
+
     // Show toast after 2 seconds delay
     setTimeout(() => {
       toast({
@@ -689,11 +689,7 @@ export class AppComponent {
                 <Textarea id="welcomeMessage" value={welcomeMessage} onChange={e => setWelcomeMessage(e.target.value)} rows={2} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?" />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="copySuccessMessage" className="text-sm font-medium">Copy Success Message</Label>
-                <Input id="copySuccessMessage" value={copySuccessMessage} onChange={e => setCopySuccessMessage(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="Code Copied!" />
-                <p className="text-xs text-gray-500">Message shown when integration code is copied</p>
-              </div>
+              
 
               <div className="space-y-2">
                 <Label htmlFor="welcomeTooltipMessage" className="text-sm font-medium">Welcome Tooltip Message</Label>
