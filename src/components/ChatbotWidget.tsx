@@ -1132,11 +1132,14 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
           }}>
                 <div style={{
               display: 'flex',
-              alignItems: 'flex-start',
+              alignItems: 'center',
               gap: '8px'
             }}>
                   <div className="chatbot-widget-header-avatar-tooltip">
-                    {logoSrc && <img src={logoSrc} alt="Logo" className="chatbot-widget-logo" onError={e => {
+                    {logoSrc && <img src={logoSrc} alt="Logo" className="chatbot-widget-logo" style={{
+                  boxShadow: 'none',
+                  border: 'none'
+                }} onError={e => {
                   console.error('Tooltip logo failed to load:', logoSrc);
                   e.currentTarget.style.display = 'none';
                 }} />}
