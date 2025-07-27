@@ -10,6 +10,7 @@ import { SecuritySection } from './landing/SecuritySection';
 import { IntegrationSection } from './landing/IntegrationSection';
 import { ConfigurationSection } from './landing/ConfigurationSection';
 import { FAQSection } from './landing/FAQSection';
+import { VoiceAgentSection } from './VoiceAgentSection';
 
 export const CDNDemo = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -138,6 +139,9 @@ export const CDNDemo = () => {
 
       {/* FAQ Section */}
       <FAQSection />
+
+      {/* Voice Agent Section */}
+      <VoiceAgentSection isDarkMode={isDarkMode} />
 
       {/* Configuration Section */}
       <ConfigurationSection
