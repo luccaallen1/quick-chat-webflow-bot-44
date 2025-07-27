@@ -61,131 +61,116 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
   };
 
   return (
-    <section className={`py-16 px-4 ${
-      isDarkMode 
-        ? 'bg-gradient-to-br from-gray-800/50 to-blue-900/50' 
-        : 'bg-gradient-to-br from-blue-50/50 to-indigo-50/50'
-    }`}>
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className={`text-3xl font-bold mb-4 ${
-            isDarkMode ? 'text-white' : 'text-gray-900'
-          }`}>
-            Voice AI Assistant
-          </h2>
-          <p className={`text-lg ${
-            isDarkMode ? 'text-gray-300' : 'text-gray-600'
-          }`}>
-            Talk directly with our AI voice agent for instant assistance
-          </p>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Main Voice Agent Button */}
-          <div className="flex-1">
-            <Card className={`${
-              isDarkMode 
-                ? 'bg-gray-800/60 border-gray-700 text-white' 
-                : 'bg-white/80 border-gray-200'
-            } backdrop-blur-sm`}>
-              <CardContent className="p-8 text-center">
-                <div className="mb-6">
-                  <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 ${
-                    conversation.status === 'connected' ? 'bg-green-500' : 'bg-gray-400'
-                  }`}>
-                    <Mic className="w-10 h-10 text-white" />
-                  </div>
-                  <div className={`text-sm font-medium ${
-                    conversation.status === 'connected' ? 'text-green-600' : 'text-gray-500'
-                  }`}>
-                    {conversation.status === 'connected' ? 'Connected' : 'Ready to connect'}
-                  </div>
+    <section className="py-12 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* Main Voice Interface */}
+        <div className="relative">
+          <Card className="backdrop-blur-lg bg-white/10 border border-white/20 shadow-2xl">
+            <CardContent className="p-8 text-center">
+              {/* Status Indicator */}
+              <div className="mb-8">
+                <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-3 transition-all duration-300 ${
+                  conversation.status === 'connected' 
+                    ? 'bg-gradient-to-r from-green-400 to-green-600 shadow-lg shadow-green-500/25' 
+                    : 'bg-gradient-to-r from-slate-400 to-slate-600'
+                }`}>
+                  <Mic className="w-8 h-8 text-white" />
                 </div>
+                <div className={`text-sm font-medium ${
+                  conversation.status === 'connected' ? 'text-green-400' : 'text-slate-400'
+                }`}>
+                  {conversation.status === 'connected' ? 'Connected' : 'Ready'}
+                </div>
+              </div>
 
-                {!isConversationOpen ? (
-                  <Button
-                    onClick={startVoiceConversation}
-                    className="w-full py-4 text-lg font-semibold"
-                    style={{ backgroundColor: buttonColor }}
-                  >
-                    <Phone className="w-5 h-5 mr-2" />
-                    {buttonText}
-                  </Button>
-                ) : (
-                  <div className="space-y-4">
-                    <div className={`text-lg font-medium ${
-                      isDarkMode ? 'text-green-400' : 'text-green-600'
-                    }`}>
-                      Voice conversation active
-                    </div>
-                    <div className={`text-sm ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {conversation.isSpeaking ? 'Agent is speaking...' : 'Listening...'}
-                    </div>
-                    <Button
-                      onClick={endVoiceConversation}
-                      variant="destructive"
-                      className="w-full py-4 text-lg font-semibold"
-                    >
-                      <PhoneOff className="w-5 h-5 mr-2" />
-                      End Conversation
-                    </Button>
+              {/* Main Action */}
+              {!isConversationOpen ? (
+                <Button
+                  onClick={startVoiceConversation}
+                  className="w-full py-4 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
+                  style={{ 
+                    backgroundColor: buttonColor,
+                    boxShadow: `0 8px 32px ${buttonColor}25`
+                  }}
+                >
+                  <Phone className="w-5 h-5 mr-3" />
+                  {buttonText}
+                </Button>
+              ) : (
+                <div className="space-y-6">
+                  <div className="text-xl font-semibold text-green-400">
+                    Voice conversation active
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  <div className="text-slate-300">
+                    {conversation.isSpeaking ? 'Agent is speaking...' : 'Listening...'}
+                  </div>
+                  <Button
+                    onClick={endVoiceConversation}
+                    variant="destructive"
+                    className="w-full py-4 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-105"
+                  >
+                    <PhoneOff className="w-5 h-5 mr-3" />
+                    End Conversation
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-          {/* Customization Panel */}
-          <div className="lg:w-80">
+          {/* Customize Button */}
+          <div className="flex justify-center mt-6">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="ghost" 
+                  className="text-slate-400 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg px-6"
+                >
                   <Settings className="w-4 h-4 mr-2" />
-                  Customize Voice Agent
+                  Customize
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md bg-slate-900 border-slate-700">
                 <DialogHeader>
-                  <DialogTitle>Voice Agent Settings</DialogTitle>
+                  <DialogTitle className="text-white">Voice Agent Settings</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="agentId">Agent ID</Label>
+                    <Label htmlFor="agentId" className="text-slate-300">Agent ID</Label>
                     <Input
                       id="agentId"
                       value={agentId}
                       onChange={(e) => setAgentId(e.target.value)}
                       placeholder="Enter ElevenLabs Agent ID"
+                      className="bg-slate-800 border-slate-600 text-white"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="buttonText">Button Text</Label>
+                    <Label htmlFor="buttonText" className="text-slate-300">Button Text</Label>
                     <Input
                       id="buttonText"
                       value={buttonText}
                       onChange={(e) => setButtonText(e.target.value)}
                       placeholder="Enter button text"
+                      className="bg-slate-800 border-slate-600 text-white"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="buttonColor">Button Color</Label>
+                    <Label htmlFor="buttonColor" className="text-slate-300">Button Color</Label>
                     <div className="flex gap-2">
                       <Input
                         id="buttonColor"
                         type="color"
                         value={buttonColor}
                         onChange={(e) => setButtonColor(e.target.value)}
-                        className="w-16 h-10 p-1 border rounded"
+                        className="w-16 h-10 p-1 border border-slate-600 rounded bg-slate-800"
                       />
                       <Input
                         value={buttonColor}
                         onChange={(e) => setButtonColor(e.target.value)}
                         placeholder="#3b82f6"
-                        className="flex-1"
+                        className="flex-1 bg-slate-800 border-slate-600 text-white"
                       />
                     </div>
                   </div>
