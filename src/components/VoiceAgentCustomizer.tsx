@@ -93,7 +93,13 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-12 h-10 border border-gray-300 rounded-md cursor-pointer"
+          onInput={(e) => onChange((e.target as HTMLInputElement).value)}
+          className="w-12 h-10 border border-gray-300 rounded-md cursor-pointer bg-transparent"
+          style={{
+            padding: '2px',
+            minHeight: '40px',
+            minWidth: '48px'
+          }}
         />
         <Input
           value={value}
