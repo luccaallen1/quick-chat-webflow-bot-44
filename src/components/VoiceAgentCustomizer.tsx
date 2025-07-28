@@ -88,12 +88,12 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</Label>
       <div className="flex gap-2">
-        <Input 
+        <input 
           id={id} 
           type="color" 
           value={value} 
           onChange={e => onChange(e.target.value)} 
-          className="w-16 h-10 p-1 border rounded" 
+          className="w-16 h-10 p-1 border rounded cursor-pointer" 
         />
         <Input
           value={value}
