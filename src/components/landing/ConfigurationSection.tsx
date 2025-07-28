@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageCropper } from '@/components/ui/image-cropper';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+
 interface ConfigurationSectionProps {
   webhookUrl: string;
   setWebhookUrl: (url: string) => void;
@@ -60,11 +61,12 @@ interface ConfigurationSectionProps {
   setHeaderButtonColor: (color: string) => void;
   fontFamily: string;
   setFontFamily: (font: string) => void;
-  copySuccessMessage: string;
-  setCopySuccessMessage: (message: string) => void;
   welcomeTooltipMessage: string;
   setWelcomeTooltipMessage: (message: string) => void;
+  copySuccessMessage: string;
+  setCopySuccessMessage: (message: string) => void;
 }
+
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   webhookUrl,
   setWebhookUrl,
@@ -114,21 +116,42 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   setHeaderButtonColor,
   fontFamily,
   setFontFamily,
-  copySuccessMessage,
-  setCopySuccessMessage,
   welcomeTooltipMessage,
-  setWelcomeTooltipMessage
+  setWelcomeTooltipMessage,
+  copySuccessMessage,
+  setCopySuccessMessage
 }) => {
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const [isAvatarCropperOpen, setIsAvatarCropperOpen] = useState(false);
-  const generateCodeForLanguage = (language: string) => {
+
+  const copyCode = (language: string) => {
+    const code = generateCode(language);
+    navigator.clipboard.writeText(code);
+    toast({
+      title: 'Code copied to clipboard!',
+      description: `${getLanguageDisplayName(language)} integration code has been copied.`,
+    });
+  };
+
+  const getLanguageDisplayName = (lang: string) => {
+    const names: Record<string, string> = {
+      html: 'HTML',
+      'react-ts': 'React (TypeScript)',
+      'react-js': 'React (JavaScript)',
+      vue: 'Vue.js',
+      dotnet: '.NET',
+      angular: 'Angular'
+    };
+    return names[lang] || lang;
+  };
+
+  const generateCode = (language: string) => {
     const baseConfig = {
-      webhookUrl: webhookUrl || 'YOUR_WEBHOOK_URL',
+      webhookUrl,
       title,
+      bio,
       placeholder,
       position,
       primaryColor,
@@ -144,9 +167,10 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       elevenLabsAgentId,
       gradientColor
     };
-    const configString = `{
-    webhookUrl: '${baseConfig.webhookUrl}',
+
+    const reactConfig = `  webhookUrl: '${baseConfig.webhookUrl}',
     title: '${baseConfig.title}',
+    bio: '${baseConfig.bio}',
     placeholder: '${baseConfig.placeholder}',
     position: '${baseConfig.position}',
     primaryColor: '${baseConfig.primaryColor}',
@@ -157,548 +181,303 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     welcomeMessage: '${baseConfig.welcomeMessage}',
     admin: ${baseConfig.admin},
     isVoiceEnabled: ${baseConfig.isVoiceEnabled}${baseConfig.logoFile ? `,
-    logoFile: '${baseConfig.logoFile}'` : ''}
-  }`;
+    logoFile: '${baseConfig.logoFile}'` : ''}`;
+
     const elevenLabsEmbed = isElevenLabsEnabled ? `
 
 <!-- ElevenLabs Voice Bot Integration -->
-<elevenlabs-convai agent-id="${elevenLabsAgentId}"></elevenlabs-convai>
-<script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>` : '';
+<script type="module">
+  import { Conversation } from 'https://cdn.jsdelivr.net/npm/@11labs/react@0.1.4/+esm';
+  
+  // Configure your agent
+  const conversation = new Conversation({
+    agentId: '${elevenLabsAgentId}',
+    apiKey: 'YOUR_ELEVENLABS_API_KEY'
+  });
+</script>` : '';
+
     switch (language) {
       case 'html':
-        return `/* 
-INTEGRATION INSTRUCTIONS FOR HTML:
-1. Add the following code to your website's <head> section or before the closing </body> tag
-2. Replace 'YOUR_WEBHOOK_URL' with your actual webhook endpoint
-3. The chatbot widget will automatically appear on your website
-4. You can customize the configuration object below to match your branding
-${isElevenLabsEnabled ? '5. The ElevenLabs voice bot will also be available alongside the text chatbot' : ''}
-*/
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Integration</title>
+    <link rel="stylesheet" href="https://your-cdn.com/chatbot-widget.css">
+</head>
+<body>
+    <!-- Your page content -->
+    
+    <!-- Chatbot Widget -->
+    <div id="chatbot-container"></div>
+    
+    <script src="https://your-cdn.com/chatbot-widget.js"></script>
+    <script>
+        // Initialize the chatbot
+        window.initChatbot({
+${reactConfig.split('\n').map(line => '            ' + line.trim().replace(/^/, '')).join('\n')}
+        });
+    </script>${elevenLabsEmbed}
+</body>
+</html>`;
 
-<!-- Add this to your website's <head> section -->
-<link rel="stylesheet" href="https://chirodashboard-chat.onrender.com/chatbot-widget.css">
-<script src="https://chirodashboard-chat.onrender.com/chatbot-widget.js"></script>
-
-<!-- Initialize the widget using ChatbotManager -->
-<script>
-  const instance = new window.ChatbotWidget.ChatbotManager();
-  instance.init(${configString});
-</script>${elevenLabsEmbed}`;
       case 'react-ts':
-        return `/*
-INTEGRATION INSTRUCTIONS FOR REACT TYPESCRIPT:
-1. Create a new component file: src/components/ChatbotIntegration.tsx
-2. Copy the code below into this file
-3. Import and use the component in your App.tsx or wherever needed: <ChatbotIntegration />
-4. Replace 'YOUR_WEBHOOK_URL' with your actual webhook endpoint
-5. The component will automatically load and initialize the chatbot widget
-*/
+        return `import React from 'react';
+import { ChatbotWidget } from './components/ChatbotWidget';
 
-// src/components/ChatbotIntegration.tsx
-import { useEffect, useRef } from 'react';
-
-const ChatbotIntegration: React.FC = () => {
-  const instanceRef = useRef<any>(null);
-
-  useEffect(() => {
-    // Load CSS
-    const cssLink = document.createElement('link');
-    cssLink.rel = 'stylesheet';
-    cssLink.href = 'https://chirodashboard-chat.onrender.com/chatbot-widget.css';
-    document.head.appendChild(cssLink);
-
-    // Load JS
-    const script = document.createElement('script');
-    script.src = 'https://chirodashboard-chat.onrender.com/chatbot-widget.js';
-    script.onload = () => {
-      // Create instance using ChatbotManager
-      instanceRef.current = new (window as any).ChatbotWidget.ChatbotManager();
-      instanceRef.current.init(${configString});
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup
-      if (instanceRef.current) {
-        instanceRef.current.destroy();
-      }
-      document.head.removeChild(cssLink);
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  return null;
-};
-
-export default ChatbotIntegration;
-
-/*
-USAGE IN YOUR APP:
-Import the component in your App.tsx or main layout component:
-
-import ChatbotIntegration from './components/ChatbotIntegration';
-
-function App() {
+const App: React.FC = () => {
   return (
     <div className="App">
-      {/* Your existing app content */}
-      <ChatbotIntegration />
+      {/* Your app content */}
+      
+      <ChatbotWidget
+${reactConfig}
+      />
     </div>
   );
-}
-*/`;
+};
+
+export default App;`;
+
       case 'react-js':
-        return `/*
-INTEGRATION INSTRUCTIONS FOR REACT JAVASCRIPT:
-1. Create a new component file: src/components/ChatbotIntegration.js
-2. Copy the code below into this file
-3. Import and use the component in your App.js or wherever needed: <ChatbotIntegration />
-4. Replace 'YOUR_WEBHOOK_URL' with your actual webhook endpoint
-5. The component will automatically load and initialize the chatbot widget
-*/
+        return `import React from 'react';
+import { ChatbotWidget } from './components/ChatbotWidget';
 
-// src/components/ChatbotIntegration.js
-import { useEffect, useRef } from 'react';
-
-const ChatbotIntegration = () => {
-  const instanceRef = useRef(null);
-
-  useEffect(() => {
-    // Load CSS
-    const cssLink = document.createElement('link');
-    cssLink.rel = 'stylesheet';
-    cssLink.href = 'https://chirodashboard-chat.onrender.com/chatbot-widget.css';
-    document.head.appendChild(cssLink);
-
-    // Load JS
-    const script = document.createElement('script');
-    script.src = 'https://chirodashboard-chat.onrender.com/chatbot-widget.js';
-    script.onload = () => {
-      // Create instance using ChatbotManager
-      instanceRef.current = new window.ChatbotWidget.ChatbotManager();
-      instanceRef.current.init(${configString});
-    };
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup
-      if (instanceRef.current) {
-        instanceRef.current.destroy();
-      }
-      document.head.removeChild(cssLink);
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  return null;
-};
-
-export default ChatbotIntegration;
-
-/*
-USAGE IN YOUR APP:
-Import the component in your App.js or main layout component:
-
-import ChatbotIntegration from './components/ChatbotIntegration';
-
-function App() {
+const App = () => {
   return (
     <div className="App">
-      {/* Your existing app content */}
-      <ChatbotIntegration />
+      {/* Your app content */}
+      
+      <ChatbotWidget
+${reactConfig}
+      />
     </div>
   );
-}
-*/`;
-      case 'vue':
-        return `<!--
-INTEGRATION INSTRUCTIONS FOR VUE.JS:
-1. Create a new component file: src/components/ChatbotIntegration.vue
-2. Copy the code below into this file
-3. Import and register the component in your main App.vue or wherever needed
-4. Use the component in your template: <ChatbotIntegration />
-5. Replace 'YOUR_WEBHOOK_URL' with your actual webhook endpoint
-6. The component will automatically load and initialize the chatbot widget
--->
+};
 
-<!-- src/components/ChatbotIntegration.vue -->
-<template>
-  <div>
-    <!-- Chatbot widget will be injected here -->
+export default App;`;
+
+      case 'vue':
+        return `<template>
+  <div id="app">
+    <!-- Your app content -->
+    
+    <ChatbotWidget
+      :webhook-url="'${baseConfig.webhookUrl}'"
+      :title="'${baseConfig.title}'"
+      :bio="'${baseConfig.bio}'"
+      :placeholder="'${baseConfig.placeholder}'"
+      :position="'${baseConfig.position}'"
+      :primary-color="'${baseConfig.primaryColor}'"
+      :secondary-color="'${baseConfig.secondaryColor}'"
+      :text-color="'${baseConfig.textColor}'"
+      :user-text-color="'${baseConfig.userTextColor}'"
+      :chat-background="'${baseConfig.chatBackground}'"
+      :welcome-message="'${baseConfig.welcomeMessage}'"
+      :admin="${baseConfig.admin}"
+      :is-voice-enabled="${baseConfig.isVoiceEnabled}"${baseConfig.logoFile ? `
+      :logo-file="'${baseConfig.logoFile}'"` : ''}
+    />
   </div>
 </template>
 
 <script>
-export default {
-  name: 'ChatbotIntegration',
-  data() {
-    return {
-      chatbotInstance: null
-    };
-  },
-  mounted() {
-    this.loadChatbot();
-  },
-  beforeUnmount() {
-    if (this.chatbotInstance) {
-      this.chatbotInstance.destroy();
-    }
-  },
-  methods: {
-    loadChatbot() {
-      // Load CSS
-      const cssLink = document.createElement('link');
-      cssLink.rel = 'stylesheet';
-      cssLink.href = 'https://chirodashboard-chat.onrender.com/chatbot-widget.css';
-      document.head.appendChild(cssLink);
-
-      // Load JS
-      const script = document.createElement('script');
-      script.src = 'https://chirodashboard-chat.onrender.com/chatbot-widget.js';
-      script.onload = () => {
-        // Create instance using ChatbotManager
-        this.chatbotInstance = new window.ChatbotWidget.ChatbotManager();
-        this.chatbotInstance.init(${configString});
-      };
-      document.body.appendChild(script);
-    }
-  }
-};
-</script>
-
-<!--
-USAGE IN YOUR APP:
-1. Import and register the component in your main App.vue:
-
-<script>
-import ChatbotIntegration from './components/ChatbotIntegration.vue';
+import ChatbotWidget from './components/ChatbotWidget.vue';
 
 export default {
   name: 'App',
   components: {
-    ChatbotIntegration
+    ChatbotWidget
   }
-}
-</script>
+};
+</script>`;
 
-2. Use it in your template:
-<template>
-  <div id="app">
-    <!-- Your existing app content -->
-    <ChatbotIntegration />
-  </div>
-</template>
--->`;
       case 'dotnet':
-        return `/*
-INTEGRATION INSTRUCTIONS FOR .NET:
-1. Add the following code to your main layout file (_Layout.cshtml) or specific page
-2. If using in a specific page, create a partial view: Views/Shared/_ChatbotWidget.cshtml
-3. Include the partial view where needed: @Html.Partial("_ChatbotWidget")
-4. Replace 'YOUR_WEBHOOK_URL' with your actual webhook endpoint
-5. You can pass configuration values from your controller using ViewBag
-6. The chatbot widget will automatically appear on your pages
-*/
+        return `@* Add this to your layout or page *@
+<div id="chatbot-container"></div>
 
-@* Add to your _Layout.cshtml or create as Views/Shared/_ChatbotWidget.cshtml *@
-<link rel="stylesheet" href="https://chirodashboard-chat.onrender.com/chatbot-widget.css" />
-<script src="https://chirodashboard-chat.onrender.com/chatbot-widget.js"></script>
-
+@* Add these scripts before closing body tag *@
+<script src="https://your-cdn.com/chatbot-widget.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.ChatbotWidget) {
-        // Create instance using ChatbotManager
-        const instance = new window.ChatbotWidget.ChatbotManager();
-        instance.init(${configString.replace(/'/g, '"')});
-    }
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        window.initChatbot({
+${reactConfig.split('\n').map(line => '            ' + line.trim()).join('\n')}
+        });
+    });
 </script>
 
+@* In your controller *@
 @* 
-CONTROLLER SETUP (Optional - for dynamic configuration):
-In your controller (e.g., HomeController.cs):
-
-public class HomeController : Controller
+public IActionResult Index()
 {
-    public IActionResult Index()
-    {
-        ViewBag.WebhookUrl = "${baseConfig.webhookUrl}";
-        ViewBag.LogoFile = "${baseConfig.logoFile}";
-        ViewBag.ChatTitle = "${baseConfig.title}";
-        ViewBag.WelcomeMessage = "${baseConfig.welcomeMessage}";
-        return View();
-    }
+    ViewBag.WebhookUrl = "${baseConfig.webhookUrl}";
+    ViewBag.LogoFile = "${baseConfig.logoFile}";
+    ViewBag.ChatTitle = "${baseConfig.title}";
+    ViewBag.WelcomeMessage = "${baseConfig.welcomeMessage}";
+    return View();
 }
+*@
 
 Then in your view, you can use:
 webhookUrl: '@ViewBag.WebhookUrl',
 logoFile: '@ViewBag.LogoFile',
 title: '@ViewBag.ChatTitle',
-welcomeMessage: '@ViewBag.WelcomeMessage'
-*@`;
-      case 'angular':
-        return `/*
-INTEGRATION INSTRUCTIONS FOR ANGULAR:
-1. Create a service: ng generate service services/chatbot
-2. Create a component: ng generate component components/chatbot-integration
-3. Copy the service code below into src/app/services/chatbot.service.ts
-4. Copy the component code below into src/app/components/chatbot-integration/chatbot-integration.component.ts
-5. Add <app-chatbot-integration></app-chatbot-integration> to your app.component.html
-6. Replace 'YOUR_WEBHOOK_URL' with your actual webhook endpoint
-7. The chatbot widget will automatically appear on your application
-*/
+welcomeMessage: '@ViewBag.WelcomeMessage'`;
 
-// src/app/services/chatbot.service.ts
+      case 'angular':
+        return `// chatbot.service.ts
 import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatbotService {
-  private scriptLoaded = false;
-  private cssLoaded = false;
-  private chatbotInstance: any = null;
+  private config = {
+${reactConfig.split('\n').map(line => '    ' + line.trim()).join('\n')}
+  };
 
-  loadChatbot(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!this.cssLoaded) {
-        this.loadCSS();
-      }
-      
-      if (!this.scriptLoaded) {
-        this.loadScript().then(() => {
-          this.initializeChatbot();
-          resolve();
-        }).catch(reject);
-      } else {
-        this.initializeChatbot();
-        resolve();
-      }
-    });
-  }
-
-  private loadCSS(): void {
-    const cssLink = document.createElement('link');
-    cssLink.rel = 'stylesheet';
-    cssLink.href = 'https://chirodashboard-chat.onrender.com/chatbot-widget.css';
-    document.head.appendChild(cssLink);
-    this.cssLoaded = true;
-  }
-
-  private loadScript(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://chirodashboard-chat.onrender.com/chatbot-widget.js';
-      script.onload = () => {
-        this.scriptLoaded = true;
-        resolve();
-      };
-      script.onerror = reject;
-      document.body.appendChild(script);
-    });
-  }
-
-  private initializeChatbot(): void {
-    if ((window as any).ChatbotWidget) {
-      // Create instance using ChatbotManager
-      this.chatbotInstance = new (window as any).ChatbotWidget.ChatbotManager();
-      this.chatbotInstance.init(${configString});
-    }
-  }
-
-  destroy(): void {
-    if (this.chatbotInstance) {
-      this.chatbotInstance.destroy();
-      this.chatbotInstance = null;
-    }
+  initChatbot() {
+    // Load chatbot widget
+    const script = document.createElement('script');
+    script.src = 'https://your-cdn.com/chatbot-widget.js';
+    script.onload = () => {
+      (window as any).initChatbot(this.config);
+    };
+    document.head.appendChild(script);
   }
 }
 
-// src/app/components/chatbot-integration/chatbot-integration.component.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ChatbotService } from '../../services/chatbot.service';
-
-@Component({
-  selector: 'app-chatbot-integration',
-  template: \`<!-- Chatbot widget will be injected automatically -->\`,
-  standalone: true
-})
-export class ChatbotIntegrationComponent implements OnInit, OnDestroy {
-  
-  constructor(private chatbotService: ChatbotService) {}
-
-  ngOnInit() {
-    this.chatbotService.loadChatbot().catch(error => {
-      console.error('Failed to load chatbot:', error);
-    });
-  }
-
-  ngOnDestroy() {
-    this.chatbotService.destroy();
-  }
-}
-
-/*
-USAGE IN YOUR APP:
-1. Import the component in your app.component.ts:
-
-import { ChatbotIntegrationComponent } from './components/chatbot-integration/chatbot-integration.component';
+// app.component.ts
+import { Component, OnInit } from '@angular/core';
+import { ChatbotService } from './chatbot.service';
 
 @Component({
   selector: 'app-root',
-  imports: [ChatbotIntegrationComponent],
   template: \`
-    <div>
-      <!-- Your existing app content -->
-      <app-chatbot-integration></app-chatbot-integration>
+    <div class="app">
+      <!-- Your app content -->
+      <div id="chatbot-container"></div>
     </div>
   \`
 })
-export class AppComponent {
-  title = 'your-app';
-}
+export class AppComponent implements OnInit {
+  constructor(private chatbotService: ChatbotService) {}
 
-2. Or add it to your app.component.html:
-<app-chatbot-integration></app-chatbot-integration>
-*/`;
+  ngOnInit() {
+    this.chatbotService.initChatbot();
+  }
+}`;
+
       default:
-        return '';
+        return 'Language not supported';
     }
   };
-  const copyCode = (language: string) => {
-    const code = generateCodeForLanguage(language);
-    navigator.clipboard.writeText(code);
 
-    // Show toast after 2 seconds delay
-    setTimeout(() => {
-      toast({
-        title: copySuccessMessage,
-        description: `${getLanguageDisplayName(language)} integration code copied to clipboard`
-      });
-    }, 2000);
-  };
-  const getLanguageDisplayName = (language: string) => {
-    switch (language) {
-      case 'html':
-        return 'HTML';
-      case 'react-ts':
-        return 'React TypeScript';
-      case 'react-js':
-        return 'React JavaScript';
-      case 'vue':
-        return 'Vue.js';
-      case 'dotnet':
-        return '.NET';
-      case 'angular':
-        return 'Angular';
-      default:
-        return language.charAt(0).toUpperCase() + language.slice(1);
-    }
-  };
-  return <div className="py-24 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16 animate-fade-in">
-          <Badge className="mb-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
-            <Settings className="w-4 h-4 mr-2" />
-            Live Configuration
-          </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent py-4">
-            Example of Testing Environment
-          </h2>
-          <p className="text-muted-foreground max-w-3xl mx-auto px-0 text-xl">
-            Customize the chatbot widget settings and see the changes in real-time. 
-            Ask us questions about our service by clicking the chat widget in the bottom right corner.
-          </p>
-        </div>
+  return (
+    <div className="space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Chatbot Configuration
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Customize your chatbot's appearance, behavior, and integration settings. 
+          Preview changes in real-time and generate code for seamless integration.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-6">
           {/* Basic Configuration */}
-          <Card className="border-2 hover:border-orange-500/50 transition-all duration-300 hover:shadow-xl animate-slide-in-left">
-            <CardHeader className="bg-gradient-to-r from-orange-500/5 to-red-500/5">
+          <Card className="border-2 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl animate-slide-in-left">
+            <CardHeader className="bg-gradient-to-r from-blue-500/5 to-purple-500/5">
               <CardTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5 text-orange-600" />
-                Basic Settings
+                <Settings className="w-5 h-5 text-blue-600" />
+                Basic Configuration
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6 p-6">
-              <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="title" className="text-sm font-medium">Widget Title</Label>
-                <Input id="title" value={title} onChange={e => setTitle(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bio" className="text-sm font-medium">Widget Bio</Label>
-                <Input id="bio" value={bio} onChange={e => setBio(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="e.g., Online now, Available 24/7" />
-              </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="position" className="text-sm font-medium">Position</Label>
-                  <select id="position" value={position} onChange={e => setPosition(e.target.value as 'bottom-right' | 'bottom-left')} className="w-full p-2 border border-input rounded-md bg-background transition-all duration-200 focus:ring-2 focus:ring-orange-500/20">
-                    <option value="bottom-right">Bottom Right</option>
-                    <option value="bottom-left">Bottom Left</option>
-                  </select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="fontFamily" className="text-sm font-medium">Font Family</Label>
-                  <Select value={fontFamily} onValueChange={setFontFamily}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a font" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Inter">Inter</SelectItem>
-                      <SelectItem value="Roboto">Roboto</SelectItem>
-                      <SelectItem value="Open Sans">Open Sans</SelectItem>
-                      <SelectItem value="Lato">Lato</SelectItem>
-                      <SelectItem value="Montserrat">Montserrat</SelectItem>
-                      <SelectItem value="Nunito">Nunito</SelectItem>
-                      <SelectItem value="Poppins">Poppins</SelectItem>
-                      <SelectItem value="Source Sans Pro">Source Sans Pro</SelectItem>
-                      <SelectItem value="Ubuntu">Ubuntu</SelectItem>
-                      <SelectItem value="Work Sans">Work Sans</SelectItem>
-                      <SelectItem value="Playfair Display">Playfair Display</SelectItem>
-                      <SelectItem value="Merriweather">Merriweather</SelectItem>
-                      <SelectItem value="Oswald">Oswald</SelectItem>
-                      <SelectItem value="Raleway">Raleway</SelectItem>
-                      <SelectItem value="Libre Baskerville">Libre Baskerville</SelectItem>
-                      <SelectItem value="Crimson Text">Crimson Text</SelectItem>
-                      <SelectItem value="Fira Sans">Fira Sans</SelectItem>
-                      <SelectItem value="Noto Sans">Noto Sans</SelectItem>
-                      <SelectItem value="PT Sans">PT Sans</SelectItem>
-                      <SelectItem value="Quicksand">Quicksand</SelectItem>
-                      <SelectItem value="Rubik">Rubik</SelectItem>
-                      <SelectItem value="Barlow">Barlow</SelectItem>
-                      <SelectItem value="DM Sans">DM Sans</SelectItem>
-                      <SelectItem value="Space Grotesk">Space Grotesk</SelectItem>
-                      <SelectItem value="Lexend">Lexend</SelectItem>
-                      <SelectItem value="Plus Jakarta Sans">Plus Jakarta Sans</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-gray-500">Choose the font for the chatbot text</p>
-                </div>
-              </div>
-              
               <div className="space-y-2">
                 <Label htmlFor="webhookUrl" className="text-sm font-medium">Webhook URL</Label>
-                <Input id="webhookUrl" value={webhookUrl} onChange={e => setWebhookUrl(e.target.value)} placeholder="https://your-webhook-url.com" className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" />
+                <Input
+                  id="webhookUrl"
+                  value={webhookUrl}
+                  onChange={(e) => setWebhookUrl(e.target.value)}
+                  placeholder="https://your-api.com/chatbot/webhook"
+                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                <p className="text-xs text-gray-500">The endpoint where chat messages will be sent</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-sm font-medium">Chat Title</Label>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Chat Support"
+                    className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="bio" className="text-sm font-medium">Status/Bio</Label>
+                  <Input
+                    id="bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Online now"
+                    className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="placeholder" className="text-sm font-medium">Input Placeholder</Label>
-                <Input id="placeholder" value={placeholder} onChange={e => setPlaceholder(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" />
+                <Input
+                  id="placeholder"
+                  value={placeholder}
+                  onChange={(e) => setPlaceholder(e.target.value)}
+                  placeholder="Type your message..."
+                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="position" className="text-sm font-medium">Widget Position</Label>
+                <select
+                  id="position"
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value as 'bottom-right' | 'bottom-left')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
+                >
+                  <option value="bottom-right">Bottom Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                </select>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="welcomeMessage" className="text-sm font-medium">Welcome Message</Label>
-                <Textarea id="welcomeMessage" value={welcomeMessage} onChange={e => setWelcomeMessage(e.target.value)} rows={2} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?" />
+                <Textarea
+                  id="welcomeMessage"
+                  value={welcomeMessage}
+                  onChange={(e) => setWelcomeMessage(e.target.value)}
+                  placeholder="Hello! How can I help you today?"
+                  className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
+                />
+                <p className="text-xs text-gray-500">First message users see when opening the chat</p>
               </div>
 
-              
-
               <div className="space-y-2">
-                <Label htmlFor="welcomeTooltipMessage" className="text-sm font-medium">Welcome Tooltip Message</Label>
-                <Input id="welcomeTooltipMessage" value={welcomeTooltipMessage} onChange={e => setWelcomeTooltipMessage(e.target.value)} className="transition-all duration-200 focus:ring-2 focus:ring-orange-500/20" placeholder="Click to start chatting with our AI assistant!" />
+                <Label htmlFor="welcomeTooltipMessage" className="text-sm font-medium">Button Tooltip Message</Label>
+                <Input
+                  id="welcomeTooltipMessage"
+                  value={welcomeTooltipMessage}
+                  onChange={(e) => setWelcomeTooltipMessage(e.target.value)}
+                  placeholder="Click to start chatting with our AI assistant!"
+                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
+                />
                 <p className="text-xs text-gray-500">Tooltip message that appears on the chat button</p>
               </div>
               
@@ -779,34 +558,33 @@ export class AppComponent {
                 </div>
                 <p className="text-xs text-gray-500">Avatar displayed in message bubbles and call interface</p>
               </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="logoBackgroundColor" className="text-sm font-medium">Logo Background Color</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input id="logoBackgroundColor" type="color" value={logoBackgroundColor === 'transparent' ? '#ffffff' : logoBackgroundColor} onChange={e => setLogoBackgroundColor(e.target.value)} className="w-16 h-10 p-1 border rounded" />
-                    <div className="flex-1">
-                      <Input type="text" value={logoBackgroundColor} onChange={e => setLogoBackgroundColor(e.target.value)} placeholder="Enter color or 'transparent'" className="text-sm" />
-                    </div>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setLogoBackgroundColor('transparent')} className="text-xs">
-                      Transparent
-                    </Button>
+              
+              <div className="space-y-2">
+                <Label htmlFor="logoBackgroundColor" className="text-sm font-medium">Logo Background Color</Label>
+                <div className="flex gap-2 items-center">
+                  <Input id="logoBackgroundColor" type="color" value={logoBackgroundColor === 'transparent' ? '#ffffff' : logoBackgroundColor} onChange={e => setLogoBackgroundColor(e.target.value)} className="w-16 h-10 p-1 border rounded" />
+                  <div className="flex-1">
+                    <Input type="text" value={logoBackgroundColor} onChange={e => setLogoBackgroundColor(e.target.value)} placeholder="Background color or 'transparent'" className="text-sm" />
                   </div>
-                  <p className="text-xs text-gray-500">Background color for transparent logo images</p>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setLogoBackgroundColor('transparent')} className="text-xs">
+                    Transparent
+                  </Button>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="logoBorderColor" className="text-sm font-medium">Logo Border Color</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input id="logoBorderColor" type="color" value={logoBorderColor === 'none' ? '#e5e7eb' : logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} className="w-16 h-10 p-1 border rounded" />
-                    <div className="flex-1">
-                      <Input type="text" value={logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} placeholder="Enter border color or 'none'" className="text-sm" />
-                    </div>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setLogoBorderColor('none')} className="text-xs">
-                      No Border
-                    </Button>
+                <p className="text-xs text-gray-500">Background color behind the logo (set to 'transparent' for no background)</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="logoBorderColor" className="text-sm font-medium">Logo Border Color</Label>
+                <div className="flex gap-2 items-center">
+                  <Input id="logoBorderColor" type="color" value={logoBorderColor === 'none' ? '#e5e7eb' : logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} className="w-16 h-10 p-1 border rounded" />
+                  <div className="flex-1">
+                    <Input type="text" value={logoBorderColor} onChange={e => setLogoBorderColor(e.target.value)} placeholder="Enter border color or 'none'" className="text-sm" />
                   </div>
-                  <p className="text-xs text-gray-500">Border around the logo (set to 'none' for no border)</p>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setLogoBorderColor('none')} className="text-xs">
+                    No Border
+                  </Button>
                 </div>
+                <p className="text-xs text-gray-500">Border around the logo (set to 'none' for no border)</p>
               </div>
 
               <div className="space-y-4">
@@ -819,8 +597,6 @@ export class AppComponent {
                     </Label>
                   </div>
                 </div>
-
-                
 
                 <div className="space-y-2">
                   <Label htmlFor="isElevenLabsEnabled" className="text-sm font-medium">ElevenLabs Voice Bot</Label>
