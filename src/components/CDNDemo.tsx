@@ -25,7 +25,9 @@ export const CDNDemo = () => {
   const [userTextColor, setUserTextColor] = useState('#ffffff');
   const [chatBackground, setChatBackground] = useState('#ffffff');
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [defaultLogoUrl] = useState('/lovable-uploads/e21c3d80-4ad8-46f7-8892-faf21f128773.png');
+  const [defaultAvatarUrl] = useState('/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png');
   const [welcomeMessage, setWelcomeMessage] = useState('Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?');
   const [admin, setAdmin] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
@@ -217,6 +219,8 @@ export const CDNDemo = () => {
         fontFamily={fontFamily}
         logoFile={logoFile}
         logoUrl={logoFile ? undefined : defaultLogoUrl}
+        avatarFile={avatarFile}
+        avatarUrl={avatarFile ? undefined : defaultAvatarUrl}
         welcomeMessage={welcomeMessage}
         welcomeTooltipMessage={welcomeTooltipMessage}
         admin={admin}

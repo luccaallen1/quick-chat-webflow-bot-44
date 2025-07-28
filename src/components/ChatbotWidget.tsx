@@ -31,6 +31,8 @@ interface ChatbotWidgetProps {
   clinicId?: string;
   logoUrl?: string;
   logoFile?: File;
+  avatarUrl?: string;
+  avatarFile?: File;
   welcomeMessage?: string;
   welcomeTooltipMessage?: string;
   admin?: boolean;
@@ -108,6 +110,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   clinicId = '104',
   logoUrl = '/lovable-uploads/51aeecaa-e03f-4456-bd84-a206c3003227.png',
   logoFile,
+  avatarUrl = '/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png',
+  avatarFile,
   welcomeMessage = 'Hello! How can I help you today?',
   welcomeTooltipMessage = 'Click to start chatting with our AI assistant!',
   admin = false,
@@ -122,6 +126,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
 }) => {
   // Create logo URL from file if provided
   const [logoSrc, setLogoSrc] = useState<string>(logoUrl);
+  const [avatarSrc, setAvatarSrc] = useState<string>(avatarUrl);
   
   useEffect(() => {
     if (logoFile) {
@@ -132,6 +137,16 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       setLogoSrc(logoUrl);
     }
   }, [logoFile, logoUrl]);
+
+  useEffect(() => {
+    if (avatarFile) {
+      const url = URL.createObjectURL(avatarFile);
+      setAvatarSrc(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setAvatarSrc(avatarUrl);
+    }
+  }, [avatarFile, avatarUrl]);
   // Voice functionality - only initialize if voice is enabled
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [autoPlayResponses, setAutoPlayResponses] = useState(true);
@@ -878,7 +893,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
           </div>
           
           {/* NEW: Conditional rendering for Call Interface or Regular Chat */}
-        {isCallMode ? <CallInterface primaryColor={primaryColor} secondaryColor={secondaryColor} textColor={botTextColor} chatBackground={chatBackground} logoUrl={logoUrl} agentId={elevenLabsAgentId} onBackToChat={() => setIsCallMode(false)} /> : <>
+        {isCallMode ? <CallInterface primaryColor={primaryColor} secondaryColor={secondaryColor} textColor={botTextColor} chatBackground={chatBackground} logoUrl={avatarUrl} agentId={elevenLabsAgentId} onBackToChat={() => setIsCallMode(false)} /> : <>
               {/* Messages */}
               {hasError ? <div className="chatbot-widget-messages chatbot-widget-scrollbar" style={{
           backgroundColor: chatBackground,
@@ -1128,7 +1143,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             <div style={{
               width: '48px',
               height: '48px',
-              background: logoSrc ? (logoBackgroundColor || 'transparent') : primaryColor,
+              background: avatarSrc ? (logoBackgroundColor || 'transparent') : primaryColor,
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
@@ -1136,9 +1151,9 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               flexShrink: 0,
               overflow: 'hidden'
             }}>
-              {logoSrc ? (
+              {avatarSrc ? (
                 <img 
-                  src={logoSrc} 
+                  src={avatarSrc} 
                   alt="Avatar" 
                   style={{
                     width: '100%',
@@ -1146,7 +1161,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                     objectFit: 'contain'
                   }}
                   onError={e => {
-                    console.error('Avatar logo failed to load:', logoSrc);
+                    console.error('Avatar logo failed to load:', avatarSrc);
                     e.currentTarget.style.display = 'none';
                   }}
                 />
