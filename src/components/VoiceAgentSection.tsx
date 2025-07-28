@@ -25,12 +25,12 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
 
   const avatarUrl = avatarFile 
     ? URL.createObjectURL(avatarFile) 
-    : '/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png';
+    : '/lovable-uploads/48879003-fa58-48bb-a9a5-3e3f334800f9.png';
 
   // Generate embed code with current settings
   const generateEmbedCode = () => {
     const baseUrl = window.location.origin;
-    const avatarUrlForEmbed = avatarFile ? '/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png' : avatarUrl;
+    const avatarUrlForEmbed = avatarFile ? '/lovable-uploads/48879003-fa58-48bb-a9a5-3e3f334800f9.png' : avatarUrl;
     
     return `<!-- Voice Widget Embed Code -->
 <div id="voice-widget-container"></div>
