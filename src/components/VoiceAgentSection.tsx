@@ -85,71 +85,80 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
 
   return (
     <section className="py-12 px-4">
-      <div className="flex justify-center items-center min-h-[500px]">
-        {/* Main Voice Widget */}
-        <div className="voice-agent-widget bg-white rounded-[20px] p-10 shadow-[0_10px_30px_rgba(0,0,0,0.1)] text-center relative max-w-[320px] w-full border border-gray-200">
-          {/* Status indicator */}
-          <div className="absolute top-5 right-5 text-green-400 text-xs font-medium flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-            Available 24/7
-          </div>
+      <div className="flex justify-center">
+        {/* Main Voice Widget - Horizontal Layout */}
+        <div className="voice-agent-section max-w-[1200px] w-full bg-white rounded-[20px] p-10 lg:px-[60px] lg:py-10 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-8 lg:gap-10 relative">
           
-          {/* Avatar with company branding */}
-          <div className="w-[140px] h-[140px] -mt-[90px] mx-auto mb-8 relative">
-            <div className="w-full h-full bg-black rounded-full flex items-center justify-center relative shadow-[0_5px_20px_rgba(0,0,0,0.2)]">
-              {avatarImage ? (
-                <img 
-                  src={avatarImage} 
-                  alt="Brand avatar" 
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                <div className="text-white text-sm font-semibold text-center leading-tight whitespace-pre-line">
-                  {brandText}
-                </div>
-              )}
-            </div>
-            {/* Small phone circle */}
-            <div className="absolute -bottom-2.5 right-2.5 w-[50px] h-[50px] bg-black rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-3 border-white">
-              <Phone className="w-6 h-6 text-white" />
+          {/* Avatar - Left Side on Desktop */}
+          <div className="flex-shrink-0">
+            <div className="w-[100px] h-[100px] lg:w-[100px] lg:h-[100px] relative">
+              <div className="w-full h-full bg-primary rounded-full flex items-center justify-center relative shadow-[0_5px_20px_rgba(0,0,0,0.15)]">
+                {avatarImage ? (
+                  <img 
+                    src={avatarImage} 
+                    alt="Brand avatar" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="text-primary-foreground text-xs font-bold text-center leading-tight whitespace-pre-line">
+                    {brandText}
+                  </div>
+                )}
+              </div>
+              {/* Small phone circle overlay */}
+              <div className="absolute -bottom-0 -right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-3 border-white">
+                <Phone className="w-4 h-4 text-primary-foreground" />
+              </div>
             </div>
           </div>
-          
-          {/* Title and description */}
-          <h2 className="text-[#1a1a1a] text-[26px] font-bold mb-3">
-            {title}
-          </h2>
-          <p className="text-gray-600 text-[15px] mb-8 leading-relaxed">
-            {description}
-          </p>
-          
-          {/* Call button */}
-          {!isConversationOpen ? (
-            <button
-              onClick={startVoiceConversation}
-              className="inline-flex items-center gap-2.5 px-9 py-4 rounded-[50px] text-[17px] font-semibold cursor-pointer transition-all duration-200 shadow-[0_4px_15px_rgba(0,0,0,0.2)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-0 text-white"
-              style={{ backgroundColor: buttonColor }}
-            >
-              <Phone className="w-5 h-5" />
-              <span>{buttonText}</span>
-            </button>
-          ) : (
-            <div className="space-y-4">
-              <div className="text-xl font-semibold text-green-400">
-                Voice conversation active
-              </div>
-              <div className="text-gray-600">
-                {conversation.isSpeaking ? 'Agent is speaking...' : 'Listening...'}
-              </div>
+
+          {/* Content - Center on Desktop */}
+          <div className="flex-1 text-center lg:text-left">
+            <h2 className="text-foreground text-2xl lg:text-[32px] font-bold mb-2 lg:mb-2 leading-tight">
+              {title}
+            </h2>
+            <p className="text-muted-foreground text-base lg:text-lg leading-relaxed max-w-[600px]">
+              {description}
+            </p>
+          </div>
+
+          {/* Action Area - Right Side on Desktop */}
+          <div className="flex flex-col items-center lg:items-end gap-4 flex-shrink-0">
+            {/* Status Badge */}
+            <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+              isConversationOpen 
+                ? 'bg-green-100 text-green-700' 
+                : 'bg-green-50 text-green-600'
+            }`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${
+                isConversationOpen 
+                  ? 'bg-green-500 animate-pulse' 
+                  : 'bg-green-400'
+              }`}></div>
+              {isConversationOpen ? 'In Call' : 'Available 24/7'}
+            </div>
+            
+            {/* Call Button */}
+            {!isConversationOpen ? (
+              <button
+                onClick={startVoiceConversation}
+                className="inline-flex items-center gap-2.5 px-9 py-4 rounded-[30px] text-base font-semibold cursor-pointer transition-all duration-200 shadow-[0_4px_15px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 active:translate-y-0 text-white whitespace-nowrap"
+                style={{ backgroundColor: buttonColor }}
+              >
+                <Phone className="w-5 h-5" />
+                <span>{buttonText}</span>
+              </button>
+            ) : (
               <button
                 onClick={endVoiceConversation}
-                className="inline-flex items-center gap-2.5 px-9 py-4 rounded-[50px] text-[17px] font-semibold cursor-pointer transition-all duration-200 bg-red-500 text-white hover:bg-red-600 shadow-[0_4px_15px_rgba(239,68,68,0.2)]"
+                className="inline-flex items-center gap-2.5 px-9 py-4 rounded-[30px] text-base font-semibold cursor-pointer transition-all duration-200 shadow-[0_4px_15px_rgba(34,197,94,0.2)] hover:shadow-[0_8px_20px_rgba(34,197,94,0.2)] hover:-translate-y-0.5 active:translate-y-0 text-white whitespace-nowrap animate-pulse"
+                style={{ backgroundColor: '#22c55e' }}
               >
                 <PhoneOff className="w-5 h-5" />
-                <span>End Conversation</span>
+                <span>End Call</span>
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -325,29 +334,39 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
 
       {/* Global styles for responsive design */}
       <style dangerouslySetInnerHTML={{__html: `
-        @media (max-width: 380px) {
-          .voice-agent-widget {
+        @media (max-width: 1024px) {
+          .voice-agent-section {
+            padding: 30px 40px !important;
+            gap: 30px !important;
+          }
+        }
+        
+        @media (max-width: 640px) {
+          .voice-agent-section {
+            flex-direction: column !important;
+            text-align: center !important;
             padding: 30px 20px !important;
+            gap: 20px !important;
           }
           
-          .voice-agent-widget .avatar-container {
-            width: 120px !important;
-            height: 120px !important;
-            margin-top: -80px !important;
+          .voice-agent-section button {
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 14px 24px !important;
+          }
+        }
+        
+        @media (max-width: 380px) {
+          .voice-agent-section {
+            padding: 25px 15px !important;
           }
           
-          .voice-agent-widget .phone-circle {
-            width: 45px !important;
-            height: 45px !important;
-          }
-          
-          .voice-agent-widget h2 {
+          .voice-agent-section h2 {
             font-size: 22px !important;
           }
           
-          .voice-agent-widget button {
-            padding: 14px 28px !important;
-            font-size: 16px !important;
+          .voice-agent-section p {
+            font-size: 14px !important;
           }
         }
       `}} />
