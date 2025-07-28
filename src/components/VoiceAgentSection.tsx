@@ -167,7 +167,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
             </h2>
             {isConversationOpen ? (
               <div className="space-y-2">
-                <div className="text-green-500 text-4xl lg:text-[48px] font-mono font-bold tabular-nums">
+                <div className="text-green-500 text-2xl lg:text-3xl font-mono font-bold tabular-nums">
                   {Math.floor(callDuration / 60).toString().padStart(2, '0')}:
                   {(callDuration % 60).toString().padStart(2, '0')}
                 </div>
@@ -381,37 +381,6 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
         </Dialog>
       </div>
 
-      {/* Voice Conversation Interface */}
-      {isConversationOpen && (
-        <div className="flex justify-center mt-8">
-          <Card className="bg-white border-gray-200 max-w-md w-full">
-            <CardHeader>
-              <CardTitle className="text-center text-gray-900">Live Voice Conversation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center space-y-4">
-                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full ${
-                  conversation.isSpeaking ? 'bg-blue-500 animate-pulse' : 'bg-green-500'
-                }`}>
-                  {conversation.isSpeaking ? (
-                    <MicOff className="w-8 h-8 text-white" />
-                  ) : (
-                    <Mic className="w-8 h-8 text-white" />
-                  )}
-                </div>
-                
-                <div className="text-lg font-medium text-gray-700">
-                  {conversation.isSpeaking ? 'AI is speaking...' : 'Listening for your voice...'}
-                </div>
-                
-                <div className="text-sm text-gray-500">
-                  Conversation ID: {conversationId}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {/* Global styles for responsive design and animations */}
       <style dangerouslySetInnerHTML={{__html: `
@@ -438,7 +407,6 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
         }
         
         .voice-agent-section.in-call {
-          background: radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.05) 0%, rgba(255, 255, 255, 1) 70%);
           animation: subtle-pulse 3s ease-in-out infinite;
         }
         
