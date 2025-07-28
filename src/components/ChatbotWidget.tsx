@@ -1171,7 +1171,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 lineHeight: '1.4',
                 margin: 0
               }}>
-                {welcomeMessage || `Hey! I'm ${agentName}, your AI assistant. Feel free to chat with me and ask any questions!`}
+                {welcomeTooltipMessage || `Hey! I'm ${agentName}, your AI assistant. Feel free to chat with me and ask any questions!`}
               </p>
             </div>
           </div>
