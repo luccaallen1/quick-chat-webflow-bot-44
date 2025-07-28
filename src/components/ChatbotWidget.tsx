@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, MessageCircle, X, Bot, Edit, Check, Calendar, HelpCircle, Bell, Phone } from 'lucide-react';
+import { Send, MessageCircle, X, Bot, Edit, Check, Calendar, HelpCircle, Bell, Phone, Shield } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { useVoiceChat } from '../hooks/useVoiceChat';
 import { VoiceControls } from './VoiceControls';
@@ -881,6 +881,36 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               height: '26px',
               color: '#1f2937 !important'
             }} className="bg-transparent" />
+              </button>
+
+              {/* Privacy Policy Button */}
+              <button 
+                className="chatbot-widget-button" 
+                onClick={() => window.open('/privacy-policy', '_blank')} 
+                title="Privacy Policy" 
+                style={{
+                  marginRight: '8px',
+                  width: '32px',
+                  height: '32px',
+                  padding: '0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  opacity: '0.8',
+                  transition: 'opacity 0.2s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
+              >
+                <Shield style={{
+                  width: '16px',
+                  height: '16px',
+                  color: headerButtonColor || '#ffffff'
+                }} />
               </button>
               
               <button className="chatbot-widget-button" onClick={() => setIsOpen(false)}>
