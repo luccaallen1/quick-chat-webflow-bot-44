@@ -1192,7 +1192,9 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                   style={{
                     width: '100%',
                     height: '100%',
-                    objectFit: 'contain'
+                    objectFit: 'contain',
+                    imageRendering: 'crisp-edges',
+                    filter: 'contrast(1.05) saturate(1.1)'
                   }}
                   onError={e => {
                     console.error('Avatar logo failed to load:', avatarSrc);
