@@ -98,7 +98,9 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
                 width: '80px',
                 height: '80px',
                 borderRadius: '50%',
-                objectFit: 'cover'
+                objectFit: 'contain',
+                imageRendering: 'crisp-edges',
+                filter: 'contrast(1.05) saturate(1.1)'
               }}
               onError={(e) => {
                 // Fallback to phone icon if logo fails to load
