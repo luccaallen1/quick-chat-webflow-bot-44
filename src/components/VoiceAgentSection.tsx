@@ -153,8 +153,8 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
                   </div>
                 </div>
               ) : (
-                <div className="absolute -bottom-0 -right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[3px] border-white">
-                  <Phone className="w-4 h-4 text-primary-foreground" />
+                <div className="absolute -bottom-0 -right-0 w-6 h-6 bg-gray-800 rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[2px] border-white">
+                  <Phone className="w-3 h-3 text-white" />
                 </div>
               )}
             </div>
