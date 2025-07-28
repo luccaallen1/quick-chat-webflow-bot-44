@@ -123,11 +123,19 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
             <div className="w-[100px] h-[100px] relative">
               {/* Main Avatar Circle */}
               <div className="w-full h-full rounded-full overflow-hidden shadow-[0_5px_20px_rgba(0,0,0,0.15)]">
-                <img 
-                  src="/lovable-uploads/46013ce6-0e78-4209-885a-6fc3259809c2.png" 
-                  alt="Brand avatar" 
-                  className="w-full h-full object-cover"
-                />
+                {avatarImage ? (
+                  <img 
+                    src={avatarImage} 
+                    alt="Brand avatar" 
+                    className="w-full h-full object-cover object-center"
+                  />
+                ) : (
+                  <img 
+                    src="/lovable-uploads/46013ce6-0e78-4209-885a-6fc3259809c2.png" 
+                    alt="Brand avatar" 
+                    className="w-full h-full object-cover object-center"
+                  />
+                )}
               </div>
               
               {/* Phone Icon Badge - Bottom Right Corner */}
