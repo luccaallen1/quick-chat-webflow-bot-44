@@ -121,25 +121,27 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
           {/* Avatar - Left Side on Desktop */}
           <div className="flex-shrink-0">
             <div className="w-[100px] h-[100px] relative">
-              <div className="w-full h-full bg-primary rounded-full flex items-center justify-center relative shadow-[0_5px_20px_rgba(0,0,0,0.15)]">
+              {/* Main Avatar Circle */}
+              <div className="w-full h-full rounded-full overflow-hidden shadow-[0_5px_20px_rgba(0,0,0,0.15)]">
                 <img 
                   src="/lovable-uploads/46013ce6-0e78-4209-885a-6fc3259809c2.png" 
                   alt="Brand avatar" 
-                  className="w-full h-full rounded-full object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
-              {/* Voice Animation or Phone Icon */}
+              
+              {/* Phone Icon Badge - Bottom Right Corner */}
               {isConversationOpen ? (
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[2px] border-white">
-                  <div className="flex items-end gap-[1px] h-4">
+                <div className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                  <div className="flex items-end gap-[1px] h-3">
                     {[1, 2, 3, 4, 5].map((bar) => (
                       <div
                         key={bar}
-                        className={`w-[2px] bg-white rounded-sm ${
-                          conversation.isSpeaking ? 'animate-voice-bar' : 'h-2'
+                        className={`w-[1.5px] bg-white rounded-sm ${
+                          conversation.isSpeaking ? 'animate-voice-bar' : 'h-1.5'
                         }`}
                         style={{
-                          height: conversation.isSpeaking ? undefined : '8px',
+                          height: conversation.isSpeaking ? undefined : '6px',
                           animationDelay: `${bar * 0.1}s`
                         }}
                       />
@@ -147,8 +149,8 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
                   </div>
                 </div>
               ) : (
-                <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-gray-800 rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[2px] border-white">
-                  <Phone className="w-3 h-3 text-white" />
+                <div className="absolute bottom-0 right-0 w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                  <Phone className="w-3.5 h-3.5 text-white" />
                 </div>
               )}
             </div>
