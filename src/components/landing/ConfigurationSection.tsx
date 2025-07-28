@@ -386,7 +386,7 @@ export class AppComponent implements OnInit {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="w-full">
         <div className="w-full grid grid-cols-2 gap-6">
           {/* Basic Configuration */}
           <Card className="border-2 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl animate-slide-in-left">
