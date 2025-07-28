@@ -862,7 +862,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             <div className="chatbot-widget-header-actions">
               {/* NEW: Voice Agent Call Button */}
               <button className="chatbot-widget-button" onClick={() => setIsCallMode(true)} title="Start a call" style={{
-            marginRight: '8px',
+            marginRight: '4px',
             width: '48px',
             height: '48px',
             padding: '0',
@@ -889,7 +889,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 onClick={() => window.open('/privacy-policy', '_blank')} 
                 title="Privacy Policy" 
                 style={{
-                  marginRight: '8px',
+                  marginRight: '4px',
                   width: '32px',
                   height: '32px',
                   padding: '0',
