@@ -40,6 +40,9 @@ interface ChatbotWidgetProps {
   logoBorderColor?: string;
   headerButtonColor?: string;
   fontFamily?: string;
+  companyName?: string;
+  agentName?: string;
+  callToAction?: string;
 }
 
 // Helper function to render text with line breaks
@@ -112,7 +115,10 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   elevenLabsAgentId = 'agent_01k04zwwq3fv5acgzdwmbvfk8k',
   logoBackgroundColor = 'transparent',
   logoBorderColor = '#e5e7eb',
-  headerButtonColor = '#ffffff'
+  headerButtonColor = '#ffffff',
+  companyName = '',
+  agentName = 'AI Assistant',
+  callToAction = 'Start a conversation'
 }) => {
   // Create logo URL from file if provided
   const [logoSrc, setLogoSrc] = useState<string>(logoUrl);
@@ -1101,104 +1107,102 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             </>}
         </div>}
 
-      {/* Toggle Button - Only show when chat is closed */}
-      {!isOpen && <div style={{
-      position: 'relative'
-    }}>
-          <TooltipProvider>
-            <Tooltip open={showWelcomeTooltip} onOpenChange={() => {}}>
-              <TooltipTrigger asChild>
-                <button onClick={handleChatButtonClick} className="chatbot-widget-toggle" style={{
-              backgroundColor: primaryColor
-            }}>
-                  <MessageCircle style={{
-                width: '24px',
-                height: '24px'
-              }} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="left" align="end" className="chatbot-welcome-tooltip" style={{
-            backgroundColor: '#ffffff',
-            color: botTextColor,
-            border: `1px solid ${secondaryColor === '#f1f5f9' ? '#e2e8f0' : 'rgba(0,0,0,0.1)'}`,
-            borderRadius: '18px',
-            padding: '12px 16px',
-            maxWidth: '280px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            fontSize: '14px',
-            lineHeight: '1.4',
-            fontWeight: '400',
-            position: 'relative'
+      {/* Chat Bubble Widget - Only show when chat is closed */}
+      {!isOpen && <div className="voice-chat-widget" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999 }}>
+        <div className="chat-bubble" style={{
+          background: '#ffffff',
+          borderRadius: '24px',
+          padding: '16px 20px',
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)',
+          maxWidth: '380px',
+          cursor: 'pointer'
+        }} onClick={handleChatButtonClick}>
+          {/* Header with avatar and message */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '12px',
+            marginBottom: '16px'
           }}>
-                <div style={{
+            {/* Avatar circle */}
+            <div style={{
+              width: '48px',
+              height: '48px',
+              background: primaryColor,
+              borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              justifyContent: 'center',
+              flexShrink: 0,
+              overflow: 'hidden'
             }}>
-                  <div className="chatbot-widget-header-avatar-tooltip">
-                    {logoSrc && <img src={logoSrc} alt="Logo" className="chatbot-widget-logo" style={{
-                  boxShadow: 'none',
-                  border: 'none'
-                }} onError={e => {
-                  console.error('Tooltip logo failed to load:', logoSrc);
-                  e.currentTarget.style.display = 'none';
-                }} />}
-                  </div>
-                  <div style={{ 
-                    flex: 1, 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    marginLeft: '12px' 
-                  }}>
-                    {welcomeTooltipMessage}
-                  </div>
-                  <button
-                    onClick={() => setShowWelcomeTooltip(false)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '2px',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '20px',
-                      height: '20px',
-                      marginLeft: '8px',
-                      opacity: 0.6,
-                      transition: 'opacity 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                    onMouseLeave={(e) => e.currentTarget.style.opacity = '0.6'}
-                  >
-                    <X style={{ width: '14px', height: '14px', color: botTextColor }} />
-                  </button>
-                </div>
+              {logoSrc ? (
+                <img 
+                  src={logoSrc} 
+                  alt="Avatar" 
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                  onError={e => {
+                    console.error('Avatar logo failed to load:', logoSrc);
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
                 <div style={{
-              position: 'absolute',
-              right: '-6px',
-              bottom: '20px',
-              width: '12px',
-              height: '12px',
-              backgroundColor: '#ffffff',
-              border: `1px solid ${secondaryColor === '#f1f5f9' ? '#e2e8f0' : 'rgba(0,0,0,0.1)'}`,
-              borderLeft: 'none',
-              borderTop: 'none',
-              transform: 'rotate(45deg)'
-            }} />
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  textAlign: 'center',
+                  lineHeight: '1.2'
+                }}>
+                  {companyName.split(' ').slice(0, 2).join('\n').toUpperCase() || 'AI'}
+                </div>
+              )}
+            </div>
+            
+            {/* Message text */}
+            <div style={{ flex: 1 }}>
+              <p style={{
+                color: '#1a1a1a',
+                fontSize: '15px',
+                lineHeight: '1.4',
+                margin: 0
+              }}>
+                {welcomeMessage || `Hey! I'm ${agentName}, your AI assistant. Feel free to chat with me and ask any questions!`}
+              </p>
+            </div>
+          </div>
           
-          {/* Message Indicator */}
-          {hasUnreadMessages && <div className="chatbot-widget-notification chatbot-widget-animate-pulse">
-              <Bell style={{
-          width: '12px',
-          height: '12px',
-          color: 'white'
-        }} />
-            </div>}
-        </div>}
+          {/* Call button */}
+          <button style={{
+            background: primaryColor,
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '24px',
+            padding: '14px 24px',
+            fontSize: '16px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px',
+            width: '100%',
+            transition: 'all 0.2s ease'
+          }} onMouseEnter={e => {
+            e.currentTarget.style.background = `${primaryColor}dd`;
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }} onMouseLeave={e => {
+            e.currentTarget.style.background = primaryColor;
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}>
+            <MessageCircle style={{ width: '20px', height: '20px' }} />
+            {callToAction || 'Start a conversation'}
+          </button>
+        </div>
+      </div>}
     </div>;
 };
