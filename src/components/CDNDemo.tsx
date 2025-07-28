@@ -227,6 +227,7 @@ export const CDNDemo = () => {
         welcomeTooltipMessage={welcomeTooltipMessage}
         admin={admin}
         isVoiceEnabled={isVoiceEnabled}
+        isElevenLabsEnabled={isElevenLabsEnabled}
         elevenLabsAgentId={elevenLabsAgentId}
       />
     </div>
