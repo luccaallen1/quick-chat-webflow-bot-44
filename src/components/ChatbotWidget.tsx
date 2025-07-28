@@ -865,7 +865,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               {/* NEW: Voice Agent Call Button - only show if ElevenLabs is enabled */}
               {isElevenLabsEnabled && elevenLabsAgentId && (
                 <button className="chatbot-widget-button" onClick={() => setIsCallMode(true)} title="Start a call" style={{
-              marginRight: '4px',
+              marginRight: '2px',
               width: '48px',
               height: '48px',
               padding: '0',
