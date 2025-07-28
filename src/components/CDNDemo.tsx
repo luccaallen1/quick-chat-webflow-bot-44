@@ -26,7 +26,7 @@ export const CDNDemo = () => {
   const [chatBackground, setChatBackground] = useState('#ffffff');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [defaultLogoUrl] = useState('/lovable-uploads/e21c3d80-4ad8-46f7-8892-faf21f128773.png');
+  const [defaultLogoUrl] = useState('/lovable-uploads/fd9d4dbf-9035-4de8-a3a1-81089fcac665.png');
   const [defaultAvatarUrl] = useState('/lovable-uploads/1f938225-daa7-46d3-a44e-d951e492fcd4.png');
   const [welcomeMessage, setWelcomeMessage] = useState('Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?');
   const [admin, setAdmin] = useState(false);
