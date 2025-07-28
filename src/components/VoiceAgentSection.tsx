@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useConversation } from '@11labs/react';
-import { Mic, MicOff, Phone, PhoneOff, Settings, Upload, X } from 'lucide-react';
+import { Mic, MicOff, Phone, PhoneOff, Settings, Upload, X, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +21,33 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
   const [isConversationOpen, setIsConversationOpen] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [callDuration, setCallDuration] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const callTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Call timer effect
+  useEffect(() => {
+    if (isConversationOpen) {
+      setCallDuration(0);
+      callTimerRef.current = setInterval(() => {
+        setCallDuration(prev => prev + 1);
+      }, 1000);
+    } else {
+      if (callTimerRef.current) {
+        clearInterval(callTimerRef.current);
+        callTimerRef.current = null;
+      }
+      setCallDuration(0);
+    }
+
+    return () => {
+      if (callTimerRef.current) {
+        clearInterval(callTimerRef.current);
+      }
+    };
+  }, [isConversationOpen]);
 
   const conversation = useConversation({
     onConnect: () => {
@@ -31,6 +57,9 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
       console.log('Disconnected from voice agent');
       setConversationId(null);
       setIsConversationOpen(false);
+      setCallDuration(0);
+      setIsMuted(false);
+      setIsSpeakerOn(false);
     },
     onError: (error) => {
       console.error('Voice agent error:', error);
@@ -87,7 +116,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
     <section className="py-12 px-4">
       <div className="flex justify-center">
         {/* Main Voice Widget - Horizontal Layout */}
-        <div className="voice-agent-section max-w-[1200px] w-full bg-white rounded-[20px] p-10 lg:px-[60px] lg:py-10 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-8 lg:gap-10 relative">
+        <div className={`voice-agent-section max-w-[1200px] w-full bg-white rounded-[20px] p-10 lg:px-[60px] lg:py-10 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-8 lg:gap-10 relative ${isConversationOpen ? 'in-call' : ''}`}>
           
           {/* Avatar - Left Side on Desktop */}
           <div className="flex-shrink-0">
@@ -105,21 +134,52 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
                   </div>
                 )}
               </div>
-              {/* Small phone circle overlay */}
-              <div className="absolute -bottom-0 -right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[3px] border-white">
-                <Phone className="w-4 h-4 text-primary-foreground" />
-              </div>
+              {/* Voice Animation or Phone Icon */}
+              {isConversationOpen ? (
+                <div className="absolute -bottom-0 -right-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[3px] border-white">
+                  <div className="flex items-end gap-[1px] h-4">
+                    {[1, 2, 3, 4, 5].map((bar) => (
+                      <div
+                        key={bar}
+                        className={`w-[2px] bg-white rounded-sm ${
+                          conversation.isSpeaking ? 'animate-voice-bar' : 'h-2'
+                        }`}
+                        style={{
+                          height: conversation.isSpeaking ? undefined : '8px',
+                          animationDelay: `${bar * 0.1}s`
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="absolute -bottom-0 -right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[3px] border-white">
+                  <Phone className="w-4 h-4 text-primary-foreground" />
+                </div>
+              )}
             </div>
           </div>
 
           {/* Content - Center on Desktop */}
           <div className="flex-1 text-center lg:text-left">
             <h2 className="text-foreground text-2xl lg:text-[32px] font-bold mb-2 lg:mb-2 leading-tight">
-              {title}
+              {isConversationOpen ? 'Connected' : title}
             </h2>
-            <p className="text-muted-foreground text-base lg:text-lg leading-relaxed max-w-[600px]">
-              {description}
-            </p>
+            {isConversationOpen ? (
+              <div className="space-y-2">
+                <div className="text-green-500 text-4xl lg:text-[48px] font-mono font-bold tabular-nums">
+                  {Math.floor(callDuration / 60).toString().padStart(2, '0')}:
+                  {(callDuration % 60).toString().padStart(2, '0')}
+                </div>
+                <p className="text-muted-foreground text-base lg:text-lg">
+                  Speaking with AI Agent
+                </p>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-base lg:text-lg leading-relaxed max-w-[600px]">
+                {description}
+              </p>
+            )}
           </div>
 
           {/* Action Area - Right Side on Desktop */}
@@ -138,7 +198,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
               {isConversationOpen ? 'In Call' : 'Available 24/7'}
             </div>
             
-            {/* Call Button */}
+            {/* Call Button or Control Buttons */}
             {!isConversationOpen ? (
               <button
                 onClick={startVoiceConversation}
@@ -149,14 +209,35 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
                 <span>{buttonText}</span>
               </button>
             ) : (
-              <button
-                onClick={endVoiceConversation}
-                className="inline-flex items-center gap-2.5 px-9 py-4 rounded-[30px] text-base font-semibold cursor-pointer transition-all duration-200 shadow-[0_4px_15px_rgba(34,197,94,0.2)] hover:shadow-[0_8px_20px_rgba(34,197,94,0.2)] hover:-translate-y-0.5 active:translate-y-0 text-white whitespace-nowrap animate-pulse"
-                style={{ backgroundColor: '#22c55e' }}
-              >
-                <PhoneOff className="w-5 h-5" />
-                <span>End Call</span>
-              </button>
+              <div className="flex items-center gap-3">
+                {/* Mute Button */}
+                <button
+                  onClick={() => setIsMuted(!isMuted)}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 ${
+                    isMuted ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                </button>
+                
+                {/* End Call Button - Larger */}
+                <button
+                  onClick={endVoiceConversation}
+                  className="w-14 h-14 rounded-full bg-red-500 text-white flex items-center justify-center transition-all duration-200 hover:bg-red-600 hover:scale-110 shadow-lg"
+                >
+                  <PhoneOff className="w-6 h-6" />
+                </button>
+                
+                {/* Speaker Button */}
+                <button
+                  onClick={() => setIsSpeakerOn(!isSpeakerOn)}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 ${
+                    isSpeakerOn ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  <Volume2 className="w-5 h-5" />
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -332,8 +413,44 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
         </div>
       )}
 
-      {/* Global styles for responsive design */}
+      {/* Global styles for responsive design and animations */}
       <style dangerouslySetInnerHTML={{__html: `
+        /* Voice bar animation keyframes */
+        @keyframes voice-bar {
+          0%, 100% { 
+            height: 8px; 
+            transform: scaleY(0.5);
+          }
+          50% { 
+            height: 16px; 
+            transform: scaleY(1);
+          }
+        }
+        
+        .animate-voice-bar {
+          animation: voice-bar 0.6s ease-in-out infinite;
+          transform-origin: bottom;
+        }
+        
+        /* Call state background gradient */
+        .voice-agent-section {
+          transition: background 0.3s ease;
+        }
+        
+        .voice-agent-section.in-call {
+          background: radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.05) 0%, rgba(255, 255, 255, 1) 70%);
+          animation: subtle-pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes subtle-pulse {
+          0%, 100% { 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+          }
+          50% { 
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.15);
+          }
+        }
+        
         @media (max-width: 1024px) {
           .voice-agent-section {
             padding: 30px 40px !important;
@@ -349,7 +466,12 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
             gap: 20px !important;
           }
           
-          .voice-agent-section button {
+          .voice-agent-section .flex {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          
+          .voice-agent-section button:not(.w-12):not(.w-14) {
             width: 100% !important;
             justify-content: center !important;
             padding: 14px 24px !important;
