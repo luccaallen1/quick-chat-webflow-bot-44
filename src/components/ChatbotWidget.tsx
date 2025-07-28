@@ -37,6 +37,7 @@ interface ChatbotWidgetProps {
   welcomeTooltipMessage?: string;
   admin?: boolean;
   isVoiceEnabled?: boolean;
+  isElevenLabsEnabled?: boolean;
   elevenLabsAgentId?: string;
   logoBackgroundColor?: string;
   logoBorderColor?: string;
@@ -116,6 +117,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   welcomeTooltipMessage = 'Click to start chatting with our AI assistant!',
   admin = false,
   isVoiceEnabled = true,
+  isElevenLabsEnabled = false,
   elevenLabsAgentId = 'agent_01k04zwwq3fv5acgzdwmbvfk8k',
   logoBackgroundColor = 'transparent',
   logoBorderColor = '#e5e7eb',
@@ -861,7 +863,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             </div>
             <div className="chatbot-widget-header-actions">
               {/* NEW: Voice Agent Call Button - only show if ElevenLabs is enabled */}
-              {isVoiceEnabled && elevenLabsAgentId && (
+              {isElevenLabsEnabled && elevenLabsAgentId && (
                 <button className="chatbot-widget-button" onClick={() => setIsCallMode(true)} title="Start a call" style={{
               marginRight: '4px',
               width: '48px',
@@ -1108,7 +1110,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             position: 'relative'
           }}>
                       {/* Call AI Voice Agent Button - only show if no user messages sent yet and ElevenLabs is enabled */}
-                      {!messages.some(msg => msg.sender === 'user') && isVoiceEnabled && elevenLabsAgentId && (
+                      {!messages.some(msg => msg.sender === 'user') && isElevenLabsEnabled && elevenLabsAgentId && (
                         <button 
                           onClick={() => setIsCallMode(true)}
                           className="w-full mb-3 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
