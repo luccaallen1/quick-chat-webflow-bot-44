@@ -116,7 +116,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
     <section className="py-12 px-4">
       <div className="flex justify-center">
         {/* Main Voice Widget - Horizontal Layout */}
-        <div className={`voice-agent-section max-w-[1200px] w-full sm:max-w-[500px] bg-white rounded-[20px] p-6 sm:p-8 lg:px-[60px] lg:py-10 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-6 lg:gap-10 relative ${isConversationOpen ? 'in-call' : ''}`}>
+        <div className={`voice-agent-section max-w-[400px] sm:max-w-[1200px] w-full bg-white rounded-[20px] p-6 sm:p-8 lg:px-[60px] lg:py-10 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-6 lg:gap-10 relative ${isConversationOpen ? 'in-call' : ''}`}>
           
           {/* Avatar - Left Side on Desktop */}
           <div className="flex-shrink-0">
