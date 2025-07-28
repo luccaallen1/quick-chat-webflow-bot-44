@@ -106,7 +106,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   // Keep as fallback but won't be used for webhook
   clinicName = 'Gadsden',
   clinicId = '104',
-  logoUrl = 'https://media.licdn.com/dms/image/v2/D4E0BAQFRPXC4w25iOw/company-logo_200_200/B4EZVtx7beHgAI-/0/1741303560536?e=2147483647&v=beta&t=IMfviElZP1Vi86km2p9hrP-uuXQZxo1Ux_BvQ9-o0l4',
+  logoUrl = '/lovable-uploads/51aeecaa-e03f-4456-bd84-a206c3003227.png',
   logoFile,
   welcomeMessage = 'Hello! How can I help you today?',
   welcomeTooltipMessage = 'Click to start chatting with our AI assistant!',
