@@ -23,7 +23,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
 
   const avatarUrl = avatarFile 
     ? URL.createObjectURL(avatarFile) 
-    : '/lovable-uploads/46013ce6-0e78-4209-885a-6fc3259809c2.png';
+    : '/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png';
 
   return (
     <>
