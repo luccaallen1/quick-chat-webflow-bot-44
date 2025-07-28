@@ -94,11 +94,15 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onInput={(e) => onChange((e.target as HTMLInputElement).value)}
-          className="w-12 h-10 border border-gray-300 rounded-md cursor-pointer bg-transparent"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          className="w-12 h-10 border border-gray-300 rounded-md cursor-pointer"
           style={{
-            padding: '2px',
-            minHeight: '40px',
-            minWidth: '48px'
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
+            appearance: 'none',
+            padding: '0',
+            background: 'none'
           }}
         />
         <Input
