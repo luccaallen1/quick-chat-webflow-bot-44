@@ -116,7 +116,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
     <section className="py-12 px-4">
       <div className="flex justify-center">
         {/* Main Voice Widget - Horizontal Layout */}
-        <div className={`voice-agent-section max-w-[1200px] w-full bg-white rounded-[20px] p-10 lg:px-[60px] lg:py-10 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-8 lg:gap-10 relative ${isConversationOpen ? 'in-call' : ''}`}>
+        <div className={`voice-agent-section max-w-[1200px] w-full sm:max-w-[500px] bg-white rounded-[20px] p-6 sm:p-8 lg:px-[60px] lg:py-10 shadow-[0_10px_30px_rgba(0,0,0,0.08)] flex flex-col lg:flex-row items-center gap-6 lg:gap-10 relative ${isConversationOpen ? 'in-call' : ''}`}>
           
           {/* Avatar - Left Side on Desktop */}
           <div className="flex-shrink-0">
@@ -426,19 +426,14 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
           .voice-agent-section {
             flex-direction: column !important;
             text-align: center !important;
-            padding: 30px 20px !important;
-            gap: 20px !important;
+            padding: 20px !important;
+            gap: 16px !important;
+            max-width: 400px !important;
+            margin: 0 auto !important;
           }
           
-          .voice-agent-section .flex {
-            width: 100% !important;
-            justify-content: center !important;
-          }
-          
-          .voice-agent-section button:not(.w-12):not(.w-14) {
-            width: 100% !important;
-            justify-content: center !important;
-            padding: 14px 24px !important;
+          .voice-agent-section button:not(.w-12):not(.w-14):not(.w-8) {
+            padding: 12px 20px !important;
           }
         }
         
