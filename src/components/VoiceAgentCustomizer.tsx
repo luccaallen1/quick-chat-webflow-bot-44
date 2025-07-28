@@ -88,19 +88,13 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</Label>
       <div className="flex gap-2">
-        <div className="relative">
-          <input
-            id={id}
-            type="color"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-12 h-10 p-0 border border-gray-300 rounded-md cursor-pointer bg-white overflow-hidden"
-            style={{ 
-              WebkitAppearance: 'none',
-              appearance: 'none'
-            }}
-          />
-        </div>
+        <input
+          id={id}
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-12 h-10 border border-gray-300 rounded-md cursor-pointer"
+        />
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -290,34 +284,6 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{__html: `
-        input[type="color"] {
-          -webkit-appearance: none;
-          -moz-appearance: none;
-          appearance: none;
-          background: none;
-          border: 0;
-          cursor: pointer;
-          height: 40px;
-          padding: 0;
-          width: 48px;
-        }
-
-        input[type="color"]::-webkit-color-swatch-wrapper {
-          border-radius: 6px;
-          padding: 0;
-        }
-
-        input[type="color"]::-webkit-color-swatch {
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-        }
-
-        input[type="color"]::-moz-color-swatch {
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-        }
-      `}} />
     </div>
   );
 };
