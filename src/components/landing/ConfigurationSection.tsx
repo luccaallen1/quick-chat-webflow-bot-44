@@ -34,6 +34,8 @@ interface ConfigurationSectionProps {
   setChatBackground: (color: string) => void;
   logoFile: File | null;
   setLogoFile: (file: File | null) => void;
+  avatarFile: File | null;
+  setAvatarFile: (file: File | null) => void;
   welcomeMessage: string;
   setWelcomeMessage: (message: string) => void;
   admin: boolean;
@@ -86,6 +88,8 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   setChatBackground,
   logoFile,
   setLogoFile,
+  avatarFile,
+  setAvatarFile,
   welcomeMessage,
   setWelcomeMessage,
   admin,
@@ -120,6 +124,7 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
   const [isCropperOpen, setIsCropperOpen] = useState(false);
+  const [isAvatarCropperOpen, setIsAvatarCropperOpen] = useState(false);
   const generateCodeForLanguage = (language: string) => {
     const baseConfig = {
       webhookUrl: webhookUrl || 'YOUR_WEBHOOK_URL',
@@ -698,13 +703,13 @@ export class AppComponent {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="logoFile" className="text-sm font-medium">Logo Image (optional)</Label>
+                <Label htmlFor="logoFile" className="text-sm font-medium">Header Logo (optional)</Label>
                 <div className="space-y-3">
                   <Dialog open={isCropperOpen} onOpenChange={setIsCropperOpen}>
                     <DialogTrigger asChild>
                       <Button type="button" variant="outline" className="w-full h-10 flex items-center justify-center gap-2">
                         <Upload className="h-4 w-4" />
-                        {logoFile ? 'Change Logo' : 'Upload & Crop Logo'}
+                        {logoFile ? 'Change Header Logo' : 'Upload & Crop Header Logo'}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-lg">
@@ -718,12 +723,12 @@ export class AppComponent {
                   {logoFile && <div className="flex items-center gap-4">
                       <div className="flex-shrink-0">
                         <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
-                          <img src={URL.createObjectURL(logoFile)} alt="Logo preview" className="w-full h-full object-cover" />
+                          <img src={URL.createObjectURL(logoFile)} alt="Header logo preview" className="w-full h-full object-contain" />
                         </div>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-gray-600 truncate">{logoFile.name}</p>
-                        <p className="text-xs text-gray-400">Cropped logo preview</p>
+                        <p className="text-xs text-gray-400">Header logo preview</p>
                       </div>
                       <Button type="button" variant="ghost" size="sm" onClick={() => setIsCropperOpen(true)} className="flex-shrink-0">
                         <Edit3 className="h-4 w-4" />
@@ -733,6 +738,47 @@ export class AppComponent {
                       </Button>
                     </div>}
                 </div>
+                <p className="text-xs text-gray-500">Logo displayed in the chat widget header</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="avatarFile" className="text-sm font-medium">Avatar Image (optional)</Label>
+                <div className="space-y-3">
+                  <Dialog open={isAvatarCropperOpen} onOpenChange={setIsAvatarCropperOpen}>
+                    <DialogTrigger asChild>
+                      <Button type="button" variant="outline" className="w-full h-10 flex items-center justify-center gap-2">
+                        <Upload className="h-4 w-4" />
+                        {avatarFile ? 'Change Avatar' : 'Upload & Crop Avatar'}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <ImageCropper onCrop={croppedFile => {
+                      setAvatarFile(croppedFile);
+                      setIsAvatarCropperOpen(false);
+                    }} onCancel={() => setIsAvatarCropperOpen(false)} initialImage={avatarFile} size={200} />
+                    </DialogContent>
+                  </Dialog>
+                  
+                  {avatarFile && <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
+                          <img src={URL.createObjectURL(avatarFile)} alt="Avatar preview" className="w-full h-full object-contain" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-600 truncate">{avatarFile.name}</p>
+                        <p className="text-xs text-gray-400">Avatar preview</p>
+                      </div>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setIsAvatarCropperOpen(true)} className="flex-shrink-0">
+                        <Edit3 className="h-4 w-4" />
+                      </Button>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setAvatarFile(null)} className="flex-shrink-0">
+                        Remove
+                      </Button>
+                    </div>}
+                </div>
+                <p className="text-xs text-gray-500">Avatar displayed in message bubbles and call interface</p>
+              </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="logoBackgroundColor" className="text-sm font-medium">Logo Background Color</Label>
@@ -892,5 +938,6 @@ export class AppComponent {
           </Card>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };

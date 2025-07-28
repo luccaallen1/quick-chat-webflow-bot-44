@@ -169,6 +169,8 @@ export const CDNDemo = () => {
         setChatBackground={setChatBackground}
         logoFile={logoFile}
         setLogoFile={setLogoFile}
+        avatarFile={avatarFile}
+        setAvatarFile={setAvatarFile}
         welcomeMessage={welcomeMessage}
         setWelcomeMessage={setWelcomeMessage}
         admin={admin}
