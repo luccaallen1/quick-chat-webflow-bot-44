@@ -198,8 +198,8 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
             {!isConversationOpen ? (
               <button
                 onClick={startVoiceConversation}
-                className="inline-flex items-center gap-2.5 px-9 py-4 rounded-[30px] text-base font-semibold cursor-pointer transition-all duration-200 shadow-[0_4px_15px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 active:translate-y-0 text-white whitespace-nowrap"
-                style={{ backgroundColor: buttonColor }}
+                className="inline-flex items-center gap-2.5 px-9 py-4 text-base font-semibold cursor-pointer transition-all duration-200 shadow-[0_4px_15px_rgba(0,0,0,0.12)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 active:translate-y-0 text-white whitespace-nowrap"
+                style={{ backgroundColor: buttonColor, borderRadius: '30px' }}
               >
                 <Phone className="w-5 h-5" />
                 <span>{buttonText}</span>
