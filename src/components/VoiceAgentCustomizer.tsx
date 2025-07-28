@@ -106,7 +106,7 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
   );
 
   return (
-    <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+    <div className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="agentId" className="text-sm font-medium text-gray-700">Agent ID</Label>
         <Input
