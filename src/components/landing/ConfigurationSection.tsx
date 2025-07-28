@@ -387,7 +387,7 @@ export class AppComponent implements OnInit {
       </div>
 
       <div className="grid grid-cols-2 gap-8">
-        <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-6">
           {/* Basic Configuration */}
           <Card className="border-2 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl animate-slide-in-left">
             <CardHeader className="bg-gradient-to-r from-blue-500/5 to-purple-500/5">
