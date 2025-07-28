@@ -127,7 +127,11 @@ export const VoiceWidget: React.FC<VoiceWidgetProps> = ({
               <img 
                 src={avatarUrl} 
                 alt="Brand avatar" 
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-contain"
+                style={{
+                  imageRendering: 'crisp-edges',
+                  filter: 'contrast(1.05) saturate(1.1)'
+                }}
               />
             </div>
             
