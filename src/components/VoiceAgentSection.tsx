@@ -122,17 +122,11 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
           <div className="flex-shrink-0">
             <div className="w-[100px] h-[100px] relative">
               <div className="w-full h-full bg-primary rounded-full flex items-center justify-center relative shadow-[0_5px_20px_rgba(0,0,0,0.15)]">
-                {avatarImage ? (
-                  <img 
-                    src={avatarImage} 
-                    alt="Brand avatar" 
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="text-primary-foreground text-xs font-bold text-center leading-tight whitespace-pre-line">
-                    {brandText}
-                  </div>
-                )}
+                <img 
+                  src="/lovable-uploads/46013ce6-0e78-4209-885a-6fc3259809c2.png" 
+                  alt="Brand avatar" 
+                  className="w-full h-full rounded-full object-cover"
+                />
               </div>
               {/* Voice Animation or Phone Icon */}
               {isConversationOpen ? (
