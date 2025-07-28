@@ -1128,7 +1128,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             <div style={{
               width: '48px',
               height: '48px',
-              background: primaryColor,
+              background: logoSrc ? (logoBackgroundColor || 'transparent') : primaryColor,
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
