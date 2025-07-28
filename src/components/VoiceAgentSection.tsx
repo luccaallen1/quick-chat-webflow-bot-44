@@ -26,7 +26,6 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
   const [callDuration, setCallDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const callTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Call timer effect
@@ -394,7 +393,6 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
           </DialogContent>
         </Dialog>
       </div>
-
 
       {/* Global styles for responsive design and animations */}
       <style dangerouslySetInnerHTML={{__html: `
