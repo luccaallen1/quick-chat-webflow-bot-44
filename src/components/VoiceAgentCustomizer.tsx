@@ -86,26 +86,19 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
     id: string; 
   }) => (
     <div className="space-y-2">
-      <Label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</Label>
+      <Label htmlFor={id} className="text-sm font-medium">{label}</Label>
       <div className="flex gap-2">
         <Input 
           id={id} 
           type="color" 
           value={value} 
           onChange={e => onChange(e.target.value)} 
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-          onInput={(e) => {
-            e.stopPropagation();
-          }}
-          className="w-16 h-10 p-1 rounded-md border transition-all duration-200 hover:scale-105 cursor-pointer"
+          className="w-16 h-10 p-1 rounded-md border transition-all duration-200 hover:scale-105"
         />
         <Input
           value={value}
           onChange={e => onChange(e.target.value)}
-          placeholder="#000000"
-          className="flex-1 bg-white border-gray-300 text-gray-900 text-sm"
+          className="flex-1 transition-all duration-200 focus:ring-2 focus:ring-purple-500/20"
         />
       </div>
     </div>
