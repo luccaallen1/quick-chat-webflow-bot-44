@@ -136,7 +136,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
               </div>
               {/* Voice Animation or Phone Icon */}
               {isConversationOpen ? (
-                <div className="absolute -bottom-0 -right-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[3px] border-white">
+                <div className="absolute -bottom-0 -right-0 w-6 h-6 lg:w-8 lg:h-8 bg-green-500 rounded-full flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.2)] border-[2px] lg:border-[3px] border-white">
                   <div className="flex items-end gap-[1px] h-4">
                     {[1, 2, 3, 4, 5].map((bar) => (
                       <div
