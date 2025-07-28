@@ -88,7 +88,7 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
     <div className="space-y-2">
       <Label htmlFor={id} className="text-sm font-medium text-gray-700">{label}</Label>
       <div className="flex gap-2">
-        <input 
+        <Input 
           id={id} 
           type="color" 
           value={value} 
