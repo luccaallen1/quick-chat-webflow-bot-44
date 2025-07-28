@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ImageCropper } from '@/components/ui/image-cropper';
 
 interface VoiceAgentSectionProps {
   isDarkMode?: boolean;
@@ -19,6 +20,8 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
   const [description, setDescription] = useState('Get instant answers to your questions. Our AI assistant is ready to help you 24/7.');
   const [brandText, setBrandText] = useState('YOUR\nBRAND\nHERE');
   const [avatarImage, setAvatarImage] = useState<string | null>(null);
+  const [showImageCropper, setShowImageCropper] = useState(false);
+  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [isConversationOpen, setIsConversationOpen] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [callDuration, setCallDuration] = useState(0);
@@ -97,16 +100,32 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAvatarImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      setUploadedImageFile(file);
+      setShowImageCropper(true);
+    }
+  };
+
+  const handleCroppedImage = (croppedFile: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setAvatarImage(e.target?.result as string);
+    };
+    reader.readAsDataURL(croppedFile);
+    setShowImageCropper(false);
+    setUploadedImageFile(null);
+  };
+
+  const handleCropperCancel = () => {
+    setShowImageCropper(false);
+    setUploadedImageFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
   const removeImage = () => {
     setAvatarImage(null);
+    setUploadedImageFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -384,6 +403,19 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Image Cropper Dialog */}
+      {showImageCropper && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <ImageCropper
+            onCrop={handleCroppedImage}
+            onCancel={handleCropperCancel}
+            initialImage={uploadedImageFile}
+            size={200}
+            aspectRatio={1}
+          />
+        </div>
+      )}
 
 
       {/* Global styles for responsive design and animations */}
