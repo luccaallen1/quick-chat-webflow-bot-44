@@ -860,28 +860,30 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               </div>
             </div>
             <div className="chatbot-widget-header-actions">
-              {/* NEW: Voice Agent Call Button */}
-              <button className="chatbot-widget-button" onClick={() => setIsCallMode(true)} title="Start a call" style={{
-            marginRight: '4px',
-            width: '48px',
-            height: '48px',
-            padding: '0',
-            display: 'flex !important',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'transparent',
-            border: 'none',
-            borderRadius: '50%',
-            cursor: 'pointer',
-            opacity: '1',
-            visibility: 'visible'
-          }}>
-                <Phone style={{
-              width: '26px',
-              height: '26px',
-              color: '#1f2937 !important'
-            }} className="bg-transparent" />
-              </button>
+              {/* NEW: Voice Agent Call Button - only show if ElevenLabs is enabled */}
+              {isVoiceEnabled && elevenLabsAgentId && (
+                <button className="chatbot-widget-button" onClick={() => setIsCallMode(true)} title="Start a call" style={{
+              marginRight: '4px',
+              width: '48px',
+              height: '48px',
+              padding: '0',
+              display: 'flex !important',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              opacity: '1',
+              visibility: 'visible'
+            }}>
+                  <Phone style={{
+                width: '26px',
+                height: '26px',
+                color: '#1f2937 !important'
+              }} className="bg-transparent" />
+                </button>
+              )}
 
               {/* Privacy Policy Button */}
               <button 
@@ -1105,8 +1107,8 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                     <div className="chatbot-widget-input" style={{
             position: 'relative'
           }}>
-                      {/* Call AI Voice Agent Button - only show if no user messages sent yet */}
-                      {!messages.some(msg => msg.sender === 'user') && (
+                      {/* Call AI Voice Agent Button - only show if no user messages sent yet and ElevenLabs is enabled */}
+                      {!messages.some(msg => msg.sender === 'user') && isVoiceEnabled && elevenLabsAgentId && (
                         <button 
                           onClick={() => setIsCallMode(true)}
                           className="w-full mb-3 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
