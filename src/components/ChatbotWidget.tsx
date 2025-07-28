@@ -889,7 +889,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 onClick={() => window.open('/privacy-policy', '_blank')} 
                 title="Privacy Policy" 
                 style={{
-                  marginRight: '4px',
+                  marginRight: '1.5px',
                   width: '32px',
                   height: '32px',
                   padding: '0',
