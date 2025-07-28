@@ -120,7 +120,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
           
           {/* Avatar - Left Side on Desktop */}
           <div className="flex-shrink-0">
-            <div className="w-[100px] h-[100px] lg:w-[100px] lg:h-[100px] relative">
+            <div className="w-[100px] h-[100px] relative">
               <div className="w-full h-full bg-primary rounded-full flex items-center justify-center relative shadow-[0_5px_20px_rgba(0,0,0,0.15)]">
                 {avatarImage ? (
                   <img 
