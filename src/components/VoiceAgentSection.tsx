@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useConversation } from '@11labs/react';
-import { Mic, MicOff, Phone, PhoneOff, Settings, Upload, X, Volume2 } from 'lucide-react';
+import { Mic, MicOff, Phone, PhoneOff, Settings, Upload, X, Volume2, Edit3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,9 +19,8 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
   const [title, setTitle] = useState('AI Voice Assistant');
   const [description, setDescription] = useState('Get instant answers to your questions. Our AI assistant is ready to help you 24/7.');
   const [brandText, setBrandText] = useState('YOUR\nBRAND\nHERE');
-  const [avatarImage, setAvatarImage] = useState<string | null>(null);
-  const [showImageCropper, setShowImageCropper] = useState(false);
-  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [isCropperOpen, setIsCropperOpen] = useState(false);
   const [isConversationOpen, setIsConversationOpen] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [callDuration, setCallDuration] = useState(0);
@@ -97,38 +96,13 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
     }
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setUploadedImageFile(file);
-      setShowImageCropper(true);
-    }
-  };
-
   const handleCroppedImage = (croppedFile: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setAvatarImage(e.target?.result as string);
-    };
-    reader.readAsDataURL(croppedFile);
-    setShowImageCropper(false);
-    setUploadedImageFile(null);
+    setAvatarFile(croppedFile);
+    setIsCropperOpen(false);
   };
 
   const handleCropperCancel = () => {
-    setShowImageCropper(false);
-    setUploadedImageFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const removeImage = () => {
-    setAvatarImage(null);
-    setUploadedImageFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    setIsCropperOpen(false);
   };
 
   return (
@@ -142,9 +116,9 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
             <div className="w-[100px] h-[100px] relative">
               {/* Main Avatar Circle */}
               <div className="w-full h-full rounded-full overflow-hidden shadow-[0_5px_20px_rgba(0,0,0,0.15)]">
-                {avatarImage ? (
+                {avatarFile ? (
                   <img 
-                    src={avatarImage} 
+                    src={URL.createObjectURL(avatarFile)} 
                     alt="Brand avatar" 
                     className="w-full h-full object-cover object-center"
                   />
@@ -341,44 +315,61 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
               </div>
 
               <div className="space-y-2">
-                <Label className="text-gray-700">Avatar Image</Label>
-                <div className="flex gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex-1"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload Image
-                  </Button>
-                  {avatarImage && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={removeImage}
-                      className="px-3"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
+                <Label htmlFor="avatarFile" className="text-gray-700">Avatar Image (optional)</Label>
+                <div className="space-y-3">
+                  <Dialog open={isCropperOpen} onOpenChange={setIsCropperOpen}>
+                    <DialogTrigger asChild>
+                      <Button type="button" variant="outline" className="w-full h-10 flex items-center justify-center gap-2">
+                        <Upload className="h-4 w-4" />
+                        {avatarFile ? 'Change Avatar' : 'Upload & Crop Avatar'}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <ImageCropper 
+                        onCrop={handleCroppedImage}
+                        onCancel={handleCropperCancel}
+                        initialImage={avatarFile}
+                        size={200}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                  
+                  {avatarFile && (
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
+                          <img 
+                            src={URL.createObjectURL(avatarFile)} 
+                            alt="Avatar preview" 
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-600 truncate">{avatarFile.name}</p>
+                        <p className="text-xs text-gray-400">Cropped avatar preview</p>
+                      </div>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setIsCropperOpen(true)} 
+                        className="flex-shrink-0"
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setAvatarFile(null)} 
+                        className="flex-shrink-0"
+                      >
+                        Remove
+                      </Button>
+                    </div>
                   )}
                 </div>
-                {avatarImage && (
-                  <div className="mt-2">
-                    <img 
-                      src={avatarImage} 
-                      alt="Avatar preview" 
-                      className="w-16 h-16 rounded-full object-cover mx-auto"
-                    />
-                  </div>
-                )}
               </div>
               
               <div className="space-y-2">
@@ -403,19 +394,6 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
           </DialogContent>
         </Dialog>
       </div>
-
-      {/* Image Cropper Dialog */}
-      {showImageCropper && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <ImageCropper
-            onCrop={handleCroppedImage}
-            onCancel={handleCropperCancel}
-            initialImage={uploadedImageFile}
-            size={200}
-            aspectRatio={1}
-          />
-        </div>
-      )}
 
 
       {/* Global styles for responsive design and animations */}
