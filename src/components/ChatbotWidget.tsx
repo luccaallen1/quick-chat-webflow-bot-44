@@ -111,7 +111,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   clinicId = '1',
   logoUrl = '/lovable-uploads/51aeecaa-e03f-4456-bd84-a206c3003227.png',
   logoFile,
-  avatarUrl = '/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png',
+  avatarUrl = '/lovable-uploads/3a759918-1b8f-4492-9af7-3508f2b52f74.png',
   avatarFile,
   welcomeMessage = 'Hi! I\'m your medical assistant. How can I help you today?',
   welcomeTooltipMessage = 'Click to start chatting with our AI assistant!',
