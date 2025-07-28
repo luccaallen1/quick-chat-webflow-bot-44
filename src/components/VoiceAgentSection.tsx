@@ -27,52 +27,61 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
 
   return (
     <section className="py-12 px-4">
-      <div className="flex justify-center">
-        <VoiceWidget
-          agentId={agentId}
-          title={title}
-          description={description}
-          buttonText={buttonText}
-          buttonColor={buttonColor}
-          backgroundColor={backgroundColor}
-          textColor={textColor}
-          secondaryTextColor={secondaryTextColor}
-          borderColor={borderColor}
-          shadowColor={shadowColor}
-          statusBgColor={statusBgColor}
-          statusTextColor={statusTextColor}
-          avatarUrl={avatarUrl}
-        />
-      </div>
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8 items-start">
+          {/* Widget Preview */}
+          <div className="flex justify-center lg:justify-start">
+            <VoiceWidget
+              agentId={agentId}
+              title={title}
+              description={description}
+              buttonText={buttonText}
+              buttonColor={buttonColor}
+              backgroundColor={backgroundColor}
+              textColor={textColor}
+              secondaryTextColor={secondaryTextColor}
+              borderColor={borderColor}
+              shadowColor={shadowColor}
+              statusBgColor={statusBgColor}
+              statusTextColor={statusTextColor}
+              avatarUrl={avatarUrl}
+            />
+          </div>
 
-      <VoiceAgentCustomizer
-        agentId={agentId}
-        onAgentIdChange={setAgentId}
-        title={title}
-        onTitleChange={setTitle}
-        description={description}
-        onDescriptionChange={setDescription}
-        buttonText={buttonText}
-        onButtonTextChange={setButtonText}
-        buttonColor={buttonColor}
-        onButtonColorChange={setButtonColor}
-        backgroundColor={backgroundColor}
-        onBackgroundColorChange={setBackgroundColor}
-        textColor={textColor}
-        onTextColorChange={setTextColor}
-        secondaryTextColor={secondaryTextColor}
-        onSecondaryTextColorChange={setSecondaryTextColor}
-        borderColor={borderColor}
-        onBorderColorChange={setBorderColor}
-        shadowColor={shadowColor}
-        onShadowColorChange={setShadowColor}
-        statusBgColor={statusBgColor}
-        onStatusBgColorChange={setStatusBgColor}
-        statusTextColor={statusTextColor}
-        onStatusTextColorChange={setStatusTextColor}
-        avatarFile={avatarFile}
-        onAvatarFileChange={setAvatarFile}
-      />
+          {/* Customization Panel */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">Customize Voice Assistant</h3>
+            <VoiceAgentCustomizer
+              agentId={agentId}
+              onAgentIdChange={setAgentId}
+              title={title}
+              onTitleChange={setTitle}
+              description={description}
+              onDescriptionChange={setDescription}
+              buttonText={buttonText}
+              onButtonTextChange={setButtonText}
+              buttonColor={buttonColor}
+              onButtonColorChange={setButtonColor}
+              backgroundColor={backgroundColor}
+              onBackgroundColorChange={setBackgroundColor}
+              textColor={textColor}
+              onTextColorChange={setTextColor}
+              secondaryTextColor={secondaryTextColor}
+              onSecondaryTextColorChange={setSecondaryTextColor}
+              borderColor={borderColor}
+              onBorderColorChange={setBorderColor}
+              shadowColor={shadowColor}
+              onShadowColorChange={setShadowColor}
+              statusBgColor={statusBgColor}
+              onStatusBgColorChange={setStatusBgColor}
+              statusTextColor={statusTextColor}
+              onStatusTextColorChange={setStatusTextColor}
+              avatarFile={avatarFile}
+              onAvatarFileChange={setAvatarFile}
+            />
+          </div>
+        </div>
+      </div>
     </section>
   );
 };
