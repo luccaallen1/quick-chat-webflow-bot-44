@@ -93,9 +93,21 @@ export const VoiceAgentCustomizer: React.FC<VoiceAgentCustomizerProps> = ({
           type="color" 
           value={value} 
           onChange={e => onChange(e.target.value)} 
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          className="w-16 h-10 p-1 rounded-md border transition-all duration-200 hover:scale-105"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onMouseUp={(e) => {
+            e.stopPropagation();
+          }}
+          onFocus={(e) => {
+            e.stopPropagation();
+          }}
+          className="w-16 h-10 p-1 rounded-md border transition-all duration-200 hover:scale-105 cursor-pointer"
         />
         <Input
           value={value}
