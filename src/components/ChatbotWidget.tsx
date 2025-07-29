@@ -1169,7 +1169,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
           {/* Header with avatar and message */}
           <div style={{
             display: 'flex',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             gap: '12px',
             marginBottom: '16px'
           }}>
