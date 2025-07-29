@@ -6,17 +6,19 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const isCDNBuild = process.env.BUILD_TARGET === 'cdn';
+  const buildTarget = process.env.BUILD_TARGET;
   
-  if (isCDNBuild) {
+  if (buildTarget === 'cdn' || buildTarget === 'voice-cdn') {
     // CDN Widget Build Configuration
+    const isVoiceWidget = buildTarget === 'voice-cdn';
+    
     return {
       plugins: [react()],
       build: {
         lib: {
-          entry: path.resolve(__dirname, 'src/components/StandaloneChatbot.tsx'),
-          name: 'ChatbotWidget',
-          fileName: 'chatbot-widget',
+          entry: path.resolve(__dirname, isVoiceWidget ? 'src/components/StandaloneVoiceWidget.tsx' : 'src/components/StandaloneChatbot.tsx'),
+          name: isVoiceWidget ? 'VoiceWidget' : 'ChatbotWidget',
+          fileName: isVoiceWidget ? 'voice-widget' : 'chatbot-widget',
           formats: ['iife']
         },
         rollupOptions: {
@@ -25,7 +27,7 @@ export default defineConfig(({ mode }) => {
             globals: {},
             assetFileNames: (assetInfo) => {
               if (assetInfo.name?.endsWith('.css')) {
-                return 'chatbot-widget.css';
+                return isVoiceWidget ? 'voice-widget.css' : 'chatbot-widget.css';
               }
               return assetInfo.name || 'asset';
             }

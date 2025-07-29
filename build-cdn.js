@@ -22,7 +22,7 @@ try {
   }
   
   // Run the build
-  execSync('npm run build', { stdio: 'inherit' });
+  execSync('npm run build:app', { stdio: 'inherit' });
   
   // Copy and rename the generated files
   const cdnPath = path.join(__dirname, 'cdn');

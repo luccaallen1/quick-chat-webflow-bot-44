@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node build-all-cdn.js",
+    "build:app": "vite build",
     "build:dev": "vite build --mode development",
+    "build:chat-widget": "node build-cdn.js",
+    "build:voice-widget": "node build-voice-cdn.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

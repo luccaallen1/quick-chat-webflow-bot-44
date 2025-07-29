@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useConversation } from '@11labs/react';
 import { Mic, MicOff, Phone, PhoneOff, Volume2 } from 'lucide-react';
+import './VoiceWidget.css';
 
 interface VoiceWidgetProps {
   agentId: string;
@@ -110,9 +111,8 @@ export const VoiceWidget: React.FC<VoiceWidgetProps> = ({
   };
 
   return (
-    <>
-      <div 
-        className={`voice-widget max-w-[400px] sm:max-w-[1200px] w-full rounded-[20px] p-6 sm:p-8 lg:px-[60px] lg:py-10 flex flex-col lg:flex-row items-center gap-6 lg:gap-10 relative ${isConversationOpen ? 'in-call' : ''} ${className}`}
+    <div 
+      className={`voice-widget max-w-[400px] sm:max-w-[1200px] w-full rounded-[20px] p-6 sm:p-8 lg:px-[60px] lg:py-10 flex flex-col lg:flex-row items-center gap-6 lg:gap-10 relative ${isConversationOpen ? 'in-call' : ''} ${className}`}
         style={{ 
           backgroundColor,
           boxShadow: `0 10px 30px ${shadowColor}`,
@@ -253,80 +253,5 @@ export const VoiceWidget: React.FC<VoiceWidgetProps> = ({
           )}
         </div>
       </div>
-
-      {/* Global styles for animations */}
-      <style dangerouslySetInnerHTML={{__html: `
-        /* Voice bar animation keyframes */
-        @keyframes voice-bar {
-          0%, 100% { 
-            height: 8px; 
-            transform: scaleY(0.5);
-          }
-          50% { 
-            height: 16px; 
-            transform: scaleY(1);
-          }
-        }
-        
-        .animate-voice-bar {
-          animation: voice-bar 0.6s ease-in-out infinite;
-          transform-origin: bottom;
-        }
-        
-        /* Call state background gradient */
-        .voice-widget {
-          transition: background 0.3s ease;
-        }
-        
-        .voice-widget.in-call {
-          animation: subtle-pulse 3s ease-in-out infinite;
-        }
-        
-        @keyframes subtle-pulse {
-          0%, 100% { 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-          }
-          50% { 
-            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.15);
-          }
-        }
-        
-        @media (max-width: 1024px) {
-          .voice-widget {
-            padding: 30px 40px !important;
-            gap: 30px !important;
-          }
-        }
-        
-        @media (max-width: 640px) {
-          .voice-widget {
-            flex-direction: column !important;
-            text-align: center !important;
-            padding: 20px !important;
-            gap: 16px !important;
-            max-width: 400px !important;
-            margin: 0 auto !important;
-          }
-          
-          .voice-widget button:not(.w-12):not(.w-14):not(.w-8) {
-            padding: 12px 20px !important;
-          }
-        }
-        
-        @media (max-width: 380px) {
-          .voice-widget {
-            padding: 25px 15px !important;
-          }
-          
-          .voice-widget h2 {
-            font-size: 22px !important;
-          }
-          
-          .voice-widget p {
-            font-size: 14px !important;
-          }
-        }
-      `}} />
-    </>
   );
 };
