@@ -194,12 +194,92 @@ html body *[class*="voice-widget"] *[class*="px-9"],
   padding-right: 2.25rem !important; 
 }
 
+html body .voice-widget .px-2,
+html body *[class*="voice-widget"] *[class*="px-2"],
+.voice-widget .px-2,
+*[class*="voice-widget"] *[class*="px-2"] { 
+  padding-left: 0.5rem !important; 
+  padding-right: 0.5rem !important; 
+}
+
+html body .voice-widget .px-3,
+html body *[class*="voice-widget"] *[class*="px-3"],
+.voice-widget .px-3,
+*[class*="voice-widget"] *[class*="px-3"] { 
+  padding-left: 0.75rem !important; 
+  padding-right: 0.75rem !important; 
+}
+
+html body .voice-widget .px-6,
+html body *[class*="voice-widget"] *[class*="px-6"],
+.voice-widget .px-6,
+*[class*="voice-widget"] *[class*="px-6"] { 
+  padding-left: 1.5rem !important; 
+  padding-right: 1.5rem !important; 
+}
+
+html body .voice-widget .px-8,
+html body *[class*="voice-widget"] *[class*="px-8"],
+.voice-widget .px-8,
+*[class*="voice-widget"] *[class*="px-8"] { 
+  padding-left: 2rem !important; 
+  padding-right: 2rem !important; 
+}
+
+html body .voice-widget .py-2,
+html body *[class*="voice-widget"] *[class*="py-2"],
+.voice-widget .py-2,
+*[class*="voice-widget"] *[class*="py-2"] { 
+  padding-top: 0.5rem !important; 
+  padding-bottom: 0.5rem !important; 
+}
+
+html body .voice-widget .py-3,
+html body *[class*="voice-widget"] *[class*="py-3"],
+.voice-widget .py-3,
+*[class*="voice-widget"] *[class*="py-3"] { 
+  padding-top: 0.75rem !important; 
+  padding-bottom: 0.75rem !important; 
+}
+
+html body .voice-widget .py-6,
+html body *[class*="voice-widget"] *[class*="py-6"],
+.voice-widget .py-6,
+*[class*="voice-widget"] *[class*="py-6"] { 
+  padding-top: 1.5rem !important; 
+  padding-bottom: 1.5rem !important; 
+}
+
+html body .voice-widget .py-8,
+html body *[class*="voice-widget"] *[class*="py-8"],
+.voice-widget .py-8,
+*[class*="voice-widget"] *[class*="py-8"] { 
+  padding-top: 2rem !important; 
+  padding-bottom: 2rem !important; 
+}
+
+html body .voice-widget .py-1\.5,
+html body *[class*="voice-widget"] *[class*="py-1"][class*="5"],
+.voice-widget .py-1\.5,
+*[class*="voice-widget"] *[class*="py-1"][class*="5"] { 
+  padding-top: 0.375rem !important; 
+  padding-bottom: 0.375rem !important; 
+}
+
 html body .voice-widget .py-4,
 html body *[class*="voice-widget"] *[class*="py-4"],
 .voice-widget .py-4,
 *[class*="voice-widget"] *[class*="py-4"] { 
   padding-top: 1rem !important; 
   padding-bottom: 1rem !important; 
+}
+
+html body .voice-widget .py-10,
+html body *[class*="voice-widget"] *[class*="py-10"],
+.voice-widget .py-10,
+*[class*="voice-widget"] *[class*="py-10"] { 
+  padding-top: 2.5rem !important; 
+  padding-bottom: 2.5rem !important; 
 }
 
 /* Flexbox */
@@ -457,6 +537,71 @@ html body *[class*="voice-widget"] *[class*="mb-2"],
   margin-bottom: 0.5rem !important; 
 }
 
+html body .voice-widget .mt-2,
+html body *[class*="voice-widget"] *[class*="mt-2"],
+.voice-widget .mt-2,
+*[class*="voice-widget"] *[class*="mt-2"] { 
+  margin-top: 0.5rem !important; 
+}
+
+html body .voice-widget .ml-2,
+html body *[class*="voice-widget"] *[class*="ml-2"],
+.voice-widget .ml-2,
+*[class*="voice-widget"] *[class*="ml-2"] { 
+  margin-left: 0.5rem !important; 
+}
+
+html body .voice-widget .mr-2,
+html body *[class*="voice-widget"] *[class*="mr-2"],
+.voice-widget .mr-2,
+*[class*="voice-widget"] *[class*="mr-2"] { 
+  margin-right: 0.5rem !important; 
+}
+
+html body .voice-widget .m-0,
+html body *[class*="voice-widget"] *[class*="m-0"],
+.voice-widget .m-0,
+*[class*="voice-widget"] *[class*="m-0"] { 
+  margin: 0 !important; 
+}
+
+html body .voice-widget .mx-auto,
+html body *[class*="voice-widget"] *[class*="mx-auto"],
+.voice-widget .mx-auto,
+*[class*="voice-widget"] *[class*="mx-auto"] { 
+  margin-left: auto !important; 
+  margin-right: auto !important; 
+}
+
+/* Individual padding utilities */
+html body .voice-widget .pt-2,
+html body *[class*="voice-widget"] *[class*="pt-2"],
+.voice-widget .pt-2,
+*[class*="voice-widget"] *[class*="pt-2"] { 
+  padding-top: 0.5rem !important; 
+}
+
+html body .voice-widget .pb-2,
+html body *[class*="voice-widget"] *[class*="pb-2"],
+.voice-widget .pb-2,
+*[class*="voice-widget"] *[class*="pb-2"] { 
+  padding-bottom: 0.5rem !important; 
+}
+
+html body .voice-widget .pl-2,
+html body *[class*="voice-widget"] *[class*="pl-2"],
+.voice-widget .pl-2,
+*[class*="voice-widget"] *[class*="pl-2"] { 
+  padding-left: 0.5rem !important; 
+}
+
+html body .voice-widget .pr-2,
+html body *[class*="voice-widget"] *[class*="pr-2"],
+.voice-widget .pr-2,
+*[class*="voice-widget"] *[class*="pr-2"] { 
+  padding-right: 0.5rem !important; 
+}
+
 /* Background colors */
 html body .voice-widget .bg-green-500,
 html body *[class*="voice-widget"] *[class*="bg-green-500"],
@@ -673,6 +818,23 @@ html body *[class*="voice-widget"] [class*="h-"][class*="100px"],
 .voice-widget [class*="h-"][class*="100px"],
 *[class*="voice-widget"] [class*="h-"][class*="100px"] { 
   height: 100px !important; 
+}
+
+/* Padding utilities with arbitrary values */
+html body .voice-widget [class*="px-"][class*="60px"],
+html body *[class*="voice-widget"] [class*="px-"][class*="60px"],
+.voice-widget [class*="px-"][class*="60px"],
+*[class*="voice-widget"] [class*="px-"][class*="60px"] { 
+  padding-left: 60px !important; 
+  padding-right: 60px !important; 
+}
+
+html body .voice-widget [class*="py-"][class*="10"],
+html body *[class*="voice-widget"] [class*="py-"][class*="10"],
+.voice-widget [class*="py-"][class*="10"],
+*[class*="voice-widget"] [class*="py-"][class*="10"] { 
+  padding-top: 2.5rem !important; 
+  padding-bottom: 2.5rem !important; 
 }
 
 /* Border radius with arbitrary values */
