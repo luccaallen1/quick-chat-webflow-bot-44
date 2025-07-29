@@ -376,7 +376,7 @@ export class AppComponent implements OnInit {
 
   return (
     <div className="space-y-8">
-      <div className="text-center space-y-2">
+      <div className="text-center space-y-2 py-8">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Chatbot Configuration
         </h2>
