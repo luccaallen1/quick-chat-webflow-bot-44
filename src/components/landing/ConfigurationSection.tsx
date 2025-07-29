@@ -11,7 +11,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageCropper } from '@/components/ui/image-cropper';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-
 interface ConfigurationSectionProps {
   webhookUrl: string;
   setWebhookUrl: (url: string) => void;
@@ -66,7 +65,6 @@ interface ConfigurationSectionProps {
   copySuccessMessage: string;
   setCopySuccessMessage: (message: string) => void;
 }
-
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   webhookUrl,
   setWebhookUrl,
@@ -121,20 +119,20 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   copySuccessMessage,
   setCopySuccessMessage
 }) => {
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const [isAvatarCropperOpen, setIsAvatarCropperOpen] = useState(false);
-
   const copyCode = (language: string) => {
     const code = generateCode(language);
     navigator.clipboard.writeText(code);
     toast({
       title: 'Code copied to clipboard!',
-      description: `${getLanguageDisplayName(language)} integration code has been copied.`,
+      description: `${getLanguageDisplayName(language)} integration code has been copied.`
     });
   };
-
   const getLanguageDisplayName = (lang: string) => {
     const names: Record<string, string> = {
       html: 'HTML',
@@ -146,7 +144,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     };
     return names[lang] || lang;
   };
-
   const generateCode = (language: string) => {
     const baseConfig = {
       webhookUrl,
@@ -167,7 +164,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       elevenLabsAgentId,
       gradientColor
     };
-
     const reactConfig = `  webhookUrl: '${baseConfig.webhookUrl}',
     title: '${baseConfig.title}',
     bio: '${baseConfig.bio}',
@@ -182,7 +178,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     admin: ${baseConfig.admin},
     isVoiceEnabled: ${baseConfig.isVoiceEnabled}${baseConfig.logoFile ? `,
     logoFile: '${baseConfig.logoFile}'` : ''}`;
-
     const elevenLabsEmbed = isElevenLabsEnabled ? `
 
 <!-- ElevenLabs Voice Bot Integration -->
@@ -195,7 +190,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     apiKey: 'YOUR_ELEVENLABS_API_KEY'
   });
 </script>` : '';
-
     switch (language) {
       case 'html':
         return `<!DOCTYPE html>
@@ -221,7 +215,6 @@ ${reactConfig.split('\n').map(line => '            ' + line.trim().replace(/^/, 
     </script>${elevenLabsEmbed}
 </body>
 </html>`;
-
       case 'react-ts':
         return `import React from 'react';
 import { ChatbotWidget } from './components/ChatbotWidget';
@@ -239,7 +232,6 @@ ${reactConfig}
 };
 
 export default App;`;
-
       case 'react-js':
         return `import React from 'react';
 import { ChatbotWidget } from './components/ChatbotWidget';
@@ -257,7 +249,6 @@ ${reactConfig}
 };
 
 export default App;`;
-
       case 'vue':
         return `<template>
   <div id="app">
@@ -292,7 +283,6 @@ export default {
   }
 };
 </script>`;
-
       case 'dotnet':
         return `@* Add this to your layout or page *@
 <div id="chatbot-container"></div>
@@ -324,7 +314,6 @@ webhookUrl: '@ViewBag.WebhookUrl',
 logoFile: '@ViewBag.LogoFile',
 title: '@ViewBag.ChatTitle',
 welcomeMessage: '@ViewBag.WelcomeMessage'`;
-
       case 'angular':
         return `// chatbot.service.ts
 import { Injectable } from '@angular/core';
@@ -368,18 +357,13 @@ export class AppComponent implements OnInit {
     this.chatbotService.initChatbot();
   }
 }`;
-
       default:
         return 'Language not supported';
     }
   };
-
-  return (
-    <div className="space-y-8">
-      <div className="text-center space-y-2 py-8">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          Chatbot Configuration
-        </h2>
+  return <div className="space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Chatbot &amp; Voice Agent Widget Configuration</h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
           Customize your chatbot's appearance, behavior, and integration settings. 
           Preview changes in real-time and generate code for seamless integration.
@@ -399,59 +383,30 @@ export class AppComponent implements OnInit {
             <CardContent className="space-y-6 p-6">
               <div className="space-y-2">
                 <Label htmlFor="webhookUrl" className="text-sm font-medium">Webhook URL</Label>
-                <Input
-                  id="webhookUrl"
-                  value={webhookUrl}
-                  onChange={(e) => setWebhookUrl(e.target.value)}
-                  placeholder="https://your-api.com/chatbot/webhook"
-                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
-                />
+                <Input id="webhookUrl" value={webhookUrl} onChange={e => setWebhookUrl(e.target.value)} placeholder="https://your-api.com/chatbot/webhook" className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
                 <p className="text-xs text-gray-500">The endpoint where chat messages will be sent</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="title" className="text-sm font-medium">Chat Title</Label>
-                  <Input
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Chat Support"
-                    className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
-                  />
+                  <Input id="title" value={title} onChange={e => setTitle(e.target.value)} placeholder="Chat Support" className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="bio" className="text-sm font-medium">Status/Bio</Label>
-                  <Input
-                    id="bio"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Online now"
-                    className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
-                  />
+                  <Input id="bio" value={bio} onChange={e => setBio(e.target.value)} placeholder="Online now" className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="placeholder" className="text-sm font-medium">Input Placeholder</Label>
-                <Input
-                  id="placeholder"
-                  value={placeholder}
-                  onChange={(e) => setPlaceholder(e.target.value)}
-                  placeholder="Type your message..."
-                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
-                />
+                <Input id="placeholder" value={placeholder} onChange={e => setPlaceholder(e.target.value)} placeholder="Type your message..." className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="position" className="text-sm font-medium">Widget Position</Label>
-                <select
-                  id="position"
-                  value={position}
-                  onChange={(e) => setPosition(e.target.value as 'bottom-right' | 'bottom-left')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-                >
+                <select id="position" value={position} onChange={e => setPosition(e.target.value as 'bottom-right' | 'bottom-left')} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200">
                   <option value="bottom-right">Bottom Right</option>
                   <option value="bottom-left">Bottom Left</option>
                 </select>
@@ -459,25 +414,13 @@ export class AppComponent implements OnInit {
 
               <div className="space-y-2">
                 <Label htmlFor="welcomeMessage" className="text-sm font-medium">Welcome Message</Label>
-                <Textarea
-                  id="welcomeMessage"
-                  value={welcomeMessage}
-                  onChange={(e) => setWelcomeMessage(e.target.value)}
-                  placeholder="Hello! How can I help you today?"
-                  className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
-                />
+                <Textarea id="welcomeMessage" value={welcomeMessage} onChange={e => setWelcomeMessage(e.target.value)} placeholder="Hello! How can I help you today?" className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
                 <p className="text-xs text-gray-500">First message users see when opening the chat</p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="welcomeTooltipMessage" className="text-sm font-medium">Button Tooltip Message</Label>
-                <Input
-                  id="welcomeTooltipMessage"
-                  value={welcomeTooltipMessage}
-                  onChange={(e) => setWelcomeTooltipMessage(e.target.value)}
-                  placeholder="Click to start chatting with our AI assistant!"
-                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
-                />
+                <Input id="welcomeTooltipMessage" value={welcomeTooltipMessage} onChange={e => setWelcomeTooltipMessage(e.target.value)} placeholder="Click to start chatting with our AI assistant!" className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
                 <p className="text-xs text-gray-500">Tooltip message that appears on the chat button</p>
               </div>
               
@@ -714,6 +657,5 @@ export class AppComponent implements OnInit {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
