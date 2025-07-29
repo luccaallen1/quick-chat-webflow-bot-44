@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Rocket, MessageCircle, ExternalLink } from 'lucide-react';
+import { Sparkles, Rocket, MessageCircle, ExternalLink, Mic } from 'lucide-react';
 import { DemoBookingForm } from '@/components/DemoBookingForm';
+import { Link } from 'react-router-dom';
 interface HeroSectionProps {
   onViewExample: () => void;
 }
@@ -43,6 +44,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Call-to-Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <DemoBookingForm />
+            <Link to="/voice-agent">
+              <Button variant="outline" size="lg" className="gap-2">
+                <Mic className="w-4 h-4" />
+                Voice Agent
+              </Button>
+            </Link>
           </div>
           
           {/* Stats */}
