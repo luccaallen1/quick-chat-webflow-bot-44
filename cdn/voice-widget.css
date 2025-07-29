@@ -36,8 +36,6 @@ html body *[class*="voice-widget"],
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif !important;
   
   /* Layout Properties */
-  display: flex !important;
-  align-items: center !important;
   position: relative !important;
   
   /* Default Sizing */
@@ -46,7 +44,6 @@ html body *[class*="voice-widget"],
   
   /* Default Spacing */
   padding: 1.5rem !important;
-  gap: 1.5rem !important;
   
   /* Default Styling */
   background-color: #ffffff !important;
@@ -55,7 +52,6 @@ html body *[class*="voice-widget"],
   
   /* Text */
   color: #000000 !important;
-  flex-direction: column !important;
   text-align: center !important;
 }
 
@@ -111,73 +107,187 @@ html body *[class*="voice-widget"] .animate-pulse,
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important; 
 }
 
-/* Display Utilities - Only exact class matches */
-html body .voice-widget .flex,
-html body *[class*="voice-widget"] .flex,
-.voice-widget .flex,
-*[class*="voice-widget"] .flex { 
+/* Display Utilities - Only when voice-widget has specific flex classes */
+html body .voice-widget.flex,
+html body *[class*="voice-widget"].flex { 
   display: flex !important; 
 }
 
-html body .voice-widget .inline-flex,
-html body *[class*="voice-widget"] .inline-flex,
-.voice-widget .inline-flex,
-*[class*="voice-widget"] .inline-flex { 
+html body .voice-widget.inline-flex,
+html body *[class*="voice-widget"].inline-flex { 
   display: inline-flex !important; 
 }
 
-/* Flex Direction - These also need display: flex */
-html body .voice-widget .flex-col,
-html body *[class*="voice-widget"] .flex-col,
-.voice-widget .flex-col,
-*[class*="voice-widget"] .flex-col { 
+/* Flex Direction - Only when voice-widget has specific flex classes */
+html body .voice-widget.flex-col,
+html body *[class*="voice-widget"].flex-col { 
   display: flex !important;
   flex-direction: column !important; 
 }
 
-html body .voice-widget .flex-row,
-html body *[class*="voice-widget"] .flex-row,
-.voice-widget .flex-row,
-*[class*="voice-widget"] .flex-row { 
+html body .voice-widget.flex-row,
+html body *[class*="voice-widget"].flex-row { 
   display: flex !important;
   flex-direction: row !important; 
 }
 
-/* Flex Alignment */
-html body .voice-widget .items-center,
-html body *[class*="voice-widget"] .items-center,
-.voice-widget .items-center,
-*[class*="voice-widget"] .items-center { 
+/* Flex utilities for children only when parent has flex display */
+html body .voice-widget.flex .flex,
+html body .voice-widget.flex-col .flex,
+html body .voice-widget.flex-row .flex,
+html body *[class*="voice-widget"].flex .flex,
+html body *[class*="voice-widget"].flex-col .flex,
+html body *[class*="voice-widget"].flex-row .flex { 
+  display: flex !important; 
+}
+
+html body .voice-widget.flex .flex-col,
+html body .voice-widget.flex-col .flex-col,
+html body .voice-widget.flex-row .flex-col,
+html body *[class*="voice-widget"].flex .flex-col,
+html body *[class*="voice-widget"].flex-col .flex-col,
+html body *[class*="voice-widget"].flex-row .flex-col { 
+  display: flex !important;
+  flex-direction: column !important; 
+}
+
+html body .voice-widget.flex .flex-row,
+html body .voice-widget.flex-col .flex-row,
+html body .voice-widget.flex-row .flex-row,
+html body *[class*="voice-widget"].flex .flex-row,
+html body *[class*="voice-widget"].flex-col .flex-row,
+html body *[class*="voice-widget"].flex-row .flex-row { 
+  display: flex !important;
+  flex-direction: row !important; 
+}
+
+/* Flex Alignment - Only apply when parent is a flex container */
+html body .voice-widget.flex .items-center,
+html body .voice-widget.flex-col .items-center,
+html body .voice-widget.flex-row .items-center,
+html body *[class*="voice-widget"].flex .items-center,
+html body *[class*="voice-widget"].flex-col .items-center,
+html body *[class*="voice-widget"].flex-row .items-center,
+html body .voice-widget.items-center.flex,
+html body .voice-widget.items-center.flex-col,
+html body .voice-widget.items-center.flex-row,
+html body *[class*="voice-widget"].items-center.flex,
+html body *[class*="voice-widget"].items-center.flex-col,
+html body *[class*="voice-widget"].items-center.flex-row { 
   align-items: center !important; 
 }
 
-html body .voice-widget .items-end,
-html body *[class*="voice-widget"] .items-end,
-.voice-widget .items-end,
-*[class*="voice-widget"] .items-end { 
+html body .voice-widget.flex .items-end,
+html body .voice-widget.flex-col .items-end,
+html body .voice-widget.flex-row .items-end,
+html body *[class*="voice-widget"].flex .items-end,
+html body *[class*="voice-widget"].flex-col .items-end,
+html body *[class*="voice-widget"].flex-row .items-end,
+html body .voice-widget.items-end.flex,
+html body .voice-widget.items-end.flex-col,
+html body .voice-widget.items-end.flex-row,
+html body *[class*="voice-widget"].items-end.flex,
+html body *[class*="voice-widget"].items-end.flex-col,
+html body *[class*="voice-widget"].items-end.flex-row { 
   align-items: flex-end !important; 
 }
 
-html body .voice-widget .justify-center,
-html body *[class*="voice-widget"] .justify-center,
-.voice-widget .justify-center,
-*[class*="voice-widget"] .justify-center { 
+html body .voice-widget.flex .justify-center,
+html body .voice-widget.flex-col .justify-center,
+html body .voice-widget.flex-row .justify-center,
+html body *[class*="voice-widget"].flex .justify-center,
+html body *[class*="voice-widget"].flex-col .justify-center,
+html body *[class*="voice-widget"].flex-row .justify-center,
+html body .voice-widget.justify-center.flex,
+html body .voice-widget.justify-center.flex-col,
+html body .voice-widget.justify-center.flex-row,
+html body *[class*="voice-widget"].justify-center.flex,
+html body *[class*="voice-widget"].justify-center.flex-col,
+html body *[class*="voice-widget"].justify-center.flex-row { 
   justify-content: center !important; 
 }
 
-/* Flex Item Properties - Do NOT set display: flex */
-html body .voice-widget .flex-shrink-0,
-html body *[class*="voice-widget"] .flex-shrink-0,
-.voice-widget .flex-shrink-0,
-*[class*="voice-widget"] .flex-shrink-0 { 
+/* Additional flex alignment utilities */
+html body .voice-widget.flex .justify-start,
+html body .voice-widget.flex-col .justify-start,
+html body .voice-widget.flex-row .justify-start,
+html body *[class*="voice-widget"].flex .justify-start,
+html body *[class*="voice-widget"].flex-col .justify-start,
+html body *[class*="voice-widget"].flex-row .justify-start,
+html body .voice-widget.justify-start.flex,
+html body .voice-widget.justify-start.flex-col,
+html body .voice-widget.justify-start.flex-row,
+html body *[class*="voice-widget"].justify-start.flex,
+html body *[class*="voice-widget"].justify-start.flex-col,
+html body *[class*="voice-widget"].justify-start.flex-row { 
+  justify-content: flex-start !important; 
+}
+
+html body .voice-widget.flex .justify-between,
+html body .voice-widget.flex-col .justify-between,
+html body .voice-widget.flex-row .justify-between,
+html body *[class*="voice-widget"].flex .justify-between,
+html body *[class*="voice-widget"].flex-col .justify-between,
+html body *[class*="voice-widget"].flex-row .justify-between,
+html body .voice-widget.justify-between.flex,
+html body .voice-widget.justify-between.flex-col,
+html body .voice-widget.justify-between.flex-row,
+html body *[class*="voice-widget"].justify-between.flex,
+html body *[class*="voice-widget"].justify-between.flex-col,
+html body *[class*="voice-widget"].justify-between.flex-row { 
+  justify-content: space-between !important; 
+}
+
+html body .voice-widget.flex .items-start,
+html body .voice-widget.flex-col .items-start,
+html body .voice-widget.flex-row .items-start,
+html body *[class*="voice-widget"].flex .items-start,
+html body *[class*="voice-widget"].flex-col .items-start,
+html body *[class*="voice-widget"].flex-row .items-start,
+html body .voice-widget.items-start.flex,
+html body .voice-widget.items-start.flex-col,
+html body .voice-widget.items-start.flex-row,
+html body *[class*="voice-widget"].items-start.flex,
+html body *[class*="voice-widget"].items-start.flex-col,
+html body *[class*="voice-widget"].items-start.flex-row { 
+  align-items: flex-start !important; 
+}
+
+/* Flex Item Properties - Only work within flex containers */
+html body .voice-widget.flex .flex-shrink-0,
+html body .voice-widget.flex-col .flex-shrink-0,
+html body .voice-widget.flex-row .flex-shrink-0,
+html body *[class*="voice-widget"].flex .flex-shrink-0,
+html body *[class*="voice-widget"].flex-col .flex-shrink-0,
+html body *[class*="voice-widget"].flex-row .flex-shrink-0 { 
   flex-shrink: 0 !important; 
 }
 
-html body .voice-widget .flex-1,
-html body *[class*="voice-widget"] .flex-1,
-.voice-widget .flex-1,
-*[class*="voice-widget"] .flex-1 { 
+html body .voice-widget.flex .flex-1,
+html body .voice-widget.flex-col .flex-1,
+html body .voice-widget.flex-row .flex-1,
+html body *[class*="voice-widget"].flex .flex-1,
+html body *[class*="voice-widget"].flex-col .flex-1,
+html body *[class*="voice-widget"].flex-row .flex-1 { 
   flex: 1 1 0% !important; 
+}
+
+html body .voice-widget.flex .flex-grow,
+html body .voice-widget.flex-col .flex-grow,
+html body .voice-widget.flex-row .flex-grow,
+html body *[class*="voice-widget"].flex .flex-grow,
+html body *[class*="voice-widget"].flex-col .flex-grow,
+html body *[class*="voice-widget"].flex-row .flex-grow { 
+  flex-grow: 1 !important; 
+}
+
+html body .voice-widget.flex .flex-shrink,
+html body .voice-widget.flex-col .flex-shrink,
+html body .voice-widget.flex-row .flex-shrink,
+html body *[class*="voice-widget"].flex .flex-shrink,
+html body *[class*="voice-widget"].flex-col .flex-shrink,
+html body *[class*="voice-widget"].flex-row .flex-shrink { 
+  flex-shrink: 1 !important; 
 }
 
 /* Position Utilities */
@@ -344,57 +454,145 @@ html body *[class*="voice-widget"] [class*="py-1"][class*="5"],
 .voice-widget [class*="py-1"][class*="5"],
 *[class*="voice-widget"] [class*="py-1"][class*="5"] { padding-top: 0.375rem !important; padding-bottom: 0.375rem !important; }
 
-/* Gap Utilities */
-html body .voice-widget .gap-6,
-html body *[class*="voice-widget"] .gap-6,
-.voice-widget .gap-6,
-*[class*="voice-widget"] .gap-6 { gap: 1.5rem !important; }
+/* Gap Utilities - Only work with flex containers */
+html body .voice-widget.flex.gap-6,
+html body .voice-widget.flex-col.gap-6,
+html body .voice-widget.flex-row.gap-6,
+html body *[class*="voice-widget"].flex.gap-6,
+html body *[class*="voice-widget"].flex-col.gap-6,
+html body *[class*="voice-widget"].flex-row.gap-6,
+html body .voice-widget.flex .gap-6,
+html body .voice-widget.flex-col .gap-6,
+html body .voice-widget.flex-row .gap-6,
+html body *[class*="voice-widget"].flex .gap-6,
+html body *[class*="voice-widget"].flex-col .gap-6,
+html body *[class*="voice-widget"].flex-row .gap-6 { gap: 1.5rem !important; }
 
-html body .voice-widget .gap-10,
-html body *[class*="voice-widget"] .gap-10,
-.voice-widget .gap-10,
-*[class*="voice-widget"] .gap-10 { gap: 2.5rem !important; }
+html body .voice-widget.flex.gap-10,
+html body .voice-widget.flex-col.gap-10,
+html body .voice-widget.flex-row.gap-10,
+html body *[class*="voice-widget"].flex.gap-10,
+html body *[class*="voice-widget"].flex-col.gap-10,
+html body *[class*="voice-widget"].flex-row.gap-10,
+html body .voice-widget.flex .gap-10,
+html body .voice-widget.flex-col .gap-10,
+html body .voice-widget.flex-row .gap-10,
+html body *[class*="voice-widget"].flex .gap-10,
+html body *[class*="voice-widget"].flex-col .gap-10,
+html body *[class*="voice-widget"].flex-row .gap-10 { gap: 2.5rem !important; }
 
-html body .voice-widget .gap-4,
-html body *[class*="voice-widget"] .gap-4,
-.voice-widget .gap-4,
-*[class*="voice-widget"] .gap-4 { gap: 1rem !important; }
+html body .voice-widget.flex.gap-4,
+html body .voice-widget.flex-col.gap-4,
+html body .voice-widget.flex-row.gap-4,
+html body *[class*="voice-widget"].flex.gap-4,
+html body *[class*="voice-widget"].flex-col.gap-4,
+html body *[class*="voice-widget"].flex-row.gap-4,
+html body .voice-widget.flex .gap-4,
+html body .voice-widget.flex-col .gap-4,
+html body .voice-widget.flex-row .gap-4,
+html body *[class*="voice-widget"].flex .gap-4,
+html body *[class*="voice-widget"].flex-col .gap-4,
+html body *[class*="voice-widget"].flex-row .gap-4 { gap: 1rem !important; }
 
-html body .voice-widget .gap-3,
-html body *[class*="voice-widget"] .gap-3,
-.voice-widget .gap-3,
-*[class*="voice-widget"] .gap-3 { gap: 0.75rem !important; }
+html body .voice-widget.flex.gap-3,
+html body .voice-widget.flex-col.gap-3,
+html body .voice-widget.flex-row.gap-3,
+html body *[class*="voice-widget"].flex.gap-3,
+html body *[class*="voice-widget"].flex-col.gap-3,
+html body *[class*="voice-widget"].flex-row.gap-3,
+html body .voice-widget.flex .gap-3,
+html body .voice-widget.flex-col .gap-3,
+html body .voice-widget.flex-row .gap-3,
+html body *[class*="voice-widget"].flex .gap-3,
+html body *[class*="voice-widget"].flex-col .gap-3,
+html body *[class*="voice-widget"].flex-row .gap-3 { gap: 0.75rem !important; }
 
-html body .voice-widget .gap-2,
-html body *[class*="voice-widget"] .gap-2,
-.voice-widget .gap-2,
-*[class*="voice-widget"] .gap-2 { gap: 0.5rem !important; }
+html body .voice-widget.flex.gap-2,
+html body .voice-widget.flex-col.gap-2,
+html body .voice-widget.flex-row.gap-2,
+html body *[class*="voice-widget"].flex.gap-2,
+html body *[class*="voice-widget"].flex-col.gap-2,
+html body *[class*="voice-widget"].flex-row.gap-2,
+html body .voice-widget.flex .gap-2,
+html body .voice-widget.flex-col .gap-2,
+html body .voice-widget.flex-row .gap-2,
+html body *[class*="voice-widget"].flex .gap-2,
+html body *[class*="voice-widget"].flex-col .gap-2,
+html body *[class*="voice-widget"].flex-row .gap-2 { gap: 0.5rem !important; }
 
-html body .voice-widget [class*="gap-2"][class*="5"],
-html body *[class*="voice-widget"] [class*="gap-2"][class*="5"],
-.voice-widget [class*="gap-2"][class*="5"],
-*[class*="voice-widget"] [class*="gap-2"][class*="5"] { gap: 0.625rem !important; }
+/* Fractional gap utilities */
+html body .voice-widget.flex[class*="gap-2"][class*="5"],
+html body .voice-widget.flex-col[class*="gap-2"][class*="5"],
+html body .voice-widget.flex-row[class*="gap-2"][class*="5"],
+html body *[class*="voice-widget"].flex[class*="gap-2"][class*="5"],
+html body *[class*="voice-widget"].flex-col[class*="gap-2"][class*="5"],
+html body *[class*="voice-widget"].flex-row[class*="gap-2"][class*="5"],
+html body .voice-widget.flex [class*="gap-2"][class*="5"],
+html body .voice-widget.flex-col [class*="gap-2"][class*="5"],
+html body .voice-widget.flex-row [class*="gap-2"][class*="5"],
+html body *[class*="voice-widget"].flex [class*="gap-2"][class*="5"],
+html body *[class*="voice-widget"].flex-col [class*="gap-2"][class*="5"],
+html body *[class*="voice-widget"].flex-row [class*="gap-2"][class*="5"] { gap: 0.625rem !important; }
 
-html body .voice-widget [class*="gap-1"][class*="5"],
-html body *[class*="voice-widget"] [class*="gap-1"][class*="5"],
-.voice-widget [class*="gap-1"][class*="5"],
-*[class*="voice-widget"] [class*="gap-1"][class*="5"] { gap: 0.375rem !important; }
+html body .voice-widget.flex[class*="gap-1"][class*="5"],
+html body .voice-widget.flex-col[class*="gap-1"][class*="5"],
+html body .voice-widget.flex-row[class*="gap-1"][class*="5"],
+html body *[class*="voice-widget"].flex[class*="gap-1"][class*="5"],
+html body *[class*="voice-widget"].flex-col[class*="gap-1"][class*="5"],
+html body *[class*="voice-widget"].flex-row[class*="gap-1"][class*="5"],
+html body .voice-widget.flex [class*="gap-1"][class*="5"],
+html body .voice-widget.flex-col [class*="gap-1"][class*="5"],
+html body .voice-widget.flex-row [class*="gap-1"][class*="5"],
+html body *[class*="voice-widget"].flex [class*="gap-1"][class*="5"],
+html body *[class*="voice-widget"].flex-col [class*="gap-1"][class*="5"],
+html body *[class*="voice-widget"].flex-row [class*="gap-1"][class*="5"] { gap: 0.375rem !important; }
 
-html body .voice-widget [class*="gap-"][class*="1px"],
-html body *[class*="voice-widget"] [class*="gap-"][class*="1px"],
-.voice-widget [class*="gap-"][class*="1px"],
-*[class*="voice-widget"] [class*="gap-"][class*="1px"] { gap: 1px !important; }
+html body .voice-widget.flex[class*="gap-"][class*="1px"],
+html body .voice-widget.flex-col[class*="gap-"][class*="1px"],
+html body .voice-widget.flex-row[class*="gap-"][class*="1px"],
+html body *[class*="voice-widget"].flex[class*="gap-"][class*="1px"],
+html body *[class*="voice-widget"].flex-col[class*="gap-"][class*="1px"],
+html body *[class*="voice-widget"].flex-row[class*="gap-"][class*="1px"],
+html body .voice-widget.flex [class*="gap-"][class*="1px"],
+html body .voice-widget.flex-col [class*="gap-"][class*="1px"],
+html body .voice-widget.flex-row [class*="gap-"][class*="1px"],
+html body *[class*="voice-widget"].flex [class*="gap-"][class*="1px"],
+html body *[class*="voice-widget"].flex-col [class*="gap-"][class*="1px"],
+html body *[class*="voice-widget"].flex-row [class*="gap-"][class*="1px"] { gap: 1px !important; }
 
-/* Margin Utilities */
+/* Margin Utilities - Scoped to voice-widget */
 html body .voice-widget .mb-2,
-html body *[class*="voice-widget"] .mb-2,
-.voice-widget .mb-2,
-*[class*="voice-widget"] .mb-2 { margin-bottom: 0.5rem !important; }
+html body *[class*="voice-widget"] .mb-2 { margin-bottom: 0.5rem !important; }
 
-html body .voice-widget .space-y-2 > * + *,
-html body *[class*="voice-widget"] .space-y-2 > * + *,
-.voice-widget .space-y-2 > * + *,
-*[class*="voice-widget"] .space-y-2 > * + * { margin-top: 0.5rem !important; }
+html body .voice-widget .mb-4,
+html body *[class*="voice-widget"] .mb-4 { margin-bottom: 1rem !important; }
+
+html body .voice-widget .mt-2,
+html body *[class*="voice-widget"] .mt-2 { margin-top: 0.5rem !important; }
+
+html body .voice-widget .mt-4,
+html body *[class*="voice-widget"] .mt-4 { margin-top: 1rem !important; }
+
+/* Space Between Utilities - Only for flex containers */
+html body .voice-widget.flex-col.space-y-2 > * + *,
+html body *[class*="voice-widget"].flex-col.space-y-2 > * + *,
+html body .voice-widget.flex-col .space-y-2 > * + *,
+html body *[class*="voice-widget"].flex-col .space-y-2 > * + * { margin-top: 0.5rem !important; }
+
+html body .voice-widget.flex-col.space-y-4 > * + *,
+html body *[class*="voice-widget"].flex-col.space-y-4 > * + *,
+html body .voice-widget.flex-col .space-y-4 > * + *,
+html body *[class*="voice-widget"].flex-col .space-y-4 > * + * { margin-top: 1rem !important; }
+
+html body .voice-widget.flex-row.space-x-2 > * + *,
+html body *[class*="voice-widget"].flex-row.space-x-2 > * + *,
+html body .voice-widget.flex-row .space-x-2 > * + *,
+html body *[class*="voice-widget"].flex-row .space-x-2 > * + * { margin-left: 0.5rem !important; }
+
+html body .voice-widget.flex-row.space-x-4 > * + *,
+html body *[class*="voice-widget"].flex-row.space-x-4 > * + *,
+html body .voice-widget.flex-row .space-x-4 > * + *,
+html body *[class*="voice-widget"].flex-row .space-x-4 > * + * { margin-left: 1rem !important; }
 
 /* Border Utilities */
 html body .voice-widget .rounded-full,
@@ -695,7 +893,6 @@ html body *[class*="voice-widget"] p,
   *[class*="voice-widget"] {
     max-width: 1200px !important;
     padding: 2rem !important;
-    flex-direction: row !important;
     text-align: left !important;
   }
   
@@ -716,13 +913,12 @@ html body *[class*="voice-widget"] p,
   .voice-widget,
   *[class*="voice-widget"] {
     padding: 2.5rem 60px !important;
-    gap: 2.5rem !important;
   }
   
-  html body .voice-widget [class*="lg:flex-row"],
-  html body *[class*="voice-widget"] [class*="lg:flex-row"],
-  .voice-widget [class*="lg:flex-row"],
-  *[class*="voice-widget"] [class*="lg:flex-row"] { flex-direction: row !important; }
+  html body .voice-widget.flex[class*="lg:flex-row"],
+  html body .voice-widget.flex-col[class*="lg:flex-row"],
+  html body *[class*="voice-widget"].flex[class*="lg:flex-row"],
+  html body *[class*="voice-widget"].flex-col[class*="lg:flex-row"] { flex-direction: row !important; }
   
   html body .voice-widget [class*="lg:text-left"],
   html body *[class*="voice-widget"] [class*="lg:text-left"],
@@ -749,20 +945,38 @@ html body *[class*="voice-widget"] p,
   .voice-widget [class*="lg:py-10"],
   *[class*="voice-widget"] [class*="lg:py-10"] { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
   
-  html body .voice-widget [class*="lg:gap-10"],
-  html body *[class*="voice-widget"] [class*="lg:gap-10"],
-  .voice-widget [class*="lg:gap-10"],
-  *[class*="voice-widget"] [class*="lg:gap-10"] { gap: 2.5rem !important; }
+  html body .voice-widget.flex[class*="lg:gap-10"],
+  html body .voice-widget.flex-col[class*="lg:gap-10"],
+  html body .voice-widget.flex-row[class*="lg:gap-10"],
+  html body *[class*="voice-widget"].flex[class*="lg:gap-10"],
+  html body *[class*="voice-widget"].flex-col[class*="lg:gap-10"],
+  html body *[class*="voice-widget"].flex-row[class*="lg:gap-10"] { gap: 2.5rem !important; }
+  
+  html body .voice-widget.flex [class*="lg:gap-10"],
+  html body .voice-widget.flex-col [class*="lg:gap-10"],
+  html body .voice-widget.flex-row [class*="lg:gap-10"],
+  html body *[class*="voice-widget"].flex [class*="lg:gap-10"],
+  html body *[class*="voice-widget"].flex-col [class*="lg:gap-10"],
+  html body *[class*="voice-widget"].flex-row [class*="lg:gap-10"] { gap: 2.5rem !important; }
   
   html body .voice-widget [class*="lg:mb-2"],
   html body *[class*="voice-widget"] [class*="lg:mb-2"],
   .voice-widget [class*="lg:mb-2"],
   *[class*="voice-widget"] [class*="lg:mb-2"] { margin-bottom: 0.5rem !important; }
   
-  html body .voice-widget [class*="lg:items-end"],
-  html body *[class*="voice-widget"] [class*="lg:items-end"],
-  .voice-widget [class*="lg:items-end"],
-  *[class*="voice-widget"] [class*="lg:items-end"] { align-items: flex-end !important; }
+  html body .voice-widget.flex[class*="lg:items-end"],
+  html body .voice-widget.flex-col[class*="lg:items-end"],
+  html body .voice-widget.flex-row[class*="lg:items-end"],
+  html body *[class*="voice-widget"].flex[class*="lg:items-end"],
+  html body *[class*="voice-widget"].flex-col[class*="lg:items-end"],
+  html body *[class*="voice-widget"].flex-row[class*="lg:items-end"] { align-items: flex-end !important; }
+  
+  html body .voice-widget.flex [class*="lg:items-end"],
+  html body .voice-widget.flex-col [class*="lg:items-end"],
+  html body .voice-widget.flex-row [class*="lg:items-end"],
+  html body *[class*="voice-widget"].flex [class*="lg:items-end"],
+  html body *[class*="voice-widget"].flex-col [class*="lg:items-end"],
+  html body *[class*="voice-widget"].flex-row [class*="lg:items-end"] { align-items: flex-end !important; }
 }
 
 /* Original VoiceWidget.css responsive overrides */
@@ -772,7 +986,6 @@ html body *[class*="voice-widget"] p,
   .voice-widget,
   *[class*="voice-widget"] {
     padding: 30px 40px !important;
-    gap: 30px !important;
   }
 }
 
@@ -781,10 +994,8 @@ html body *[class*="voice-widget"] p,
   html body *[class*="voice-widget"],
   .voice-widget,
   *[class*="voice-widget"] {
-    flex-direction: column !important;
     text-align: center !important;
     padding: 20px !important;
-    gap: 16px !important;
     max-width: 400px !important;
     margin: 0 auto !important;
   }
