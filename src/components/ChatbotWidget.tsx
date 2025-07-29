@@ -1220,7 +1220,9 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 color: '#1a1a1a',
                 fontSize: '15px',
                 lineHeight: '1.4',
-                margin: 0
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center'
               }}>
                 {welcomeTooltipMessage || `Hey! I'm ${agentName}, your AI assistant. Feel free to chat with me and ask any questions!`}
               </p>
