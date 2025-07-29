@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { VoiceWidget } from './VoiceWidget';
 import { VoiceAgentCustomizer } from './VoiceAgentCustomizer';
 import { Copy, Check } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 interface VoiceAgentSectionProps {
   isDarkMode?: boolean;
@@ -22,57 +25,222 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
   const [description, setDescription] = useState('Get instant answers to your questions. Our AI assistant is ready to help you 24/7.');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [copied, setCopied] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('html');
+  const { toast } = useToast();
 
   const avatarUrl = avatarFile 
     ? URL.createObjectURL(avatarFile) 
     : '/lovable-uploads/48879003-fa58-48bb-a9a5-3e3f334800f9.png';
 
-  // Generate embed code with current settings
-  const generateEmbedCode = () => {
+  // Get language display name
+  const getLanguageDisplayName = (lang: string) => {
+    const names: Record<string, string> = {
+      html: 'HTML',
+      'react-ts': 'React (TypeScript)',
+      'react-js': 'React (JavaScript)',
+      vue: 'Vue.js',
+      dotnet: '.NET',
+      angular: 'Angular'
+    };
+    return names[lang] || lang;
+  };
+
+  // Generate embed code based on language
+  const generateCode = (language: string) => {
     const baseUrl = window.location.origin;
     const avatarUrlForEmbed = avatarFile ? '/lovable-uploads/48879003-fa58-48bb-a9a5-3e3f334800f9.png' : avatarUrl;
     
-    return `<!-- Voice Widget Embed Code -->
-<div id="voice-widget-container"></div>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    const baseConfig = {
+      agentId,
+      title: title.replace(/"/g, '\\"'),
+      description: description.replace(/"/g, '\\"'),
+      buttonText: buttonText.replace(/"/g, '\\"'),
+      buttonColor,
+      backgroundColor,
+      textColor,
+      secondaryTextColor,
+      borderColor,
+      shadowColor,
+      statusBgColor,
+      statusTextColor,
+      avatarUrl: avatarUrlForEmbed
+    };
+
+    const reactConfig = `  agentId: "${baseConfig.agentId}",
+    title: "${baseConfig.title}",
+    description: "${baseConfig.description}",
+    buttonText: "${baseConfig.buttonText}",
+    buttonColor: "${baseConfig.buttonColor}",
+    backgroundColor: "${baseConfig.backgroundColor}",
+    textColor: "${baseConfig.textColor}",
+    secondaryTextColor: "${baseConfig.secondaryTextColor}",
+    borderColor: "${baseConfig.borderColor}",
+    shadowColor: "${baseConfig.shadowColor}",
+    statusBgColor: "${baseConfig.statusBgColor}",
+    statusTextColor: "${baseConfig.statusTextColor}",
+    avatarUrl: "${baseConfig.avatarUrl}"`;
+
+    switch (language) {
+      case 'html':
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Widget Integration</title>
+    <link rel="stylesheet" href="${baseUrl}/voice-widget.css">
+</head>
+<body>
+    <!-- Your page content -->
+    
+    <!-- Voice Widget -->
+    <div id="voice-widget-container"></div>
+    
+    <script src="${baseUrl}/voice-widget.js"></script>
+    <script>
+        // Initialize the voice widget
+        window.VoiceWidget.render('voice-widget-container', {
+${reactConfig.split('\n').map(line => '            ' + line.trim()).join('\n')}
+        });
+    </script>
+</body>
+</html>`;
+
+      case 'react-ts':
+        return `import React from 'react';
+import { VoiceWidget } from './components/VoiceWidget';
+
+const App: React.FC = () => {
+  return (
+    <div className="App">
+      {/* Your app content */}
+      
+      <VoiceWidget
+${reactConfig}
+      />
+    </div>
+  );
+};
+
+export default App;`;
+
+      case 'react-js':
+        return `import React from 'react';
+import { VoiceWidget } from './components/VoiceWidget';
+
+const App = () => {
+  return (
+    <div className="App">
+      {/* Your app content */}
+      
+      <VoiceWidget
+${reactConfig}
+      />
+    </div>
+  );
+};
+
+export default App;`;
+
+      case 'vue':
+        return `<template>
+  <div id="app">
+    <!-- Your app content -->
+    
+    <VoiceWidget
+      :agent-id="'${baseConfig.agentId}'"
+      :title="'${baseConfig.title}'"
+      :description="'${baseConfig.description}'"
+      :button-text="'${baseConfig.buttonText}'"
+      :button-color="'${baseConfig.buttonColor}'"
+      :background-color="'${baseConfig.backgroundColor}'"
+      :text-color="'${baseConfig.textColor}'"
+      :secondary-text-color="'${baseConfig.secondaryTextColor}'"
+      :border-color="'${baseConfig.borderColor}'"
+      :shadow-color="'${baseConfig.shadowColor}'"
+      :status-bg-color="'${baseConfig.statusBgColor}'"
+      :status-text-color="'${baseConfig.statusTextColor}'"
+      :avatar-url="'${baseConfig.avatarUrl}'"
+    />
+  </div>
+</template>
+
 <script>
-  // Voice Widget Configuration
-  const voiceWidgetConfig = {
-    agentId: "${agentId}",
-    title: "${title.replace(/"/g, '\\"')}",
-    description: "${description.replace(/"/g, '\\"')}",
-    buttonText: "${buttonText.replace(/"/g, '\\"')}",
-    buttonColor: "${buttonColor}",
-    backgroundColor: "${backgroundColor}",
-    textColor: "${textColor}",
-    secondaryTextColor: "${secondaryTextColor}",
-    borderColor: "${borderColor}",
-    shadowColor: "${shadowColor}",
-    statusBgColor: "${statusBgColor}",
-    statusTextColor: "${statusTextColor}",
-    avatarUrl: "${avatarUrlForEmbed}"
-  };
-  
-  // Load the voice widget
-  fetch('${baseUrl}/voice-widget.js')
-    .then(response => response.text())
-    .then(script => {
-      eval(script);
-      if (window.VoiceWidget) {
-        window.VoiceWidget.render('voice-widget-container', voiceWidgetConfig);
-      }
-    })
-    .catch(error => console.error('Failed to load voice widget:', error));
+import VoiceWidget from './components/VoiceWidget.vue';
+
+export default {
+  name: 'App',
+  components: {
+    VoiceWidget
+  }
+};
 </script>`;
+
+      case 'dotnet':
+        return `@* Add this to your layout or page *@
+<div id="voice-widget-container"></div>
+
+@* Add these scripts before closing body tag *@
+<script src="${baseUrl}/voice-widget.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        window.VoiceWidget.render('voice-widget-container', {
+${reactConfig.split('\n').map(line => '            ' + line.trim()).join('\n')}
+        });
+    });
+</script>`;
+
+      case 'angular':
+        return `// voice-widget.component.ts
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+
+@Component({
+  selector: 'app-voice-widget',
+  template: '<div #voiceContainer id="voice-widget-container"></div>'
+})
+export class VoiceWidgetComponent implements OnInit {
+  @ViewChild('voiceContainer', { static: true }) voiceContainer!: ElementRef;
+
+  ngOnInit() {
+    this.loadVoiceWidget();
+  }
+
+  private loadVoiceWidget() {
+    const script = document.createElement('script');
+    script.src = '${baseUrl}/voice-widget.js';
+    script.onload = () => {
+      (window as any).VoiceWidget.render('voice-widget-container', {
+${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
+      });
+    };
+    document.head.appendChild(script);
+  }
+}`;
+
+      default:
+        return generateEmbedCode();
+    }
+  };
+
+  // Legacy function for backward compatibility
+  const generateEmbedCode = () => {
+    return generateCode('html');
   };
 
   // Copy to clipboard function
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (language?: string) => {
     try {
-      await navigator.clipboard.writeText(generateEmbedCode());
+      const code = language ? generateCode(language) : generateEmbedCode();
+      await navigator.clipboard.writeText(code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      
+      if (language) {
+        toast({
+          title: 'Code copied to clipboard!',
+          description: `${getLanguageDisplayName(language)} integration code has been copied.`
+        });
+      }
     } catch (err) {
       console.error('Failed to copy to clipboard:', err);
     }
@@ -146,49 +314,52 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
       <section className="py-12 px-4 bg-white border-t">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Embed Code</h2>
-            <p className="text-gray-600">Copy this code and paste it into your website to add the voice widget</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Integration Code</h2>
+            <p className="text-gray-600">Choose your framework and copy the integration code</p>
           </div>
           
           <div className="bg-gray-50 rounded-xl border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">HTML Embed Code</h3>
-              <button
-                onClick={copyToClipboard}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  copied 
-                    ? 'bg-green-100 text-green-700 border border-green-200' 
-                    : 'bg-blue-600 text-white hover:bg-blue-700 border border-blue-600'
-                }`}
-                style={{ zIndex: 10 }}
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Select Framework</h3>
+              </div>
+              
+              <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                <SelectTrigger className="w-full max-w-xs">
+                  <SelectValue placeholder="Select a framework" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="html">HTML</SelectItem>
+                  <SelectItem value="react-ts">React (TypeScript)</SelectItem>
+                  <SelectItem value="react-js">React (JavaScript)</SelectItem>
+                  <SelectItem value="vue">Vue.js</SelectItem>
+                  <SelectItem value="dotnet">.NET</SelectItem>
+                  <SelectItem value="angular">Angular</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Button
+                onClick={() => copyToClipboard(selectedLanguage)}
+                className="bg-blue-600 text-white hover:bg-blue-700 gap-2"
               >
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    Copy Code
-                  </>
-                )}
-              </button>
+                <Copy className="w-4 h-4" />
+                Copy {getLanguageDisplayName(selectedLanguage)} Code
+              </Button>
             </div>
             
             <div className="relative">
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono max-h-96 overflow-y-auto">
-                <code>{generateEmbedCode()}</code>
+                <code>{generateCode(selectedLanguage)}</code>
               </pre>
             </div>
             
             <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h4 className="text-sm font-semibold text-blue-900 mb-2">Instructions:</h4>
               <ol className="text-sm text-blue-800 space-y-1">
-                <li>1. Copy the embed code above</li>
-                <li>2. Paste it into your website's HTML where you want the widget to appear</li>
-                <li>3. Make sure you have internet connection for the widget to load external dependencies</li>
-                <li>4. The widget will automatically inherit your current customization settings</li>
+                <li>1. Select your preferred framework from the dropdown above</li>
+                <li>2. Copy the generated integration code</li>
+                <li>3. Follow the framework-specific implementation guide</li>
+                <li>4. Make sure to replace placeholder values with your actual configuration</li>
               </ol>
             </div>
           </div>
