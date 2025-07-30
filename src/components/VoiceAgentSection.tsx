@@ -16,6 +16,7 @@ interface VoiceAgentSectionProps {
 }
 
 export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode = false }) => {
+  console.log('VoiceAgentSection rendering - no VoiceAgentCustomizer here');
   const [agentId, setAgentId] = useState('agent_01k04zwwq3fv5acgzdwmbvfk8k');
   const [buttonText, setButtonText] = useState('Talk to AI Agent');
   const [buttonColor, setButtonColor] = useState('#000000');
