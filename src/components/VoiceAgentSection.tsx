@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { VoiceWidget } from './VoiceWidget';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -261,21 +261,23 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
           </div>
           
           <div className="flex justify-center">
-            <VoiceWidget
-              agentId={agentId}
-              title={title}
-              description={description}
-              buttonText={buttonText}
-              buttonColor={buttonColor}
-              backgroundColor={backgroundColor}
-              textColor={textColor}
-              secondaryTextColor={secondaryTextColor}
-              borderColor={borderColor}
-              shadowColor={shadowColor}
-              statusBgColor={statusBgColor}
-              statusTextColor={statusTextColor}
-              avatarUrl={avatarUrl}
-            />
+            <div className="sticky top-4 z-50">
+              <VoiceWidget
+                agentId={agentId}
+                title={title}
+                description={description}
+                buttonText={buttonText}
+                buttonColor={buttonColor}
+                backgroundColor={backgroundColor}
+                textColor={textColor}
+                secondaryTextColor={secondaryTextColor}
+                borderColor={borderColor}
+                shadowColor={shadowColor}
+                statusBgColor={statusBgColor}
+                statusTextColor={statusTextColor}
+                avatarUrl={avatarUrl}
+              />
+            </div>
           </div>
         </section>
 
@@ -504,6 +506,73 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
           </Card>
           </div>
         </div>
+
+        {/* Integration Examples Section */}
+        <section className="py-20 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 rounded-full mb-6">
+              <Copy className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <span className="text-purple-700 dark:text-purple-300 font-medium">Easy Integration</span>
+            </div>
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+              Integration Examples
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Choose your framework and get started in minutes. Our voice widget works seamlessly with any web technology.
+            </p>
+          </div>
+
+          <Card className="backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border-0 shadow-2xl">
+            <CardHeader className="pb-6">
+              <div className="flex items-center gap-2">
+                <Mic className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <CardTitle className="text-2xl">Framework Integration</CardTitle>
+              </div>
+              <CardDescription>Easy integration into your website. Both CSS and JavaScript files are automatically minified and optimized.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {['html', 'react-ts', 'react-js', 'vue', 'dotnet', 'angular'].map((framework) => (
+                  <div key={framework} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-lg">{getLanguageDisplayName(framework)}</h4>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => copyCode(framework)}
+                        className="bg-gray-800/80 text-white border-gray-600 hover:bg-gray-700"
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copy Code
+                      </Button>
+                    </div>
+                    <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm border max-h-80 overflow-y-auto">
+                      <code>{generateCode(framework)}</code>
+                    </pre>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">📦 CDN Files Available:</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded text-blue-800 dark:text-blue-200">
+                      https://voice-agent-uvke.onrender.com/cdn/voice-widget.js
+                    </span>
+                    <span className="text-blue-700 dark:text-blue-300">- JavaScript bundle</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded text-blue-800 dark:text-blue-200">
+                      https://voice-agent-uvke.onrender.com/cdn/voice-widget.css
+                    </span>
+                    <span className="text-blue-700 dark:text-blue-300">- Minified styles</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
       </div>
     </div>
   );
