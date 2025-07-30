@@ -100,14 +100,18 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
 <body>
     <!-- Your page content -->
     
-    <!-- Voice Widget -->
+    <!-- Voice Widget Container -->
     <div id="voice-widget-container"></div>
     
     <script src="https://voice-agent-uvke.onrender.com/cdn/voice-widget.js"></script>
     <script>
         // Initialize the voice widget
-        window.VoiceWidget.render('voice-widget-container', {
-${reactConfig.split('\n').map(line => '            ' + line.trim()).join('\n')}
+        document.addEventListener('DOMContentLoaded', function() {
+            const instance = new window.VoiceWidget.VoiceManager();
+            instance.init({
+${reactConfig.split('\n').map(line => '                ' + line.trim()).join('\n')},
+                container: '#voice-widget-container'
+            });
         });
     </script>
 </body>
@@ -137,26 +141,37 @@ const VoiceWidget: React.FC<VoiceWidgetProps> = (props) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let link: HTMLLinkElement | null = null;
+    let script: HTMLScriptElement | null = null;
+
     // Load CSS
-    const link = document.createElement('link');
+    link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.css';
     document.head.appendChild(link);
 
     // Load JS and initialize
-    const script = document.createElement('script');
+    script = document.createElement('script');
     script.src = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.js';
     script.onload = () => {
       if (containerRef.current && (window as any).VoiceWidget) {
-        (window as any).VoiceWidget.render(containerRef.current, props);
+        const instance = new (window as any).VoiceWidget.VoiceManager();
+        instance.init({
+          ...props,
+          container: containerRef.current
+        });
       }
     };
     document.head.appendChild(script);
 
     return () => {
       // Cleanup
-      document.head.removeChild(link);
-      document.head.removeChild(script);
+      if (link && document.head.contains(link)) {
+        document.head.removeChild(link);
+      }
+      if (script && document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
     };
   }, [props]);
 
@@ -191,26 +206,37 @@ const VoiceWidget = (props) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
+    let link = null;
+    let script = null;
+
     // Load CSS
-    const link = document.createElement('link');
+    link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.css';
     document.head.appendChild(link);
 
     // Load JS and initialize
-    const script = document.createElement('script');
+    script = document.createElement('script');
     script.src = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.js';
     script.onload = () => {
       if (containerRef.current && window.VoiceWidget) {
-        window.VoiceWidget.render(containerRef.current, props);
+        const instance = new window.VoiceWidget.VoiceManager();
+        instance.init({
+          ...props,
+          container: containerRef.current
+        });
       }
     };
     document.head.appendChild(script);
 
     return () => {
       // Cleanup
-      document.head.removeChild(link);
-      document.head.removeChild(script);
+      if (link && document.head.contains(link)) {
+        document.head.removeChild(link);
+      }
+      if (script && document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
     };
   }, [props]);
 
@@ -280,7 +306,8 @@ export default {
       script.src = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.js';
       script.onload = () => {
         if (this.$refs.voiceContainer && window.VoiceWidget) {
-          window.VoiceWidget.render(this.$refs.voiceContainer, {
+          const instance = new window.VoiceWidget.VoiceManager();
+          instance.init({
             agentId: this.agentId,
             title: this.title,
             description: this.description,
@@ -293,7 +320,8 @@ export default {
             shadowColor: this.shadowColor,
             statusBgColor: this.statusBgColor,
             statusTextColor: this.statusTextColor,
-            avatarUrl: this.avatarUrl
+            avatarUrl: this.avatarUrl,
+            container: this.$refs.voiceContainer
           });
         }
       };
@@ -345,8 +373,10 @@ export default {
 <script src="https://voice-agent-uvke.onrender.com/cdn/voice-widget.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        window.VoiceWidget.render('voice-widget-container', {
-${reactConfig.split('\n').map(line => '            ' + line.trim()).join('\n')}
+        const instance = new window.VoiceWidget.VoiceManager();
+        instance.init({
+${reactConfig.split('\n').map(line => '            ' + line.trim()).join('\n')},
+            container: '#voice-widget-container'
         });
     });
 </script>`;
@@ -367,11 +397,20 @@ export class VoiceWidgetComponent implements OnInit {
   }
 
   private loadVoiceWidget() {
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.css';
+    document.head.appendChild(link);
+
+    // Load JS and initialize
     const script = document.createElement('script');
     script.src = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.js';
     script.onload = () => {
-      (window as any).VoiceWidget.render('voice-widget-container', {
-${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
+      const instance = new (window as any).VoiceWidget.VoiceManager();
+      instance.init({
+${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')},
+        container: this.voiceContainer.nativeElement
       });
     };
     document.head.appendChild(script);
