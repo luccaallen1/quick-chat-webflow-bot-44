@@ -114,8 +114,60 @@ ${reactConfig.split('\n').map(line => '            ' + line.trim()).join('\n')}
 </html>`;
 
       case 'react-ts':
-        return `import React from 'react';
-import { VoiceWidget } from './components/VoiceWidget';
+        return `// Step 1: Create VoiceWidget.tsx component
+import React, { useEffect, useRef } from 'react';
+
+interface VoiceWidgetProps {
+  agentId: string;
+  title?: string;
+  description?: string;
+  buttonText?: string;
+  buttonColor?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  secondaryTextColor?: string;
+  borderColor?: string;
+  shadowColor?: string;
+  statusBgColor?: string;
+  statusTextColor?: string;
+  avatarUrl?: string;
+}
+
+const VoiceWidget: React.FC<VoiceWidgetProps> = (props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.css';
+    document.head.appendChild(link);
+
+    // Load JS and initialize
+    const script = document.createElement('script');
+    script.src = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.js';
+    script.onload = () => {
+      if (containerRef.current && (window as any).VoiceWidget) {
+        (window as any).VoiceWidget.render(containerRef.current, props);
+      }
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup
+      document.head.removeChild(link);
+      document.head.removeChild(script);
+    };
+  }, [props]);
+
+  return <div ref={containerRef} />;
+};
+
+export default VoiceWidget;
+
+// Step 2: Use in your App.tsx
+import React from 'react';
+import VoiceWidget from './components/VoiceWidget';
 
 const App: React.FC = () => {
   return (
@@ -132,8 +184,44 @@ ${reactConfig}
 export default App;`;
 
       case 'react-js':
-        return `import React from 'react';
-import { VoiceWidget } from './components/VoiceWidget';
+        return `// Step 1: Create VoiceWidget.jsx component
+import React, { useEffect, useRef } from 'react';
+
+const VoiceWidget = (props) => {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.css';
+    document.head.appendChild(link);
+
+    // Load JS and initialize
+    const script = document.createElement('script');
+    script.src = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.js';
+    script.onload = () => {
+      if (containerRef.current && window.VoiceWidget) {
+        window.VoiceWidget.render(containerRef.current, props);
+      }
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup
+      document.head.removeChild(link);
+      document.head.removeChild(script);
+    };
+  }, [props]);
+
+  return <div ref={containerRef} />;
+};
+
+export default VoiceWidget;
+
+// Step 2: Use in your App.jsx
+import React from 'react';
+import VoiceWidget from './components/VoiceWidget';
 
 const App = () => {
   return (
@@ -150,7 +238,73 @@ ${reactConfig}
 export default App;`;
 
       case 'vue':
-        return `<template>
+        return `<!-- Step 1: Create VoiceWidget.vue component -->
+<template>
+  <div ref="voiceContainer"></div>
+</template>
+
+<script>
+export default {
+  name: 'VoiceWidget',
+  props: {
+    agentId: { type: String, required: true },
+    title: { type: String, default: 'AI Voice Assistant' },
+    description: { type: String, default: 'Get instant answers to your questions.' },
+    buttonText: { type: String, default: 'Talk to AI Agent' },
+    buttonColor: { type: String, default: '#000000' },
+    backgroundColor: { type: String, default: '#ffffff' },
+    textColor: { type: String, default: '#000000' },
+    secondaryTextColor: { type: String, default: '#666666' },
+    borderColor: { type: String, default: '#e5e7eb' },
+    shadowColor: { type: String, default: 'rgba(0,0,0,0.08)' },
+    statusBgColor: { type: String, default: '#f0fdf4' },
+    statusTextColor: { type: String, default: '#15803d' },
+    avatarUrl: { type: String, default: '' }
+  },
+  mounted() {
+    this.loadVoiceWidget();
+  },
+  beforeUnmount() {
+    // Cleanup if needed
+  },
+  methods: {
+    loadVoiceWidget() {
+      // Load CSS
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.css';
+      document.head.appendChild(link);
+
+      // Load JS and initialize
+      const script = document.createElement('script');
+      script.src = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.js';
+      script.onload = () => {
+        if (this.$refs.voiceContainer && window.VoiceWidget) {
+          window.VoiceWidget.render(this.$refs.voiceContainer, {
+            agentId: this.agentId,
+            title: this.title,
+            description: this.description,
+            buttonText: this.buttonText,
+            buttonColor: this.buttonColor,
+            backgroundColor: this.backgroundColor,
+            textColor: this.textColor,
+            secondaryTextColor: this.secondaryTextColor,
+            borderColor: this.borderColor,
+            shadowColor: this.shadowColor,
+            statusBgColor: this.statusBgColor,
+            statusTextColor: this.statusTextColor,
+            avatarUrl: this.avatarUrl
+          });
+        }
+      };
+      document.head.appendChild(script);
+    }
+  }
+};
+</script>
+
+<!-- Step 2: Use in your main App.vue -->
+<template>
   <div id="app">
     <!-- Your app content -->
     
