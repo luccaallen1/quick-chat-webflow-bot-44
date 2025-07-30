@@ -94,7 +94,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voice Widget Integration</title>
-    <link rel="stylesheet" href="${baseUrl}/voice-widget.css">
+    <link rel="stylesheet" href="https://voice-agent-uvke.onrender.com/cdn/voice-widget.css">
 </head>
 <body>
     <!-- Your page content -->
@@ -102,7 +102,7 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
     <!-- Voice Widget -->
     <div id="voice-widget-container"></div>
     
-    <script src="${baseUrl}/voice-widget.js"></script>
+    <script src="https://voice-agent-uvke.onrender.com/cdn/voice-widget.js"></script>
     <script>
         // Initialize the voice widget
         window.VoiceWidget.render('voice-widget-container', {
@@ -187,7 +187,7 @@ export default {
 <div id="voice-widget-container"></div>
 
 @* Add these scripts before closing body tag *@
-<script src="${baseUrl}/voice-widget.js"></script>
+<script src="https://voice-agent-uvke.onrender.com/cdn/voice-widget.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         window.VoiceWidget.render('voice-widget-container', {
@@ -213,7 +213,7 @@ export class VoiceWidgetComponent implements OnInit {
 
   private loadVoiceWidget() {
     const script = document.createElement('script');
-    script.src = '${baseUrl}/voice-widget.js';
+    script.src = 'https://voice-agent-uvke.onrender.com/cdn/voice-widget.js';
     script.onload = () => {
       (window as any).VoiceWidget.render('voice-widget-container', {
 ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
@@ -233,57 +233,55 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
     return generateCode('html');
   };
 
-  // Copy to clipboard function
-  const copyToClipboard = async (language?: string) => {
+  const copyCode = async (language: string) => {
     try {
-      const code = language ? generateCode(language) : generateEmbedCode();
+      const code = generateCode(language);
       await navigator.clipboard.writeText(code);
       
-      if (language) {
-        toast({
-          title: 'Code copied to clipboard!',
-          description: `${getLanguageDisplayName(language)} integration code has been copied.`
-        });
-      }
+      toast({
+        title: 'Code copied to clipboard!',
+        description: `${getLanguageDisplayName(language)} integration code has been copied.`
+      });
     } catch (err) {
       console.error('Failed to copy to clipboard:', err);
     }
   };
 
   return (
-    <div className="space-y-8">
-      {/* Voice Agent Widget Preview Section */}
-      <section className="py-12 px-4">
-        <div className="text-center space-y-2 mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Voice Agent Widget Configuration</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Customize your voice agent's appearance, behavior, and integration settings. 
-            Preview changes in real-time and generate code for seamless integration.
-          </p>
-        </div>
-        
-        <div className="flex justify-center">
-          <VoiceWidget
-            agentId={agentId}
-            title={title}
-            description={description}
-            buttonText={buttonText}
-            buttonColor={buttonColor}
-            backgroundColor={backgroundColor}
-            textColor={textColor}
-            secondaryTextColor={secondaryTextColor}
-            borderColor={borderColor}
-            shadowColor={shadowColor}
-            statusBgColor={statusBgColor}
-            statusTextColor={statusTextColor}
-            avatarUrl={avatarUrl}
-          />
-        </div>
-      </section>
+    <div className="px-[15px] mx-auto max-w-screen-2xl">
+      <div className="space-y-8">
+        {/* Voice Agent Widget Preview Section */}
+        <section className="py-12">
+          <div className="text-center space-y-2 mb-8">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Voice Agent Widget Configuration</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Customize your voice agent's appearance, behavior, and integration settings. 
+              Preview changes in real-time and generate code for seamless integration.
+            </p>
+          </div>
+          
+          <div className="flex justify-center">
+            <VoiceWidget
+              agentId={agentId}
+              title={title}
+              description={description}
+              buttonText={buttonText}
+              buttonColor={buttonColor}
+              backgroundColor={backgroundColor}
+              textColor={textColor}
+              secondaryTextColor={secondaryTextColor}
+              borderColor={borderColor}
+              shadowColor={shadowColor}
+              statusBgColor={statusBgColor}
+              statusTextColor={statusTextColor}
+              avatarUrl={avatarUrl}
+            />
+          </div>
+        </section>
 
-      {/* Configuration Cards */}
-      <div className="w-full">
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Configuration Cards */}
+        <div className="w-full">
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Basic Configuration */}
           <Card className="border-2 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl animate-slide-in-left">
             <CardHeader className="bg-gradient-to-r from-blue-500/5 to-purple-500/5">
@@ -405,7 +403,7 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
                     </SelectContent>
                   </Select>
                   <Button 
-                    onClick={() => copyToClipboard(selectedLanguage)} 
+                    onClick={() => copyCode(selectedLanguage)} 
                     className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-300 hover:scale-105"
                   >
                     <Copy className="w-4 h-4 mr-2" />
@@ -501,67 +499,12 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
                   </div>
                   <p className="text-xs text-muted-foreground">{color.desc}</p>
                 </div>
-              ))}
+               ))}
             </CardContent>
           </Card>
+          </div>
         </div>
       </div>
-
-      {/* Integration Code Section */}
-      <section className="py-12 px-4 bg-white border-t">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Integration Code</h2>
-            <p className="text-gray-600">Choose your framework and copy the integration code</p>
-          </div>
-          
-          <div className="bg-gray-50 rounded-xl border border-gray-200 p-6 shadow-sm">
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Select Framework</h3>
-              </div>
-              
-              <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                <SelectTrigger className="w-full max-w-xs">
-                  <SelectValue placeholder="Select a framework" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="html">HTML</SelectItem>
-                  <SelectItem value="react-ts">React (TypeScript)</SelectItem>
-                  <SelectItem value="react-js">React (JavaScript)</SelectItem>
-                  <SelectItem value="vue">Vue.js</SelectItem>
-                  <SelectItem value="dotnet">.NET</SelectItem>
-                  <SelectItem value="angular">Angular</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Button
-                onClick={() => copyToClipboard(selectedLanguage)}
-                className="bg-blue-600 text-white hover:bg-blue-700 gap-2"
-              >
-                <Copy className="w-4 h-4" />
-                Copy {getLanguageDisplayName(selectedLanguage)} Code
-              </Button>
-            </div>
-            
-            <div className="relative">
-              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono max-h-96 overflow-y-auto">
-                <code>{generateCode(selectedLanguage)}</code>
-              </pre>
-            </div>
-            
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="text-sm font-semibold text-blue-900 mb-2">Instructions:</h4>
-              <ol className="text-sm text-blue-800 space-y-1">
-                <li>1. Select your preferred framework from the dropdown above</li>
-                <li>2. Copy the generated integration code</li>
-                <li>3. Follow the framework-specific implementation guide</li>
-                <li>4. Make sure to replace placeholder values with your actual configuration</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
