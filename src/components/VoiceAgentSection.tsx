@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { VoiceWidget } from './VoiceWidget';
-import { VoiceAgentCustomizer } from './VoiceAgentCustomizer';
-import { Copy, Check } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Copy, Settings, Palette, Upload, Edit3, Mic } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { ImageCropper } from '@/components/ui/image-cropper';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 interface VoiceAgentSectionProps {
   isDarkMode?: boolean;
@@ -24,8 +29,8 @@ export const VoiceAgentSection: React.FC<VoiceAgentSectionProps> = ({ isDarkMode
   const [title, setTitle] = useState('AI Voice Assistant');
   const [description, setDescription] = useState('Get instant answers to your questions. Our AI assistant is ready to help you 24/7.');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [copied, setCopied] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('html');
+  const [isAvatarCropperOpen, setIsAvatarCropperOpen] = useState(false);
   const { toast } = useToast();
 
   const avatarUrl = avatarFile 
@@ -232,8 +237,6 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
     try {
       const code = language ? generateCode(language) : generateEmbedCode();
       await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
       
       if (language) {
         toast({
@@ -247,9 +250,17 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
   };
 
   return (
-    <>
-      {/* Voice Agent Widget Section */}
+    <div className="space-y-8">
+      {/* Voice Agent Widget Preview Section */}
       <section className="py-12 px-4">
+        <div className="text-center space-y-2 mb-8">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Voice Agent Widget Configuration</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Customize your voice agent's appearance, behavior, and integration settings. 
+            Preview changes in real-time and generate code for seamless integration.
+          </p>
+        </div>
+        
         <div className="flex justify-center">
           <VoiceWidget
             agentId={agentId}
@@ -269,48 +280,233 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
         </div>
       </section>
 
-      {/* Customization Section */}
-      <section className="py-12 px-4 bg-gray-50 border-t">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Customize Your Voice Assistant</h2>
-            <p className="text-gray-600">Personalize the appearance and settings to match your brand</p>
-          </div>
-          
-          <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
-            <VoiceAgentCustomizer
-              agentId={agentId}
-              onAgentIdChange={setAgentId}
-              title={title}
-              onTitleChange={setTitle}
-              description={description}
-              onDescriptionChange={setDescription}
-              buttonText={buttonText}
-              onButtonTextChange={setButtonText}
-              buttonColor={buttonColor}
-              onButtonColorChange={setButtonColor}
-              backgroundColor={backgroundColor}
-              onBackgroundColorChange={setBackgroundColor}
-              textColor={textColor}
-              onTextColorChange={setTextColor}
-              secondaryTextColor={secondaryTextColor}
-              onSecondaryTextColorChange={setSecondaryTextColor}
-              borderColor={borderColor}
-              onBorderColorChange={setBorderColor}
-              shadowColor={shadowColor}
-              onShadowColorChange={setShadowColor}
-              statusBgColor={statusBgColor}
-              onStatusBgColorChange={setStatusBgColor}
-              statusTextColor={statusTextColor}
-              onStatusTextColorChange={setStatusTextColor}
-              avatarFile={avatarFile}
-              onAvatarFileChange={setAvatarFile}
-            />
-          </div>
-        </div>
-      </section>
+      {/* Configuration Cards */}
+      <div className="w-full">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Basic Configuration */}
+          <Card className="border-2 hover:border-blue-500/50 transition-all duration-300 hover:shadow-xl animate-slide-in-left">
+            <CardHeader className="bg-gradient-to-r from-blue-500/5 to-purple-500/5">
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5 text-blue-600" />
+                Basic Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6 p-6">
+              <div className="space-y-2">
+                <Label htmlFor="agentId" className="text-sm font-medium">Agent ID</Label>
+                <Input 
+                  id="agentId" 
+                  value={agentId} 
+                  onChange={e => setAgentId(e.target.value)} 
+                  placeholder="agent_01k04zwwq3fv5acgzdwmbvfk8k" 
+                  className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" 
+                />
+                <p className="text-xs text-gray-500">Your ElevenLabs Agent ID</p>
+              </div>
 
-      {/* Embed Code Section */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-sm font-medium">Voice Agent Title</Label>
+                  <Input 
+                    id="title" 
+                    value={title} 
+                    onChange={e => setTitle(e.target.value)} 
+                    placeholder="AI Voice Assistant" 
+                    className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" 
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="buttonText" className="text-sm font-medium">Button Text</Label>
+                  <Input 
+                    id="buttonText" 
+                    value={buttonText} 
+                    onChange={e => setButtonText(e.target.value)} 
+                    placeholder="Talk to AI Agent" 
+                    className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" 
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                <Textarea 
+                  id="description" 
+                  value={description} 
+                  onChange={e => setDescription(e.target.value)} 
+                  placeholder="Get instant answers to your questions. Our AI assistant is ready to help you 24/7." 
+                  className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" 
+                />
+                <p className="text-xs text-gray-500">Description shown to users</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="avatarFile" className="text-sm font-medium">Avatar Image (optional)</Label>
+                <div className="space-y-3">
+                  <Dialog open={isAvatarCropperOpen} onOpenChange={setIsAvatarCropperOpen}>
+                    <DialogTrigger asChild>
+                      <Button type="button" variant="outline" className="w-full h-10 flex items-center justify-center gap-2">
+                        <Upload className="h-4 w-4" />
+                        {avatarFile ? 'Change Avatar' : 'Upload & Crop Avatar'}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <ImageCropper 
+                        onCrop={(croppedFile) => {
+                          setAvatarFile(croppedFile);
+                          setIsAvatarCropperOpen(false);
+                        }} 
+                        onCancel={() => setIsAvatarCropperOpen(false)} 
+                        initialImage={avatarFile} 
+                        size={200} 
+                      />
+                    </DialogContent>
+                  </Dialog>
+                  
+                  {avatarFile && (
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
+                          <img src={URL.createObjectURL(avatarFile)} alt="Avatar preview" className="w-full h-full object-contain" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-600 truncate">{avatarFile.name}</p>
+                        <p className="text-xs text-gray-400">Avatar preview</p>
+                      </div>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setIsAvatarCropperOpen(true)} className="flex-shrink-0">
+                        <Edit3 className="h-4 w-4" />
+                      </Button>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setAvatarFile(null)} className="flex-shrink-0">
+                        Remove
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500">Avatar displayed for the voice agent</p>
+              </div>
+
+              {/* Integration Code Generator */}
+              <div className="space-y-4 pt-4 border-t">
+                <Label className="text-sm font-medium">Generate Integration Code</Label>
+                <div className="space-y-2">
+                  <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="html">HTML</SelectItem>
+                      <SelectItem value="react-ts">React (TypeScript)</SelectItem>
+                      <SelectItem value="react-js">React (JavaScript)</SelectItem>
+                      <SelectItem value="vue">Vue.js</SelectItem>
+                      <SelectItem value="dotnet">.NET</SelectItem>
+                      <SelectItem value="angular">Angular</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    onClick={() => copyToClipboard(selectedLanguage)} 
+                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-300 hover:scale-105"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy {getLanguageDisplayName(selectedLanguage)} Integration Code
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Color Customization */}
+          <Card className="border-2 hover:border-orange-500/50 transition-all duration-300 hover:shadow-xl animate-slide-in-right">
+            <CardHeader className="bg-gradient-to-r from-purple-500/5 to-pink-500/5">
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="w-5 h-5 text-purple-600" />
+                Color Customization
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 p-6">
+              {[
+                {
+                  id: 'buttonColor',
+                  label: 'Button Color',
+                  value: buttonColor,
+                  setter: setButtonColor,
+                  desc: 'Main action button color'
+                },
+                {
+                  id: 'backgroundColor',
+                  label: 'Background Color',
+                  value: backgroundColor,
+                  setter: setBackgroundColor,
+                  desc: 'Widget background color'
+                },
+                {
+                  id: 'textColor',
+                  label: 'Text Color',
+                  value: textColor,
+                  setter: setTextColor,
+                  desc: 'Primary text color'
+                },
+                {
+                  id: 'secondaryTextColor',
+                  label: 'Secondary Text Color',
+                  value: secondaryTextColor,
+                  setter: setSecondaryTextColor,
+                  desc: 'Description and secondary text'
+                },
+                {
+                  id: 'borderColor',
+                  label: 'Border Color',
+                  value: borderColor,
+                  setter: setBorderColor,
+                  desc: 'Widget border color'
+                },
+                {
+                  id: 'shadowColor',
+                  label: 'Shadow Color',
+                  value: shadowColor,
+                  setter: setShadowColor,
+                  desc: 'Widget shadow color'
+                },
+                {
+                  id: 'statusBgColor',
+                  label: 'Status Background',
+                  value: statusBgColor,
+                  setter: setStatusBgColor,
+                  desc: 'Status indicator background'
+                },
+                {
+                  id: 'statusTextColor',
+                  label: 'Status Text Color',
+                  value: statusTextColor,
+                  setter: setStatusTextColor,
+                  desc: 'Status indicator text'
+                }
+              ].map((color, index) => (
+                <div key={color.id} className="space-y-2 animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                  <Label htmlFor={color.id} className="text-sm font-medium">{color.label}</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      id={color.id} 
+                      type="color" 
+                      value={color.value} 
+                      onChange={e => color.setter(e.target.value)} 
+                      className="w-16 h-10 p-1 rounded-md border transition-all duration-200 hover:scale-105" 
+                    />
+                    <Input 
+                      value={color.value} 
+                      onChange={e => color.setter(e.target.value)} 
+                      className="flex-1 transition-all duration-200 focus:ring-2 focus:ring-purple-500/20" 
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">{color.desc}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Integration Code Section */}
       <section className="py-12 px-4 bg-white border-t">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
@@ -365,6 +561,6 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 };
