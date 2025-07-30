@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Copy, Settings, Palette, Upload, Edit3, Mic } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ImageCropper } from '@/components/ui/image-cropper';
@@ -531,27 +532,39 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
               <CardDescription>Easy integration into your website. Both CSS and JavaScript files are automatically minified and optimized.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
+              <Tabs defaultValue="html" className="w-full">
+                <TabsList className="grid w-full grid-cols-6">
+                  <TabsTrigger value="html">HTML</TabsTrigger>
+                  <TabsTrigger value="react-ts">React (TS)</TabsTrigger>
+                  <TabsTrigger value="react-js">React (JS)</TabsTrigger>
+                  <TabsTrigger value="vue">Vue.js</TabsTrigger>
+                  <TabsTrigger value="dotnet">.NET</TabsTrigger>
+                  <TabsTrigger value="angular">Angular</TabsTrigger>
+                </TabsList>
+
                 {['html', 'react-ts', 'react-js', 'vue', 'dotnet', 'angular'].map((framework) => (
-                  <div key={framework} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-semibold text-lg">{getLanguageDisplayName(framework)}</h4>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => copyCode(framework)}
-                        className="bg-gray-800/80 text-white border-gray-600 hover:bg-gray-700"
-                      >
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copy Code
-                      </Button>
+                  <TabsContent key={framework} value={framework} className="mt-4">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-lg font-semibold">{getLanguageDisplayName(framework)}</h4>
+                        <Button
+                          onClick={() => copyCode(framework)}
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Copy className="w-4 h-4" />
+                          Copy Code
+                        </Button>
+                      </div>
+                      <div className="relative">
+                        <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm border max-h-80 overflow-y-auto">
+                          <code>{generateCode(framework)}</code>
+                        </pre>
+                      </div>
                     </div>
-                    <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm border max-h-80 overflow-y-auto">
-                      <code>{generateCode(framework)}</code>
-                    </pre>
-                  </div>
+                  </TabsContent>
                 ))}
-              </div>
+              </Tabs>
 
               <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">📦 CDN Files Available:</h4>
