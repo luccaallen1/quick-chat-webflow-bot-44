@@ -159,8 +159,10 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       welcomeMessage,
       admin,
       isVoiceEnabled,
-      logoFile: logoFile ? logoFile.name : null,
-      avatarFile: avatarFile ? avatarFile.name : null,
+    logoFile: logoFile ? logoFile.name : null,
+    logoUrl: logoFile ? URL.createObjectURL(logoFile) : null,
+    avatarFile: avatarFile ? avatarFile.name : null,
+    avatarUrl: avatarFile ? URL.createObjectURL(avatarFile) : null,
       isElevenLabsEnabled,
       elevenLabsAgentId,
       gradientColor,
@@ -197,8 +199,10 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     fontFamily: '${baseConfig.fontFamily}',
     welcomeTooltipMessage: '${baseConfig.welcomeTooltipMessage}',
     copySuccessMessage: '${baseConfig.copySuccessMessage}'${baseConfig.logoFile ? `,
-    logoFile: '${baseConfig.logoFile}'` : ''}${baseConfig.avatarFile ? `,
-    avatarFile: '${baseConfig.avatarFile}'` : ''}`;
+    logoFile: '${baseConfig.logoFile}',
+    logoUrl: '${baseConfig.logoUrl}'` : ''}${baseConfig.avatarFile ? `,
+    avatarFile: '${baseConfig.avatarFile}',
+    avatarUrl: '${baseConfig.avatarUrl}'` : ''}`;
     const elevenLabsEmbed = isElevenLabsEnabled ? `
 
 <!-- ElevenLabs Voice Bot Integration -->
