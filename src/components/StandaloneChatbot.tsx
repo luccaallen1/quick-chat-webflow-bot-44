@@ -33,6 +33,7 @@ class ChatbotManager {
     headerGradientColor?: string;
     headerMainColor?: string;
     logoUrl?: string;
+    avatarUrl?: string;
     welcomeMessage?: string;
     userId?: string;
     clinicName?: string;
@@ -67,6 +68,7 @@ class ChatbotManager {
       headerGradientColor: config.headerGradientColor,
       headerMainColor: config.headerMainColor,
       logoUrl: config.logoUrl,
+      avatarUrl: config.avatarUrl,
       welcomeMessage: config.welcomeMessage,
       userId: config.userId,
       clinicName: config.clinicName,
