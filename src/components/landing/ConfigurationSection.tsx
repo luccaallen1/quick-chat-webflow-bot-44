@@ -160,9 +160,18 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       admin,
       isVoiceEnabled,
       logoFile: logoFile ? logoFile.name : null,
+      avatarFile: avatarFile ? avatarFile.name : null,
       isElevenLabsEnabled,
       elevenLabsAgentId,
-      gradientColor
+      gradientColor,
+      headerGradientColor,
+      headerMainColor,
+      logoBackgroundColor,
+      logoBorderColor,
+      headerButtonColor,
+      fontFamily,
+      welcomeTooltipMessage,
+      copySuccessMessage
     };
     const reactConfig = `  webhookUrl: '${baseConfig.webhookUrl}',
     title: '${baseConfig.title}',
@@ -176,8 +185,20 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     chatBackground: '${baseConfig.chatBackground}',
     welcomeMessage: '${baseConfig.welcomeMessage}',
     admin: ${baseConfig.admin},
-    isVoiceEnabled: ${baseConfig.isVoiceEnabled}${baseConfig.logoFile ? `,
-    logoFile: '${baseConfig.logoFile}'` : ''}`;
+    isVoiceEnabled: ${baseConfig.isVoiceEnabled},
+    isElevenLabsEnabled: ${baseConfig.isElevenLabsEnabled},
+    elevenLabsAgentId: '${baseConfig.elevenLabsAgentId}',
+    gradientColor: '${baseConfig.gradientColor}',
+    headerGradientColor: '${baseConfig.headerGradientColor}',
+    headerMainColor: '${baseConfig.headerMainColor}',
+    logoBackgroundColor: '${baseConfig.logoBackgroundColor}',
+    logoBorderColor: '${baseConfig.logoBorderColor}',
+    headerButtonColor: '${baseConfig.headerButtonColor}',
+    fontFamily: '${baseConfig.fontFamily}',
+    welcomeTooltipMessage: '${baseConfig.welcomeTooltipMessage}',
+    copySuccessMessage: '${baseConfig.copySuccessMessage}'${baseConfig.logoFile ? `,
+    logoFile: '${baseConfig.logoFile}'` : ''}${baseConfig.avatarFile ? `,
+    avatarFile: '${baseConfig.avatarFile}'` : ''}`;
     const elevenLabsEmbed = isElevenLabsEnabled ? `
 
 <!-- ElevenLabs Voice Bot Integration -->
