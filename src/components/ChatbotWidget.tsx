@@ -108,7 +108,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   userId = 'anonymous',
   // Keep as fallback but won't be used for webhook
   clinicName = 'Demo Clinic',
-  clinicId = '1',
+  clinicId = '104',
   logoUrl = '/lovable-uploads/fd9d4dbf-9035-4de8-a3a1-81089fcac665.png',
   logoFile,
   avatarUrl = '/lovable-uploads/1f938225-daa7-46d3-a44e-d951e492fcd4.png',

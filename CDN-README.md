@@ -61,7 +61,7 @@ Your webhook endpoint should:
   "source2": "TEXT",
   "link_id": "None",
   "clinicName": "Your Site",
-  "clinicId": "1"
+  "clinicId": "104"
 }
 ```
 
