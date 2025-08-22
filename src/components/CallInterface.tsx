@@ -59,6 +59,10 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
     }
   };
 
+  // Debug logging
+  console.log('CallInterface logoUrl:', logoUrl);
+  console.log('CallInterface agentId:', agentId);
+
   return (
     <div 
       style={{ 
@@ -86,24 +90,27 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             position: 'relative',
             boxShadow: logoUrl ? 'none' : (isCallActive ? '0 0 30px rgba(59, 130, 246, 0.5)' : '0 4px 12px rgba(0, 0, 0, 0.15)'),
             animation: isCallActive ? 'voicePulse 1.5s ease-in-out infinite' : 'none',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease',
+            border: logoUrl ? '2px solid rgba(255,255,255,0.1)' : 'none'
           }}
         >
-          
           {logoUrl ? (
             <img 
               src={logoUrl} 
-              alt="Logo" 
+              alt="Avatar" 
+              key={logoUrl} // Force re-render when URL changes
               style={{
-                width: '80px',
-                height: '80px',
+                width: '96px',
+                height: '96px',
                 borderRadius: '50%',
-                objectFit: 'contain',
-                imageRendering: 'crisp-edges',
+                objectFit: 'cover', // Changed from 'contain' to 'cover' for better avatar display
+                imageRendering: 'auto',
                 filter: 'contrast(1.05) saturate(1.1)'
               }}
+              onLoad={() => console.log('Avatar image loaded successfully')}
               onError={(e) => {
-                // Fallback to phone icon if logo fails to load
+                console.error('Avatar image failed to load:', logoUrl);
+                // Fallback to phone icon if avatar fails to load
                 e.currentTarget.style.display = 'none';
                 const phoneIcon = e.currentTarget.nextElementSibling as HTMLElement;
                 if (phoneIcon) phoneIcon.style.display = 'block';
