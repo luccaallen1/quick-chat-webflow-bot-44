@@ -54,18 +54,6 @@ const Demo = () => {
       {/* Hero Section */}
       <HeroSection onViewExample={handleViewExample} />
 
-      {/* Use Cases Section */}
-      <UseCasesSection />
-
-      {/* What We Do Section */}
-      <WhatWeDoSection />
-
-      {/* Security Section */}
-      <SecuritySection />
-
-      {/* FAQ Section */}
-      <FAQSection />
-
       {/* Voice Widget */}
       <VoiceWidget
         agentId="agent_01k04zwwq3fv5acgzdwmbvfk8k"
@@ -83,6 +71,18 @@ const Demo = () => {
         avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
         position="bottom-left"
       />
+
+      {/* Use Cases Section */}
+      <UseCasesSection />
+
+      {/* What We Do Section */}
+      <WhatWeDoSection />
+
+      {/* Security Section */}
+      <SecuritySection />
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Chatbot Widget */}
       <ChatbotWidget
