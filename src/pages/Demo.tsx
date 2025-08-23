@@ -1,53 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ChatbotWidget } from '../components/ChatbotWidget';
 import { Button } from '@/components/ui/button';
-import { Moon, Sun } from 'lucide-react';
 import { ArrowRight, MessageSquare, Zap, QrCode, Globe, Users, TrendingUp, Clock, Star, Phone } from 'lucide-react';
 import { SecuritySection } from '../components/landing/SecuritySection';
 import { FAQSection } from '../components/landing/FAQSection';
 import { VoiceWidget } from '../components/VoiceWidget';
 
 const Demo = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
   useEffect(() => {
     document.title = 'AI Chat Agent - Capture Leads From Every Angle, 24/7';
   }, []);
-
-  // Apply dark mode to document
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
   const handleViewExample = () => {
     window.open('https://chirodashboard-chat.onrender.com/cdn-example.html', '_blank');
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${isDarkMode 
-      ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
-      : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
-    }`}>
-      {/* Dark Mode Toggle */}
-      <div className="fixed top-6 right-6 z-50">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className="relative overflow-hidden transition-all duration-300 hover:scale-110 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm"
-        >
-          <div className={`absolute inset-0 transition-transform duration-500 ${isDarkMode ? 'translate-y-0' : 'translate-y-full'}`}>
-            <Moon className="w-4 h-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-          </div>
-          <div className={`absolute inset-0 transition-transform duration-500 ${isDarkMode ? '-translate-y-full' : 'translate-y-0'}`}>
-            <Sun className="w-4 h-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-          </div>
-        </Button>
-      </div>
+    <div className="min-h-screen bg-white">
 
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-slate-50 to-blue-50">
@@ -290,13 +259,10 @@ const Demo = () => {
                     <span className="text-gray-700">Website Widget + Link to AI chat agent</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Get Started</Button>
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Choose Plan</Button>
               </div>
             </div>
-            <div className="bg-white border-2 border-purple-600 rounded-xl p-8 shadow-xl hover:shadow-2xl transition-shadow relative">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
-              </div>
+            <div className="bg-white border-2 border-purple-600 rounded-xl p-8 shadow-xl hover:shadow-2xl transition-shadow">
               <div className="text-center">
                 <h3 className="text-xl font-semibold mb-4 text-gray-900">Professional Plan</h3>
                 <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">$599</div>
@@ -316,7 +282,7 @@ const Demo = () => {
                     <span className="text-gray-700">Internal Insight Dashboard</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Get Started</Button>
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Choose Plan</Button>
               </div>
             </div>
             <div className="bg-white border border-slate-300 rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
@@ -335,7 +301,7 @@ const Demo = () => {
                     <span className="text-gray-700">2,700 voice minutes/month</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Get Started</Button>
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">Choose Plan</Button>
               </div>
             </div>
           </div>
