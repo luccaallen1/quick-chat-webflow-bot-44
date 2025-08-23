@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Widget Demo - ToraTech AI</title>
+    <style>
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .demo-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .demo-header p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .feature-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .feature-card h3 {
+            margin-top: 0;
+            color: #1e293b;
+        }
+        .cta-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .cta-section h2 {
+            margin-top: 0;
+            font-size: 2em;
+        }
+        .demo-instructions {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #0ea5e9;
+        }
+        .demo-instructions h3 {
+            color: #0369a1;
+            margin-top: 0;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator">
+        ✨ Chatbot Widget Active - CDN Demo
+    </div>
+
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>AI Chatbot Widget Demo</h1>
+            <p>Experience our intelligent chatbot powered by ToraTech AI</p>
+            <p>Look for the chat widget in the bottom-right corner! 👉</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>🤖 AI-Powered Responses</h3>
+                <p>Get instant, intelligent responses to your questions using advanced AI technology.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎙️ Voice Assistant</h3>
+                <p>Switch to voice mode for hands-free conversations with ElevenLabs integration.</p>
+            </div>
+            <div class="feature-card">
+                <h3>📱 Responsive Design</h3>
+                <p>Works perfectly on desktop, tablet, and mobile devices with touch-friendly interface.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎨 Customizable</h3>
+                <p>Fully customizable colors, messages, and branding to match your website.</p>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2>Try it now!</h2>
+            <p>Click the chat widget in the bottom-right corner to start a conversation with Jack, our AI assistant.</p>
+        </div>
+
+        <div class="demo-instructions">
+            <h3>🔧 Integration Instructions</h3>
+            <p>This demo shows the CDN version of the chatbot widget. For production, host the CDN files on your server:</p>
+            
+            <div class="code-block">
+&lt;!-- Load CSS --&gt;
+&lt;link rel="stylesheet" href="https://your-cdn.com/chatbot-widget.css"&gt;
+
+&lt;!-- Load JavaScript --&gt;
+&lt;script src="https://your-cdn.com/chatbot-widget.js"&gt;&lt;/script&gt;
+
+&lt;!-- Initialize the widget --&gt;
+&lt;script&gt;
+  window.addEventListener('load', function() {
+    if (window.ChatbotWidget && window.ChatbotWidget.ChatbotManager) {
+      const instance = new window.ChatbotWidget.ChatbotManager();
+      instance.init({
+        webhookUrl: 'https://luccatora.app.n8n.cloud/webhook/webbot',
+        title: 'Chat Support',
+        bio: 'Online now',
+        primaryColor: '#000000',
+        welcomeMessage: 'Hey, this is Jack, your AI assistant. How can I help?',
+        clinicName: 'ToraTech AI',
+        clinicId: '104'
+      });
+    }
+  });
+&lt;/script&gt;
+            </div>
+        </div>
+    </div>
+
+    <!-- Load CDN files from localhost -->
+    <link rel="stylesheet" href="http://localhost:8081/cdn/chatbot-widget.css">
+    <script src="http://localhost:8081/cdn/chatbot-widget.js"></script>
+    <script>
+        // Wait for the script to load
+        window.addEventListener('load', function() {
+            console.log('Initializing chatbot widget from CDN...');
+            
+            if (window.ChatbotWidget && window.ChatbotWidget.ChatbotManager) {
+                const instance = new window.ChatbotWidget.ChatbotManager();
+                instance.init({
+                    webhookUrl: 'https://luccatora.app.n8n.cloud/webhook/webbot',
+                    title: 'Chat Support',
+                    bio: 'Online now',
+                    placeholder: 'Type your message...',
+                    position: 'bottom-right',
+                    primaryColor: '#000000',
+                    secondaryColor: '#f3f4f6',
+                    textColor: '#1f2937',
+                    userTextColor: '#ffffff',
+                    chatBackground: '#ffffff',
+                    botTextColor: '#1f2937',
+                    welcomeMessage: 'Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?',
+                    admin: false,
+                    isVoiceEnabled: true,
+                    isElevenLabsEnabled: true,
+                    elevenLabsAgentId: 'agent_01k04zwwq3fv5acgzdwmbvfk8k',
+                    gradientColor: 'rgba(59, 130, 246, 0.9)',
+                    headerGradientColor: '#000000',
+                    headerMainColor: '#333333',
+                    logoBackgroundColor: 'transparent',
+                    logoBorderColor: 'none',
+                    headerButtonColor: '#ffffff',
+                    fontFamily: 'Inter',
+                    welcomeTooltipMessage: 'Click to start chatting with our AI assistant!',
+                    copySuccessMessage: 'Code Copied!',
+                    clinicName: 'ToraTech AI',
+                    clinicId: '104',
+                    logoUrl: '/lovable-uploads/fd9d4dbf-9035-4de8-a3a1-81089fcac665.png',
+                    avatarUrl: '/lovable-uploads/1f938225-daa7-46d3-a44e-d951e492fcd4.png'
+                });
+                console.log('Chatbot widget initialized successfully from CDN!');
+            } else {
+                console.error('ChatbotWidget not found. Check if the CDN script loaded correctly.');
+                console.log('Available on window:', Object.keys(window).filter(k => k.includes('Chat')));
+            }
+        });
+    </script>
+</body>
+</html>

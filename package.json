@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "node build-all-cdn.js",
     "build:app": "vite build",
+    "build:cdn": "node build-cdn.js && mkdir -p dist/cdn && cp cdn/chatbot-widget.* dist/cdn/ && mkdir -p dist/lovable-uploads && cp -r public/lovable-uploads/* dist/lovable-uploads/ 2>/dev/null || true",
     "build:dev": "vite build --mode development",
     "build:chat-widget": "node build-cdn.js",
     "build:voice-widget": "node build-voice-cdn.js",
