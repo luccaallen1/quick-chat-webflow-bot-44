@@ -54,23 +54,26 @@ const Demo = () => {
       {/* Hero Section */}
       <HeroSection onViewExample={handleViewExample} />
 
-      {/* Voice Widget */}
-      <VoiceWidget
-        agentId="agent_01k04zwwq3fv5acgzdwmbvfk8k"
-        buttonText="Talk to AI Agent"
-        buttonColor="#000000"
-        backgroundColor="#ffffff"
-        textColor="#000000"
-        secondaryTextColor="#666666"
-        borderColor="#e5e7eb"
-        shadowColor="rgba(0,0,0,0.08)"
-        statusBgColor="#f0fdf4"
-        statusTextColor="#15803d"
-        title="AI Voice Assistant"
-        description="Get instant answers to your questions. Our AI assistant is ready to help you 24/7."
-        avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
-        position="bottom-left"
-      />
+      {/* Voice Widget Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
+          <VoiceWidget
+            agentId="agent_01k04zwwq3fv5acgzdwmbvfk8k"
+            buttonText="Talk to AI Agent"
+            buttonColor="#000000"
+            backgroundColor="#ffffff"
+            textColor="#000000"
+            secondaryTextColor="#666666"
+            borderColor="#e5e7eb"
+            shadowColor="rgba(0,0,0,0.08)"
+            statusBgColor="#f0fdf4"
+            statusTextColor="#15803d"
+            title="AI Voice Assistant"
+            description="Get instant answers to your questions. Our AI assistant is ready to help you 24/7."
+            avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
+          />
+        </div>
+      </section>
 
       {/* Use Cases Section */}
       <UseCasesSection />
