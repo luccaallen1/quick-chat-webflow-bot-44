@@ -190,16 +190,30 @@ const Demo = () => {
 
       {/* Chatbot Widget */}
       <ChatbotWidget
-        webhookUrl="https://luccatora.app.n8n.cloud/webhook/webbot-test"
-        title="MediFlow Assistant"
-        bio="How can I help you today?"
-        placeholder="Ask about appointments, services, or general inquiries..."
+        webhookUrl="https://luccatora.app.n8n.cloud/webhook/webbot"
+        title="Chat Support"
+        bio="Online now"
+        placeholder="Type your message..."
         position="bottom-right"
-        primaryColor="#2563eb"
-        welcomeMessage="Hello! I'm your MediFlow virtual assistant. I can help you with appointment scheduling, service information, and answer any questions about our clinic."
-        companyName="MediFlow Clinic"
-        agentName="Healthcare Assistant"
-        callToAction="Need help? Chat with us!"
+        primaryColor="#000000"
+        secondaryColor="#f3f4f6"
+        botTextColor="#1f2937"
+        userTextColor="#ffffff"
+        chatBackground="#ffffff"
+        welcomeMessage="Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?"
+        admin={false}
+        isVoiceEnabled={false}
+        isElevenLabsEnabled={true}
+        elevenLabsAgentId="agent_01k04zwwq3fv5acgzdwmbvfk8k"
+        headerGradientColor="#000000"
+        headerMainColor="#262626"
+        logoBackgroundColor="transparent"
+        logoBorderColor="none"
+        headerButtonColor="#ffffff"
+        fontFamily="Inter"
+        welcomeTooltipMessage="Click to start chatting with our AI assistant!"
+        logoUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
+        avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
       />
     </div>
   );
