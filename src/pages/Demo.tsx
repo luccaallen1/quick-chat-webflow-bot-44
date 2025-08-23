@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ChatbotWidget } from '../components/ChatbotWidget';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun } from 'lucide-react';
-import { ArrowRight, MessageSquare, Zap, QrCode, Globe, Users, TrendingUp, Clock, Star } from 'lucide-react';
+import { ArrowRight, MessageSquare, Zap, QrCode, Globe, Users, TrendingUp, Clock, Star, Phone } from 'lucide-react';
 import { SecuritySection } from '../components/landing/SecuritySection';
 import { FAQSection } from '../components/landing/FAQSection';
 import { VoiceWidget } from '../components/VoiceWidget';
@@ -69,24 +69,75 @@ const Demo = () => {
         </div>
       </section>
 
+      {/* Interactive Demo Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Try Our AI Agents Live - Right Now!
+          </h2>
+          <p className="text-xl mb-8 leading-relaxed">
+            Don't just read about it - experience the power of AI chat agents firsthand. We've built live demos right into this page so you can test both voice and text interactions instantly.
+          </p>
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MessageSquare className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Test the Chat Widget</h3>
+              <p className="text-white/90 text-sm mb-4">
+                Try our text-based AI assistant in the bottom-right corner. Ask questions, request information, or explore our capabilities.
+              </p>
+              <div className="text-xs bg-white/20 rounded-full px-3 py-1 inline-block">
+                Look for the chat icon →
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Phone className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Try the Voice Agent Below</h3>
+              <p className="text-white/90 text-sm mb-4">
+                Experience natural voice conversations with our AI. Just click "Talk to AI Agent" in the widget below and start speaking.
+              </p>
+              <div className="text-xs bg-white/20 rounded-full px-3 py-1 inline-block">
+                Scroll down to test ↓
+              </div>
+            </div>
+          </div>
+          <p className="text-lg font-semibold">
+            See how your customers will experience instant, intelligent responses 24/7
+          </p>
+        </div>
+      </section>
+
       {/* Voice Widget Section */}
       <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center">
-          <VoiceWidget
-            agentId="agent_01k04zwwq3fv5acgzdwmbvfk8k"
-            buttonText="Talk to AI Agent"
-            buttonColor="#000000"
-            backgroundColor="#ffffff"
-            textColor="#000000"
-            secondaryTextColor="#666666"
-            borderColor="#e5e7eb"
-            shadowColor="rgba(0,0,0,0.08)"
-            statusBgColor="#f0fdf4"
-            statusTextColor="#15803d"
-            title="AI Voice Assistant"
-            description="Get instant answers to your questions. Our AI assistant is ready to help you 24/7."
-            avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
-          />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              🎤 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Voice Demo - Try It Now</span>
+            </h3>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Click the button below to start a voice conversation with our AI agent. Allow microphone access when prompted and experience natural, human-like interactions.
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <VoiceWidget
+              agentId="agent_01k04zwwq3fv5acgzdwmbvfk8k"
+              buttonText="Talk to AI Agent"
+              buttonColor="#000000"
+              backgroundColor="#ffffff"
+              textColor="#000000"
+              secondaryTextColor="#666666"
+              borderColor="#e5e7eb"
+              shadowColor="rgba(0,0,0,0.08)"
+              statusBgColor="#f0fdf4"
+              statusTextColor="#15803d"
+              title="AI Voice Assistant"
+              description="Get instant answers to your questions. Our AI assistant is ready to help you 24/7."
+              avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
+            />
+          </div>
         </div>
       </section>
 
@@ -296,6 +347,22 @@ const Demo = () => {
 
       {/* FAQ Section */}
       <FAQSection />
+
+      {/* Chat Widget Reminder */}
+      <section className="py-12 bg-gradient-to-r from-slate-100 to-blue-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            💬 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Don't Forget to Test Our Chat Widget!</span>
+          </h3>
+          <p className="text-gray-700 text-lg mb-6">
+            While you're here, try out our text-based AI assistant. You'll find Jack, our ToraTech AI assistant, ready to chat in the <strong>bottom-right corner</strong> of your screen.
+          </p>
+          <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+            <span>💡</span>
+            <span>Ask about our services, pricing, or anything else - Jack is trained and ready to help!</span>
+          </div>
+        </div>
+      </section>
 
       {/* Chatbot Widget */}
       <ChatbotWidget
