@@ -7,7 +7,6 @@ import { UseCasesSection } from '../components/landing/UseCasesSection';
 import { WhatWeDoSection } from '../components/landing/WhatWeDoSection';
 import { SecuritySection } from '../components/landing/SecuritySection';
 import { FAQSection } from '../components/landing/FAQSection';
-import { VoiceAgentSection } from '../components/VoiceAgentSection';
 
 const Demo = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -65,9 +64,6 @@ const Demo = () => {
 
       {/* FAQ Section */}
       <FAQSection />
-
-      {/* Voice Agent Section */}
-      <VoiceAgentSection isDarkMode={isDarkMode} />
 
       {/* Chatbot Widget */}
       <ChatbotWidget
