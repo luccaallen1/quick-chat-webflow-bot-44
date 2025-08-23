@@ -7,6 +7,7 @@ import { UseCasesSection } from '../components/landing/UseCasesSection';
 import { WhatWeDoSection } from '../components/landing/WhatWeDoSection';
 import { SecuritySection } from '../components/landing/SecuritySection';
 import { FAQSection } from '../components/landing/FAQSection';
+import { VoiceWidget } from '../components/VoiceWidget';
 
 const Demo = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -64,6 +65,24 @@ const Demo = () => {
 
       {/* FAQ Section */}
       <FAQSection />
+
+      {/* Voice Widget */}
+      <VoiceWidget
+        agentId="agent_01k04zwwq3fv5acgzdwmbvfk8k"
+        buttonText="Talk to AI Agent"
+        buttonColor="#000000"
+        backgroundColor="#ffffff"
+        textColor="#000000"
+        secondaryTextColor="#666666"
+        borderColor="#e5e7eb"
+        shadowColor="rgba(0,0,0,0.08)"
+        statusBgColor="#f0fdf4"
+        statusTextColor="#15803d"
+        title="AI Voice Assistant"
+        description="Get instant answers to your questions. Our AI assistant is ready to help you 24/7."
+        avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
+        position="bottom-left"
+      />
 
       {/* Chatbot Widget */}
       <ChatbotWidget
