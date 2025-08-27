@@ -53,7 +53,7 @@ export interface UnipileNotifyPayload {
 }
 
 class UnipileService {
-  private backendUrl = 'http://localhost:3001'; // Backend server URL
+  private backendUrl = 'https://quick-chat-webflow-bot-44-production.up.railway.app'; // Backend server URL
 
   /**
    * Initialize Google Calendar connection for a user
