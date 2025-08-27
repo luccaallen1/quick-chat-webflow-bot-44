@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 2px solid #ddd;
+        }
+        .success { border-color: #10b981; background-color: #f0fdf4; }
+        .error { border-color: #ef4444; background-color: #fef2f2; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Final Connection Test</h1>
+    <p>Testing the fixed backend URL configuration</p>
+    <button id="testBtn">Test Google Calendar Connection</button>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const result = document.getElementById('result');
+            result.innerHTML = '<div>Testing connection with fixed backend URL...</div>';
+            
+            try {
+                // Simulate the unipileService call with the corrected backend URL
+                const backendUrl = 'http://localhost:3001'; // Now matches development setup
+                const mockUser = { 
+                    id: 'f55cad59-27e0-4a10-8764-3cf24999e25c',
+                    email: 'lucca@toratech.ai'
+                };
+                
+                console.log('🔧 Testing with fixed backend URL:', backendUrl);
+                
+                const response = await fetch(`${backendUrl}/api/integrations/unipile/init`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: mockUser.id,
+                        provider: 'GOOGLE',
+                        providerType: 'calendar',
+                        successRedirect: `${window.location.origin}/integrations/success?redirect=saas&config=default`,
+                        failureRedirect: `${window.location.origin}/integrations/failure?redirect=saas`
+                    })
+                });
+                
+                if (response.ok) {
+                    const authResponse = await response.json();
+                    
+                    result.innerHTML = `
+                        <div class="result success">
+                            <h3>🎉 CONNECTION FIXED!</h3>
+                            <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                            <p><strong>Backend URL:</strong> ${backendUrl}</p>
+                            <p><strong>Auth URL received:</strong> ✅ Yes</p>
+                            <p><strong>Expires:</strong> ${new Date(authResponse.expiresOn).toLocaleString()}</p>
+                            <br>
+                            <div style="background: #dcfce7; padding: 10px; border-radius: 4px;">
+                                <strong>✅ Issue Resolved:</strong><br>
+                                The frontend services now use the local backend in development.<br>
+                                Users should no longer see "Failed to connect Google Calendar" error.
+                            </div>
+                            <br>
+                            <button onclick="window.location.href='${authResponse.url}'" 
+                                    style="background: #059669; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                                🔗 Test Unipile Redirect
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Connection Still Failing</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>The backend URL fix did not resolve the issue.</p>
+                        <p>Additional debugging needed...</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

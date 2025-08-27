@@ -1,0 +1,30 @@
+{
+  "message": "Test unified business integration flow",
+  "sessionId": "unified_test_123",
+  "userId": "f55cad59-27e0-4a10-8764-3cf24999e25c",
+  "timestamp": "2025-08-27T08:45:00Z",
+  "source": "unified_business_integration_test",
+  "integrations": {
+    "session_info": {
+      "user_id": "f55cad59-27e0-4a10-8764-3cf24999e25c",
+      "session_id": "unified_test_123",
+      "timestamp": "2025-08-27T08:45:00Z"
+    },
+    "google_calendar": {
+      "connected": true,
+      "account_id": "KxS9vtRhRpSaW_bsz8Tkmg",
+      "unipile_api_key": "0T8j7UMW.IpjHizK58VQPPRQMRG3bSrQldoLavQebTqwH5JuEAns=",
+      "user_id": "f55cad59-27e0-4a10-8764-3cf24999e25c",
+      "status": "connected",
+      "email": "lucca@toratech.ai"
+    },
+    "business_config": {
+      "clinic_name": "Your Business Name",
+      "clinic_id": "104",
+      "phone_number": "(256) 935-1911",
+      "clinic_email": "clinic22018@thejoint.com",
+      "booking_workflow": "pRHkQxSZqNUAO5au",
+      "integration_status": "connected"
+    }
+  }
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Connection Test</title>
+</head>
+<body>
+    <h1>Frontend Connection Test</h1>
+    <p>This test simulates exactly what the React frontend would do</p>
+    <button id="testBtn">Test Frontend Connection Call</button>
+    <div id="result"></div>
+    <div id="logs"></div>
+
+    <script>
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const result = document.getElementById('result');
+            const logs = document.getElementById('logs');
+            result.innerHTML = 'Testing frontend connection...';
+            logs.innerHTML = '';
+            
+            const log = (message) => {
+                logs.innerHTML += `<div style="font-family: monospace; font-size: 12px; margin: 2px 0;">${message}</div>`;
+                console.log(message);
+            };
+            
+            try {
+                const mockUser = { 
+                    id: 'f55cad59-27e0-4a10-8764-3cf24999e25c',
+                    email: 'lucca@toratech.ai'
+                };
+                const configurationId = 'default';
+                
+                log('🚀 Starting frontend connection test...');
+                log(`👤 User: ${mockUser.id}`);
+                log(`⚙️ Config: ${configurationId}`);
+                
+                const backendUrl = 'http://localhost:3001'; // Same as unipileService
+                const requestBody = {
+                    userId: mockUser.id,
+                    provider: 'GOOGLE',
+                    providerType: 'calendar',
+                    successRedirect: `${window.location.origin}/integrations/success?redirect=saas&config=${configurationId}`,
+                    failureRedirect: `${window.location.origin}/integrations/failure?redirect=saas`
+                };
+                
+                log('📦 Request payload:');
+                log(JSON.stringify(requestBody, null, 2));
+                
+                log('🌐 Making fetch request...');
+                
+                const response = await fetch(`${backendUrl}/api/integrations/unipile/init`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                log(`📡 Response status: ${response.status} ${response.statusText}`);
+                log(`✅ Response OK: ${response.ok}`);
+                
+                if (response.ok) {
+                    const authResponse = await response.json();
+                    log('📄 Response data:');
+                    log(JSON.stringify(authResponse, null, 2));
+                    
+                    if (authResponse.url) {
+                        result.innerHTML = `
+                            <div style="background: #f0fdf4; padding: 15px; border: 1px solid #10b981; border-radius: 8px;">
+                                <h3>✅ SUCCESS! Frontend connection is working</h3>
+                                <p><strong>Response Status:</strong> ${response.status}</p>
+                                <p><strong>Auth URL:</strong> <a href="${authResponse.url}" target="_blank">Click to test Unipile redirect</a></p>
+                                <p><strong>Expires:</strong> ${new Date(authResponse.expiresOn).toLocaleString()}</p>
+                                <br>
+                                <strong>Conclusion:</strong> The connection logic is working. The issue must be in the React component's user authentication or error handling.
+                            </div>
+                        `;
+                    } else {
+                        throw new Error('No authentication URL in response');
+                    }
+                } else {
+                    const errorText = await response.text();
+                    log(`❌ Error response: ${errorText}`);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                result.innerHTML = `
+                    <div style="background: #fef2f2; padding: 15px; border: 1px solid #ef4444; border-radius: 8px;">
+                        <h3>❌ Connection Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p>This explains why users see "Failed to connect Google Calendar. Please try again."</p>
+                        <br>
+                        <strong>Next steps:</strong>
+                        <ul>
+                            <li>Check backend server is running on port 3001</li>
+                            <li>Verify CORS configuration</li>
+                            <li>Check network tab in browser for detailed error</li>
+                            <li>Ensure user authentication is working in React app</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

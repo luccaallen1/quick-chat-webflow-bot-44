@@ -28,8 +28,10 @@ export const CalendarStatusBadge: React.FC<CalendarStatusBadgeProps> = ({
 
     try {
       const status = await unipileService.getConnectionStatus();
+      console.log('🔍 Calendar Status Badge - Connection Status:', status);
       setConnected(status.connected);
     } catch (error) {
+      console.error('❌ Calendar Status Badge - Error getting connection status:', error);
       setConnected(false);
     } finally {
       setLoading(false);

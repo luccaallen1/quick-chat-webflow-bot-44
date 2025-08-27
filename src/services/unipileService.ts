@@ -53,7 +53,9 @@ export interface UnipileNotifyPayload {
 }
 
 class UnipileService {
-  private backendUrl = 'https://quick-chat-webflow-bot-44-production.up.railway.app'; // Backend server URL
+  private backendUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://quick-chat-webflow-bot-44-production.up.railway.app'
+    : 'http://localhost:3001'; // Use local backend in development
 
   /**
    * Initialize Google Calendar connection for a user
@@ -75,13 +77,15 @@ class UnipileService {
       userEmail: userData.user.email 
     });
 
-    const response = await fetch(`${this.backendUrl}/api/integrations/unipile/google/init`, {
+    const response = await fetch(`${this.backendUrl}/api/integrations/unipile/init`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         userId: userData.user.id, // Use actual Supabase user ID
+        provider: 'GOOGLE',
+        providerType: 'calendar',
         successRedirect: successRedirect || `${window.location.origin}/integrations/success`,
         failureRedirect: failureRedirect || `${window.location.origin}/integrations/failure`
       })
@@ -103,19 +107,43 @@ class UnipileService {
       throw new Error('User not authenticated');
     }
 
-    // First try to find account by user UUID
-    const { data: mappingData, error: mappingError } = await supabase
+    // First try to find account by user UUID (with provider_type for new connections)
+    let { data: mappingData, error: mappingError } = await supabase
       .from('unipile_account_mappings')
       .select('*')
       .eq('user_identifier', userData.user.id)
       .eq('provider', 'GOOGLE')
+      .eq('provider_type', 'calendar')
       .eq('status', 'connected')
       .single();
 
-    console.log('Searching for user mapping by UUID:', {
+    // If not found with provider_type, try without it (for legacy connections)
+    if (!mappingData) {
+      ({ data: mappingData, error: mappingError } = await supabase
+        .from('unipile_account_mappings')
+        .select('*')
+        .eq('user_identifier', userData.user.id)
+        .eq('provider', 'GOOGLE')
+        .eq('status', 'connected')
+        .single());
+    }
+
+    console.log('🔍 Searching for user mapping by UUID:', {
       userId: userData.user.id,
-      foundMapping: !!mappingData
+      provider: 'GOOGLE',
+      providerType: 'calendar',
+      foundMapping: !!mappingData,
+      mappingData: mappingData,
+      error: mappingError
     });
+
+    // Also check what mappings exist for this user without filters
+    const { data: allMappings } = await supabase
+      .from('unipile_account_mappings')
+      .select('*')
+      .eq('user_identifier', userData.user.id);
+    
+    console.log('🔍 All mappings for user:', allMappings);
 
     if (mappingData) {
       return {
@@ -339,17 +367,24 @@ class UnipileService {
         this.getUserCalendars()
       ]);
 
-      const selectedCalendar = calendars.find(cal => cal.selected);
+      console.log('🔍 getConnectionStatus - Account:', account);
+      console.log('🔍 getConnectionStatus - Calendars:', calendars);
 
-      return {
+      const selectedCalendar = calendars.find(cal => cal.selected);
+      
+      const connectionStatus = {
         connected: account?.status === 'connected',
         status: account?.status,
         email: account?.email,
         selectedCalendar,
         calendars
       };
+      
+      console.log('🔍 getConnectionStatus - Final Status:', connectionStatus);
+      
+      return connectionStatus;
     } catch (error) {
-      console.error('Error getting connection status:', error);
+      console.error('❌ Error getting connection status:', error);
       return {
         connected: false,
         calendars: []

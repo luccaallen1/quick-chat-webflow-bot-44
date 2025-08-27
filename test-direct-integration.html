@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Integration Test</title>
+</head>
+<body>
+    <h1>Direct Integration Test</h1>
+    <button onclick="testIntegration()">Test Integration</button>
+    <pre id="result"></pre>
+    
+    <script>
+        async function testIntegration() {
+            const userId = 'f55cad59-27e0-4a10-8764-3cf24999e25c';
+            const result = document.getElementById('result');
+            
+            result.innerHTML = 'Testing integration...\n';
+            
+            try {
+                // Step 1: Get integration data
+                const integrationResponse = await fetch('http://localhost:3001/api/integrations/get-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, sessionId: userId })
+                });
+                
+                if (!integrationResponse.ok) {
+                    throw new Error(`Integration API failed: ${integrationResponse.status}`);
+                }
+                
+                const integrationData = await integrationResponse.json();
+                result.innerHTML += `Integration data fetched:\n${JSON.stringify(integrationData, null, 2)}\n\n`;
+                
+                // Step 2: Send webhook with integration data
+                const webhookPayload = {
+                    message: 'Test message from direct integration test',
+                    userId: userId,
+                    sessionId: userId,
+                    timestamp: new Date().toISOString(),
+                    integrations: integrationData.integrations
+                };
+                
+                result.innerHTML += `Webhook payload:\n${JSON.stringify(webhookPayload, null, 2)}\n\n`;
+                
+                const webhookResponse = await fetch('http://localhost:3001/api/webhook/capture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(webhookPayload)
+                });
+                
+                const webhookResult = await webhookResponse.json();
+                result.innerHTML += `Webhook response:\n${JSON.stringify(webhookResult, null, 2)}\n`;
+                
+            } catch (error) {
+                result.innerHTML += `ERROR: ${error.message}\n`;
+            }
+        }
+    </script>
+</body>
+</html>

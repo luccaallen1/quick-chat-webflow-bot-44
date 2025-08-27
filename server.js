@@ -74,9 +74,10 @@ app.post('/api/integrations/unipile/init', async (req, res) => {
     const providerKey = `${provider}_${providerType}`;
     const unipileProviders = providerMapping[providerKey] || [provider];
 
+    // Create proper hosted auth payload with calendar scopes
     const hostedAuthPayload = {
       type: 'create',
-      providers: unipileProviders,
+      providers: [provider], // Use the direct provider (GOOGLE)
       api_url: UNIPILE_API_URL,
       expiresOn: expiresOn.toISOString(),
       notify_url: `${req.protocol}://${req.get('host')}/api/integrations/unipile/notify`,
@@ -84,6 +85,17 @@ app.post('/api/integrations/unipile/init', async (req, res) => {
       failure_redirect_url: failureRedirect || `${req.protocol}://${req.get('host')}/integrations/failure`,
       name: `${userId}:${provider}:${providerType}` // Include provider info in name
     };
+
+    // Add provider-specific scopes for calendar access
+    if (provider === 'GOOGLE' && providerType === 'calendar') {
+      hostedAuthPayload.scopes = [
+        'https://www.googleapis.com/auth/calendar',
+        'https://www.googleapis.com/auth/calendar.events',
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile'
+      ];
+      console.log('🗓️  Requesting Google Calendar scopes:', hostedAuthPayload.scopes);
+    }
 
     const response = await fetch(`${UNIPILE_API_URL}/api/v1/hosted/accounts/link`, {
       method: 'POST',
@@ -823,6 +835,600 @@ app.post('/api/integrations/unipile/manual-link', async (req, res) => {
   }
 });
 
+// Get integration data for user (without storing in bot_configurations for now)
+app.post('/api/integrations/get-status', async (req, res) => {
+  try {
+    const { userId, sessionId } = req.body;
+    
+    const identifier = userId || sessionId;
+    if (!identifier) {
+      return res.status(400).json({ error: 'userId or sessionId is required' });
+    }
+    
+    console.log('Getting integration status for:', { userId, sessionId });
+    
+    // Get user's integration data from mappings
+    const { data: integrationMappings, error: integrationError } = await supabaseAdmin
+      .from('unipile_account_mappings')
+      .select('*')
+      .eq('user_identifier', identifier)
+      .eq('provider', 'GOOGLE')
+      .eq('status', 'connected');
+    
+    if (integrationError) {
+      console.error('Error fetching integration data:', integrationError);
+      return res.status(500).json({ error: 'Failed to fetch integration data' });
+    }
+    
+    const googleCalendarIntegration = integrationMappings?.[0];
+    const isConnected = !!googleCalendarIntegration;
+    
+    console.log('Found integration data:', { isConnected, integration: googleCalendarIntegration });
+    
+    // If connected but email is missing, try to fetch it from Unipile
+    let emailAddress = googleCalendarIntegration?.email;
+    if (isConnected && !emailAddress && googleCalendarIntegration?.account_id) {
+      try {
+        console.log('Fetching email from Unipile account info...');
+        const unipileResponse = await fetch(`${UNIPILE_API_URL}/api/v1/accounts/${googleCalendarIntegration.account_id}`, {
+          headers: {
+            'X-API-KEY': UNIPILE_API_KEY
+          }
+        });
+        
+        if (unipileResponse.ok) {
+          const accountInfo = await unipileResponse.json();
+          emailAddress = accountInfo.name || accountInfo.connection_params?.calendar?.username || accountInfo.connection_params?.mail?.username;
+          console.log('📧 Retrieved email from Unipile:', emailAddress);
+          
+          // Update our database with the email for future use
+          if (emailAddress) {
+            const { error: updateError } = await supabaseAdmin
+              .from('unipile_account_mappings')
+              .update({ email: emailAddress })
+              .eq('id', googleCalendarIntegration.id);
+            
+            if (updateError) {
+              console.log('⚠️  Could not update email in database:', updateError.message);
+            } else {
+              console.log('✅ Updated email in database');
+            }
+          }
+        }
+      } catch (emailError) {
+        console.log('⚠️  Could not fetch email from Unipile:', emailError.message);
+      }
+    }
+    
+    // Get selected calendar information from bot_configurations
+    let selectedCalendarInfo = null;
+    if (isConnected) {
+      try {
+        const { data: configData } = await supabaseAdmin
+          .from('bot_configurations')
+          .select('booking_calendar_id, wellness_plan_prices')
+          .eq('user_id', identifier)
+          .single();
+        
+        if (configData?.booking_calendar_id) {
+          selectedCalendarInfo = {
+            calendar_id: configData.booking_calendar_id,
+            name: null
+          };
+          
+          // Try to extract calendar name from metadata
+          if (configData.wellness_plan_prices) {
+            try {
+              const metadata = JSON.parse(configData.wellness_plan_prices);
+              if (metadata.selected_calendar) {
+                selectedCalendarInfo.name = metadata.selected_calendar.name;
+                selectedCalendarInfo.selected_at = metadata.selected_calendar.selected_at;
+              }
+            } catch (e) {
+              // Ignore JSON parsing errors
+            }
+          }
+        }
+      } catch (configError) {
+        console.log('⚠️  Could not fetch calendar selection:', configError.message);
+      }
+    }
+
+    const integrationData = isConnected ? {
+      google_calendar: {
+        connected: true,
+        account_id: googleCalendarIntegration.account_id,
+        email: emailAddress || null,
+        status: googleCalendarIntegration.status,
+        provider_type: googleCalendarIntegration.provider_type || 'calendar',
+        unipile_api_key: UNIPILE_API_KEY, // Include for webhooks
+        selected_calendar: selectedCalendarInfo // Include selected calendar for n8n
+      },
+      session_info: {
+        user_id: identifier,
+        timestamp: new Date().toISOString()
+      }
+    } : { 
+      google_calendar: { connected: false },
+      session_info: { user_id: identifier, timestamp: new Date().toISOString() }
+    };
+    
+    res.json({
+      success: true,
+      integration_status: isConnected ? 'connected' : 'none',
+      google_calendar_connected: isConnected,
+      integrations: integrationData
+    });
+    
+  } catch (error) {
+    console.error('Get integration status error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get bot configuration with integration data
+app.post('/api/bot-config-with-integrations', async (req, res) => {
+  try {
+    const { userId, sessionId } = req.body;
+    
+    if (!userId && !sessionId) {
+      return res.status(400).json({ error: 'userId or sessionId is required' });
+    }
+    
+    console.log('Getting bot config with integrations:', { userId, sessionId });
+    
+    // First sync latest integration data
+    if (userId) {
+      try {
+        await fetch('http://localhost:3001/api/integrations/sync-to-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId })
+        });
+      } catch (syncError) {
+        console.log('Sync failed, continuing without sync:', syncError.message);
+      }
+    }
+    
+    // Get bot configuration with integration data
+    const { data: configData, error: configError } = await supabaseAdmin
+      .from('bot_configurations')
+      .select('*')
+      .eq('user_id', userId || sessionId)
+      .first();
+    
+    if (configError && configError.code !== 'PGRST116') {
+      console.error('Error fetching bot configuration:', configError);
+      return res.status(500).json({ error: 'Failed to fetch configuration' });
+    }
+    
+    // Extract integration data from wellness_plan_prices field (temporary storage)
+    let integrationData = {};
+    if (configData?.wellness_plan_prices) {
+      try {
+        const parsed = JSON.parse(configData.wellness_plan_prices);
+        if (parsed.integrations) {
+          integrationData = parsed.integrations;
+        }
+      } catch (e) {
+        // If parsing fails, fall back to mapping table
+        const { data: mappingData } = await supabaseAdmin
+          .from('unipile_account_mappings')
+          .select('*')
+          .eq('user_identifier', userId)
+          .eq('provider', 'GOOGLE')
+          .eq('status', 'connected');
+        
+        if (mappingData?.[0]) {
+          integrationData = {
+            google_calendar: {
+              connected: true,
+              account_id: mappingData[0].account_id,
+              email: mappingData[0].email,
+              status: mappingData[0].status
+            }
+          };
+        }
+      }
+    }
+    
+    const isCalendarConnected = integrationData?.google_calendar?.connected || false;
+    
+    const result = {
+      bot_config: configData,
+      integrations: integrationData,
+      integration_status: isCalendarConnected ? 'connected' : 'none',
+      google_calendar_connected: isCalendarConnected
+    };
+    
+    console.log('Returning bot config with integrations:', {
+      hasConfig: !!configData,
+      integrationStatus: result.integration_status,
+      calendarConnected: result.google_calendar_connected
+    });
+    
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Bot config with integrations error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Webhook capture endpoint - captures actual webhook data from embedded chat
+app.post('/api/webhook/capture', async (req, res) => {
+  try {
+    const webhookData = req.body;
+    console.log('🎯 CAPTURED WEBHOOK FROM EMBEDDED CHAT:');
+    console.log(JSON.stringify(webhookData, null, 2));
+    
+    // Check if integrations are included
+    const hasIntegrations = webhookData.integrations && Object.keys(webhookData.integrations).length > 0;
+    const hasGoogleCalendar = webhookData.integrations?.google_calendar?.connected;
+    
+    console.log(`🔍 Integration Status: ${hasIntegrations ? 'PRESENT' : 'MISSING'}`);
+    console.log(`📅 Google Calendar: ${hasGoogleCalendar ? 'CONNECTED' : 'NOT CONNECTED'}`);
+    
+    // Simulate AI response for testing
+    res.json([{
+      output: `Hello! I received your message: "${webhookData.message}". Integration data ${hasIntegrations ? 'is included' : 'is missing'} in this webhook${hasGoogleCalendar ? ' and Google Calendar is connected!' : '.'}`,
+      intermediateSteps: []
+    }]);
+    
+  } catch (error) {
+    console.error('❌ Webhook capture error:', error);
+    res.json([{
+      output: 'Sorry, there was an error processing your message.',
+      intermediateSteps: []
+    }]);
+  }
+});
+
+// Webhook simulation endpoint - shows what data would be sent to n8n
+app.post('/api/webhook/simulate', async (req, res) => {
+  try {
+    const { message, userId, sessionId } = req.body;
+    
+    console.log('🎯 Simulating webhook payload for message:', { message, userId, sessionId });
+    
+    // Get integration status
+    const integrationResponse = await fetch('http://localhost:3001/api/integrations/get-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, sessionId })
+    });
+    
+    let integrationData = {};
+    if (integrationResponse.ok) {
+      const integrationResult = await integrationResponse.json();
+      integrationData = integrationResult.integrations;
+    }
+    
+    // Simulate the complete webhook payload that would be sent to n8n
+    const webhookPayload = {
+      message: message || 'Hello, I need to book an appointment',
+      user_id: userId,
+      session_id: sessionId,
+      timestamp: new Date().toISOString(),
+      integrations: integrationData, // This is what was missing before!
+      conversation_context: {
+        platform: 'web',
+        source: 'business_chatbot'
+      }
+    };
+    
+    console.log('📡 Complete webhook payload that would be sent to n8n:', JSON.stringify(webhookPayload, null, 2));
+    
+    res.json({
+      success: true,
+      webhook_payload: webhookPayload,
+      integration_included: Object.keys(integrationData).length > 0,
+      calendar_connected: integrationData?.google_calendar?.connected || false
+    });
+    
+  } catch (error) {
+    console.error('❌ Webhook simulation error:', error);
+    res.status(500).json({ error: 'Failed to simulate webhook' });
+  }
+});
+
+// Get available calendars for a connected account
+app.post('/api/integrations/calendars/list', async (req, res) => {
+  try {
+    const { userId, accountId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+    
+    console.log('📅 Fetching calendars for user:', userId);
+    
+    // Get the account_id if not provided
+    let targetAccountId = accountId;
+    if (!targetAccountId) {
+      const { data: integration } = await supabaseAdmin
+        .from('unipile_account_mappings')
+        .select('account_id')
+        .eq('user_identifier', userId)
+        .eq('provider', 'GOOGLE')
+        .eq('status', 'connected')
+        .single();
+      
+      if (!integration) {
+        return res.status(404).json({ error: 'No connected Google account found' });
+      }
+      
+      targetAccountId = integration.account_id;
+    }
+    
+    console.log('🔍 Using account_id:', targetAccountId);
+    
+    // Try to fetch calendars from Unipile, but provide fallback
+    let accountCalendars = [];
+    
+    try {
+      const calendarsResponse = await fetch(`${UNIPILE_API_URL}/api/v1/calendars`, {
+        method: 'POST',
+        headers: {
+          'X-API-KEY': UNIPILE_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          account_id: targetAccountId,
+          offset: 0,
+          limit: 50
+        })
+      });
+      
+      if (calendarsResponse.ok) {
+        const calendarsData = await calendarsResponse.json();
+        console.log('📅 Retrieved calendars:', calendarsData);
+        accountCalendars = Array.isArray(calendarsData) ? calendarsData : 
+                          calendarsData.items || calendarsData.data || [];
+      } else {
+        console.log('⚠️  Unipile calendars API failed, using fallback approach');
+      }
+    } catch (apiError) {
+      console.log('⚠️  Calendar API error:', apiError.message);
+    }
+    
+    // If no calendars found via API, create default calendar options based on the account
+    if (accountCalendars.length === 0) {
+      console.log('📅 No calendars returned from API, creating default calendar option');
+      
+      // Get account info to create a reasonable default
+      try {
+        const accountInfoResponse = await fetch(`${UNIPILE_API_URL}/api/v1/accounts/${targetAccountId}`, {
+          headers: { 'X-API-KEY': UNIPILE_API_KEY }
+        });
+        
+        if (accountInfoResponse.ok) {
+          const accountInfo = await accountInfoResponse.json();
+          const email = accountInfo.name || accountInfo.connection_params?.calendar?.username || 'Primary Calendar';
+          
+          accountCalendars = [{
+            id: `${targetAccountId}_primary`,
+            summary: `${email} - Primary Calendar`,
+            description: 'Primary Google Calendar',
+            primary: true,
+            accessRole: 'owner',
+            account_id: targetAccountId,
+            backgroundColor: '#2196F3',
+            timeZone: 'UTC'
+          }];
+          
+          console.log(`✅ Created default calendar: ${accountCalendars[0].summary}`);
+        }
+      } catch (accountError) {
+        console.log('⚠️  Could not fetch account info, using generic calendar');
+        accountCalendars = [{
+          id: `${targetAccountId}_primary`,
+          summary: 'Primary Calendar',
+          description: 'Google Calendar for bookings',
+          primary: true,
+          accessRole: 'owner',
+          account_id: targetAccountId,
+          backgroundColor: '#2196F3',
+          timeZone: 'UTC'
+        }];
+      }
+    }
+    
+    console.log(`✅ Found ${accountCalendars.length} calendars for account ${targetAccountId}`);
+    
+    res.json({
+      success: true,
+      account_id: targetAccountId,
+      calendars: accountCalendars.map(cal => ({
+        calendar_id: cal.id,
+        name: cal.summary || cal.name || 'Unnamed Calendar',
+        description: cal.description || '',
+        primary: cal.primary || false,
+        access_role: cal.accessRole || 'reader',
+        account_id: cal.account_id || cal.account || targetAccountId,
+        provider: 'GOOGLE',
+        color: cal.backgroundColor || cal.color,
+        time_zone: cal.timeZone
+      }))
+    });
+    
+  } catch (error) {
+    console.error('❌ Error fetching calendars:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
+  }
+});
+
+// Save selected calendar for a user's business configuration  
+app.post('/api/integrations/calendars/select', async (req, res) => {
+  try {
+    const { userId, calendarId, calendarName, configId } = req.body;
+    
+    if (!userId || !calendarId) {
+      return res.status(400).json({ error: 'userId and calendarId are required' });
+    }
+    
+    console.log('💾 Saving selected calendar:', { userId, calendarId, calendarName, configId });
+    
+    // Update the bot_configurations table with selected calendar
+    const updateData = {
+      booking_calendar_id: calendarId,
+      calendar_id: calendarId, // Legacy field
+      updated_at: new Date().toISOString()
+    };
+    
+    // Add calendar name to clinic_name or a metadata field if we have it
+    if (calendarName) {
+      // Store calendar name in a metadata field within the wellness_plan_prices JSON
+      const { data: existingConfig } = await supabaseAdmin
+        .from('bot_configurations')
+        .select('wellness_plan_prices')
+        .eq('user_id', userId)
+        .single();
+      
+      let metadata = {};
+      if (existingConfig?.wellness_plan_prices) {
+        try {
+          metadata = JSON.parse(existingConfig.wellness_plan_prices);
+        } catch (e) {
+          metadata = {};
+        }
+      }
+      
+      metadata.selected_calendar = {
+        calendar_id: calendarId,
+        name: calendarName,
+        selected_at: new Date().toISOString()
+      };
+      
+      updateData.wellness_plan_prices = JSON.stringify(metadata);
+    }
+    
+    const { data, error } = await supabaseAdmin
+      .from('bot_configurations')
+      .update(updateData)
+      .eq('user_id', userId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('❌ Error updating bot configuration:', error);
+      return res.status(500).json({ error: 'Failed to save calendar selection' });
+    }
+    
+    console.log('✅ Calendar selection saved successfully');
+    
+    res.json({
+      success: true,
+      message: 'Calendar selection saved',
+      selected_calendar: {
+        calendar_id: calendarId,
+        name: calendarName
+      },
+      updated_config: data
+    });
+    
+  } catch (error) {
+    console.error('❌ Error saving calendar selection:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
+  }
+});
+
+// Simple Google Calendar Auth Endpoint
+app.post('/api/integrations/auth/google', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+    
+    const expiresOn = new Date(Date.now() + 10 * 60 * 1000).toISOString(); // +10 minutes
+    
+    const payload = {
+      type: "create",
+      providers: ["GOOGLE"],
+      api_url: UNIPILE_API_URL,
+      expiresOn,
+      success_redirect_url: `${process.env.APP_URL || 'http://localhost:8080'}/integrations/success`,
+      failure_redirect_url: `${process.env.APP_URL || 'http://localhost:8080'}/integrations/failure`,
+      notify_url: `${process.env.BACKEND_URL || 'http://localhost:3001'}/api/integrations/callback`,
+      name: userId // This comes back in the notify webhook
+    };
+    
+    console.log('🎯 Creating Unipile hosted auth link for user:', userId);
+    
+    const response = await fetch(`${UNIPILE_API_URL}/api/v1/hosted/accounts/link`, {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': UNIPILE_API_KEY,
+        'accept': 'application/json',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Unipile link error:', errorText);
+      return res.status(500).json({ error: 'unipile_link_error', detail: errorText });
+    }
+    
+    const data = await response.json();
+    console.log('✅ Hosted auth URL created:', data.url);
+    
+    return res.json({ url: data.url });
+    
+  } catch (error) {
+    console.error('❌ Auth endpoint error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Unipile Callback Endpoint (notify_url)
+app.post('/api/integrations/callback', async (req, res) => {
+  try {
+    const { status, account_id, name } = req.body;
+    
+    console.log('📡 Unipile callback received:', { status, account_id, name });
+    
+    if (status === 'SUCCESS' && account_id && name) {
+      // Extract userId from the name field
+      const userId = name;
+      
+      // Store the account mapping
+      const { error } = await supabaseAdmin
+        .from('unipile_account_mappings')
+        .upsert({
+          user_identifier: userId,
+          account_id: account_id,
+          provider: 'GOOGLE',
+          status: 'connected',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_identifier,provider'
+        });
+      
+      if (error) {
+        console.error('❌ Failed to store account mapping:', error);
+      } else {
+        console.log('✅ Account mapping stored for user:', userId);
+      }
+    }
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('❌ Callback error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -835,12 +1441,21 @@ app.get('/api/health', (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 Unipile backend server running on port ${port}`);
   console.log(`📋 Available endpoints:`);
+  console.log(`   POST /api/integrations/auth/google`);
+  console.log(`   POST /api/integrations/callback`);
+  console.log(`   POST /api/integrations/unipile/init`);
   console.log(`   POST /api/integrations/unipile/google/init`);
   console.log(`   POST /api/integrations/unipile/notify`);
   console.log(`   POST /api/integrations/unipile/google/calendars/refresh`);
   console.log(`   POST /api/integrations/unipile/google/calendars/select`);
   console.log(`   POST /api/integrations/unipile/token-resolve`);
   console.log(`   POST /api/integrations/unipile/google/disconnect`);
+  console.log(`   POST /api/integrations/get-status`);
+  console.log(`   POST /api/integrations/sync-to-config`);
+  console.log(`   POST /api/integrations/calendars/list`);
+  console.log(`   POST /api/integrations/calendars/select`);
+  console.log(`   POST /api/webhook/capture`);
+  console.log(`   POST /api/webhook/simulate`);
   console.log(`   POST /api/calendar/freebusy`);
   console.log(`   POST /api/bookings/create`);
   console.log(`   GET  /api/health`);

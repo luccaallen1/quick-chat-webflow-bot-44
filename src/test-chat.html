@@ -63,7 +63,7 @@
                 
                 console.log('Sending webhook payload:', webhookPayload);
                 
-                const webhookResponse = await fetch('https://luccatora.app.n8n.cloud/webhook/webbot-test', {
+                const webhookResponse = await fetch('http://localhost:3002/webhook/test', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

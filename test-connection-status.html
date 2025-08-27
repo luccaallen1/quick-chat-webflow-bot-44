@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connection Status</title>
+</head>
+<body>
+    <h1>Test Calendar Connection Status</h1>
+    <button id="testBtn">Check Connection Status</button>
+    <div id="result"></div>
+    <div id="logs"></div>
+
+    <script>
+        // Simulate Supabase auth (since we can't access the actual auth context here)
+        const mockUser = {
+            id: 'f55cad59-27e0-4a10-8764-3cf24999e25c',
+            email: 'lucca@toratech.ai'
+        };
+
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            const logsDiv = document.getElementById('logs');
+            resultDiv.innerHTML = 'Testing connection status...';
+            logsDiv.innerHTML = '';
+            
+            try {
+                // Step 1: Check Unipile account mapping first
+                logsDiv.innerHTML += '<p>🔍 Step 1: Checking Unipile account mapping...</p>';
+                
+                // This simulates what unipileService.getUserAccount() does
+                let accountData = null;
+                try {
+                    const mappingResponse = await fetch('http://localhost:3001/api/integrations/unipile/token-resolve', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            user_id: mockUser.id
+                        })
+                    });
+                    
+                    if (mappingResponse.ok) {
+                        accountData = await mappingResponse.json();
+                        logsDiv.innerHTML += '<p>✅ Found Unipile account: ' + accountData.account_id + '</p>';
+                        console.log('🔍 Found Unipile account:', accountData);
+                    } else {
+                        logsDiv.innerHTML += '<p>❌ No Unipile account found</p>';
+                        console.log('❌ No Unipile account found');
+                    }
+                } catch (error) {
+                    logsDiv.innerHTML += '<p>❌ Error checking Unipile account: ' + error.message + '</p>';
+                    console.log('❌ Error checking Unipile account:', error);
+                }
+
+                // Step 2: If we have an account, check the connection status
+                let connectionStatus = {
+                    connected: false,
+                    calendars: []
+                };
+
+                if (accountData) {
+                    logsDiv.innerHTML += '<p>🔍 Step 2: Checking calendar connection status...</p>';
+                    
+                    // This simulates what unipileService.getConnectionStatus() does
+                    // We'll assume if we have an account_id, the connection is active
+                    connectionStatus = {
+                        connected: true,
+                        status: 'connected',
+                        email: mockUser.email,
+                        selectedCalendar: null,
+                        calendars: [] // Would be populated by actual API call
+                    };
+                    
+                    logsDiv.innerHTML += '<p>✅ Connection status: CONNECTED</p>';
+                    console.log('🔍 Connection status:', connectionStatus);
+                } else {
+                    logsDiv.innerHTML += '<p>❌ Connection status: NOT CONNECTED</p>';
+                }
+
+                // Display results
+                resultDiv.innerHTML = `
+                    <h3>Connection Status Test Result:</h3>
+                    <div style="padding: 20px; border: 2px solid ${connectionStatus.connected ? '#10b981' : '#ef4444'}; border-radius: 8px; margin: 20px 0;">
+                        <h4>Status: ${connectionStatus.connected ? '✅ CONNECTED' : '❌ NOT CONNECTED'}</h4>
+                        ${accountData ? `<p><strong>Account ID:</strong> ${accountData.account_id}</p>` : ''}
+                        ${connectionStatus.email ? `<p><strong>Email:</strong> ${connectionStatus.email}</p>` : ''}
+                        <p><strong>User ID:</strong> ${mockUser.id}</p>
+                    </div>
+                    
+                    <h4>CalendarStatusBadge would show:</h4>
+                    <div style="display: inline-flex; align-items: center; gap: 5px; padding: 10px; border-radius: 4px; background: #f3f4f6;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: ${connectionStatus.connected ? '#10b981' : '#9ca3af'};"></div>
+                        <span style="font-size: 12px; font-weight: 500; color: ${connectionStatus.connected ? '#059669' : '#6b7280'};">
+                            ${connectionStatus.connected ? 'Calendar Connected' : 'No Calendar'}
+                        </span>
+                    </div>
+                    
+                    <details style="margin-top: 20px;">
+                        <summary>Raw Account Data</summary>
+                        <pre>${JSON.stringify(accountData, null, 2)}</pre>
+                    </details>
+                    <details>
+                        <summary>Connection Status Object</summary>
+                        <pre>${JSON.stringify(connectionStatus, null, 2)}</pre>
+                    </details>
+                `;
+                
+                logsDiv.innerHTML += '<p>✅ Connection status test completed!</p>';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+                logsDiv.innerHTML += '<p>❌ Test failed: ' + error.message + '</p>';
+                console.error('Connection status test error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

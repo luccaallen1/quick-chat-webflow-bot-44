@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connection Detection</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { 
+            margin: 10px 0; 
+            padding: 15px; 
+            border-radius: 8px; 
+            border: 2px solid #ddd;
+        }
+        .success { border-color: #10b981; background-color: #f0fdf4; }
+        .error { border-color: #ef4444; background-color: #fef2f2; }
+        .info { border-color: #3b82f6; background-color: #eff6ff; }
+        .log { font-family: monospace; font-size: 12px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Connection Detection Test</h1>
+    <button id="testBtn">Test Connection Detection</button>
+    <div id="results"></div>
+
+    <script>
+        const testUserId = 'f55cad59-27e0-4a10-8764-3cf24999e25c';
+        
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="info test-result">🔍 Testing connection detection...</div>';
+            
+            try {
+                // Test 1: Check unipile_account_mappings directly
+                console.log('🔍 Test 1: Direct database query simulation');
+                
+                // Test 2: Check what the backend token-resolve returns
+                const tokenResponse = await fetch('http://localhost:3001/api/integrations/unipile/token-resolve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: testUserId })
+                });
+                
+                let tokenResult = null;
+                if (tokenResponse.ok) {
+                    tokenResult = await tokenResponse.json();
+                    console.log('✅ Token resolve successful:', tokenResult);
+                } else {
+                    console.log('❌ Token resolve failed:', tokenResponse.status);
+                }
+                
+                // Test 3: Check debug mappings
+                const debugResponse = await fetch('http://localhost:3001/api/debug-mappings');
+                const debugResult = await debugResponse.json();
+                console.log('🔍 Debug mappings:', debugResult);
+                
+                // Test 4: Simulate getUserAccount logic
+                const userMappings = debugResult.mappings.filter(m => 
+                    m.user_identifier === testUserId && 
+                    m.provider === 'GOOGLE' && 
+                    m.status === 'connected'
+                );
+                
+                console.log('🔍 User mappings found:', userMappings);
+                
+                // Display results
+                let html = '';
+                
+                // Token resolve result
+                html += `<div class="test-result ${tokenResult ? 'success' : 'error'}">
+                    <h3>Backend Token Resolve</h3>
+                    <div class="log">Status: ${tokenResult ? 'SUCCESS' : 'FAILED'}</div>
+                    ${tokenResult ? `
+                        <div class="log">Account ID: ${tokenResult.account_id}</div>
+                        <div class="log">API Key: ${tokenResult.unipile_api_key ? 'Present' : 'Missing'}</div>
+                        <div class="log">Email: ${tokenResult.email || 'Not set'}</div>
+                    ` : ''}
+                </div>`;
+                
+                // Database mappings result
+                html += `<div class="test-result ${userMappings.length > 0 ? 'success' : 'error'}">
+                    <h3>Database Mappings</h3>
+                    <div class="log">Total mappings for user: ${userMappings.length}</div>
+                    ${userMappings.map(mapping => `
+                        <div class="log">
+                            Provider: ${mapping.provider}, 
+                            Status: ${mapping.status}, 
+                            Account ID: ${mapping.account_id}
+                            ${mapping.provider_type ? `, Type: ${mapping.provider_type}` : ', Type: NOT SET'}
+                        </div>
+                    `).join('')}
+                </div>`;
+                
+                // Connection status simulation
+                const shouldBeConnected = userMappings.length > 0 && userMappings.some(m => m.status === 'connected');
+                html += `<div class="test-result ${shouldBeConnected ? 'success' : 'error'}">
+                    <h3>Expected Connection Status</h3>
+                    <div class="log">Should show as connected: ${shouldBeConnected ? 'YES' : 'NO'}</div>
+                    <div class="log">Reason: ${shouldBeConnected ? 
+                        'Found connected GOOGLE mapping' : 
+                        'No connected GOOGLE mapping found'}</div>
+                </div>`;
+                
+                // Show all mappings for debugging
+                html += `<div class="test-result info">
+                    <h3>All Mappings (Debug)</h3>
+                    <pre>${JSON.stringify(debugResult.mappings, null, 2)}</pre>
+                </div>`;
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="test-result error">
+                    <h3>Test Failed</h3>
+                    <div class="log">Error: ${error.message}</div>
+                </div>`;
+                console.error('Test error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

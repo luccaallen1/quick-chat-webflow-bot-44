@@ -146,30 +146,81 @@ export const EmbeddedChatbot: React.FC<EmbeddedChatbotProps> = ({
     setIsLoading(true);
 
     try {
-      // Get all integration data if available
-      let integrationData = null;
+      // ALWAYS get integration data - this should be included in ALL webhooks
+      let integrationData = {};
+      
       try {
-        // Import the multiProviderService
-        const { multiProviderService } = await import('@/services/multiProviderService');
-        integrationData = await multiProviderService.getIntegrationDataForWebhook();
+        // Try to get comprehensive integration data first
+        try {
+          const { multiProviderService } = await import('@/services/multiProviderService');
+          const fullIntegrationData = await multiProviderService.getIntegrationDataForWebhook();
+          if (fullIntegrationData && Object.keys(fullIntegrationData).length > 0) {
+            integrationData = fullIntegrationData;
+            console.log('✅ Multi-provider integration data loaded:', integrationData);
+          }
+        } catch (multiError) {
+          console.log('Multi-provider service not available:', multiError);
+        }
         
-        // Also try legacy calendar connection for backwards compatibility
-        if (!integrationData || Object.keys(integrationData).length === 0) {
-          const connectionStatus = await unipileService.getConnectionStatus();
-          if (connectionStatus.connected && connectionStatus.selectedCalendar) {
-            integrationData = {
-              legacy_calendar: {
+        // Get integration data using the new unified endpoint
+        try {
+          const integrationResponse = await fetch('http://localhost:3001/api/integrations/get-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              userId: userId || sessionId.current,
+              sessionId: sessionId.current
+            })
+          });
+          
+          if (integrationResponse.ok) {
+            const integrationResult = await integrationResponse.json();
+            if (integrationResult.integrations) {
+              // Merge with existing integration data
+              Object.assign(integrationData, integrationResult.integrations);
+              console.log('✅ Unified integration data loaded for chat:', integrationData);
+            }
+          } else {
+            console.log('⚠️  Integration endpoint returned:', integrationResponse.status);
+          }
+        } catch (integrationError) {
+          console.log('⚠️  Integration endpoint failed:', integrationError.message);
+          
+          // Fallback to legacy method
+          try {
+            const connectionStatus = await unipileService.getConnectionStatus();
+            if (connectionStatus.connected) {
+              integrationData.google_calendar = {
                 connected: true,
+                status: connectionStatus.status,
                 email: connectionStatus.email,
-                selected_calendar_id: connectionStatus.selectedCalendar.calendar_id,
-                selected_calendar_name: connectionStatus.selectedCalendar.summary,
                 user_id: userId || sessionId.current
-              }
-            };
+              };
+              console.log('✅ Fallback Google Calendar integration data loaded:', integrationData.google_calendar);
+            }
+          } catch (calendarError) {
+            console.log('Legacy calendar check also failed:', calendarError);
           }
         }
+        
+        // Always include user session info
+        integrationData.session_info = {
+          user_id: userId || sessionId.current,
+          session_id: sessionId.current,
+          timestamp: new Date().toISOString()
+        };
+        
       } catch (error) {
-        console.log('No integrations available:', error);
+        console.error('Error getting integration data:', error);
+        // Even if everything fails, include basic session info
+        integrationData = {
+          session_info: {
+            user_id: userId || sessionId.current,
+            session_id: sessionId.current,
+            timestamp: new Date().toISOString(),
+            error: 'Failed to load integration data'
+          }
+        };
       }
       const response = await fetch(webhookUrl, {
         method: 'POST',
@@ -209,10 +260,8 @@ export const EmbeddedChatbot: React.FC<EmbeddedChatbotProps> = ({
             bookingWorkflow: botConfiguration.bookingWorkflow,
             planPrice: botConfiguration.planPrice
           }),
-          // All integration data (calendar, email, messaging)
-          ...(integrationData && {
-            integrations: integrationData
-          })
+          // ALL integration data (always included - calendar, email, messaging)
+          integrations: integrationData
         })
       });
 

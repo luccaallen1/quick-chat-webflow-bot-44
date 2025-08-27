@@ -1,17 +1,60 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const IntegrationSuccess: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    // Redirect back to SaaS page after showing success message
-    const timer = setTimeout(() => {
-      navigate('/saas');
-    }, 3000);
+    const syncIntegrationAndRedirect = async () => {
+      // Get redirect parameter from URL
+      const redirectTo = searchParams.get('redirect') || 'saas';
+      const configId = searchParams.get('config');
+      
+      console.log('🔄 Integration success - syncing data and redirecting to:', redirectTo, 'with config:', configId);
+      
+      // Sync integration data to bot_configurations
+      try {
+        // Get user ID from auth (we'll need to mock this for now)
+        const userId = 'f55cad59-27e0-4a10-8764-3cf24999e25c'; // TODO: Get from auth context
+        
+        const response = await fetch('http://localhost:3001/api/integrations/sync-to-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            userId, 
+            configId: configId !== 'default' ? configId : null 
+          })
+        });
+        
+        if (response.ok) {
+          const syncResult = await response.json();
+          console.log('✅ Integration data synced to bot_configurations:', syncResult);
+        } else {
+          console.error('❌ Failed to sync integration data:', response.status);
+        }
+      } catch (error) {
+        console.error('❌ Error syncing integration data:', error);
+      }
+      
+      // Build redirect URL
+      let redirectUrl = `/${redirectTo}`;
+      if (configId && configId !== 'default') {
+        redirectUrl += `?config=${configId}`;
+      }
+      
+      // Redirect back to the original page after showing success message and syncing
+      const timer = setTimeout(() => {
+        navigate(redirectUrl);
+        // Trigger a page refresh to ensure connection status is updated
+        window.location.reload();
+      }, 3000);
 
-    return () => clearTimeout(timer);
-  }, [navigate]);
+      return () => clearTimeout(timer);
+    };
+    
+    syncIntegrationAndRedirect();
+  }, [navigate, searchParams]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">
@@ -38,7 +81,16 @@ const IntegrationSuccess: React.FC = () => {
           </div>
           
           <button
-            onClick={() => navigate('/saas')}
+            onClick={() => {
+              const redirectTo = searchParams.get('redirect') || 'saas';
+              const configId = searchParams.get('config');
+              let redirectUrl = `/${redirectTo}`;
+              if (configId && configId !== 'default') {
+                redirectUrl += `?config=${configId}`;
+              }
+              navigate(redirectUrl);
+              window.location.reload();
+            }}
             className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Continue to Configuration

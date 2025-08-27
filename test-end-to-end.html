@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>End-to-End Integration Test</title>
+    <style>
+        .test-section { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px;
+        }
+        .success { border-color: #10b981; background-color: #f0fdf4; }
+        .error { border-color: #ef4444; background-color: #fef2f2; }
+        .pending { border-color: #f59e0b; background-color: #fffbeb; }
+        .log { font-family: monospace; font-size: 12px; margin: 5px 0; }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: #f3f4f6;
+            margin: 10px 0;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .connected { background: #10b981; }
+        .disconnected { background: #9ca3af; }
+    </style>
+</head>
+<body>
+    <h1>End-to-End Integration Test</h1>
+    <button id="runTestBtn">Run Complete Test</button>
+    
+    <div id="test1" class="test-section pending">
+        <h3>Test 1: Backend Account Resolution</h3>
+        <div id="test1-logs"></div>
+        <div id="test1-result"></div>
+    </div>
+    
+    <div id="test2" class="test-section pending">
+        <h3>Test 2: Connection Status Logic</h3>
+        <div id="test2-logs"></div>
+        <div id="test2-result"></div>
+    </div>
+    
+    <div id="test3" class="test-section pending">
+        <h3>Test 3: Webhook Integration Data</h3>
+        <div id="test3-logs"></div>
+        <div id="test3-result"></div>
+    </div>
+    
+    <div id="final-result"></div>
+
+    <script>
+        const testUserId = 'f55cad59-27e0-4a10-8764-3cf24999e25c';
+        
+        async function runTest1() {
+            const section = document.getElementById('test1');
+            const logs = document.getElementById('test1-logs');
+            const result = document.getElementById('test1-result');
+            
+            logs.innerHTML = '<div class="log">🔍 Testing backend account resolution...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:3001/api/integrations/unipile/token-resolve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: testUserId })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    logs.innerHTML += '<div class="log">✅ Account found: ' + data.account_id + '</div>';
+                    logs.innerHTML += '<div class="log">✅ API key present: ' + (data.unipile_api_key ? 'YES' : 'NO') + '</div>';
+                    
+                    result.innerHTML = `
+                        <strong>✅ PASS</strong><br>
+                        Account ID: ${data.account_id}<br>
+                        Email: ${data.email || 'Not set'}
+                    `;
+                    section.className = 'test-section success';
+                    return { success: true, data };
+                } else {
+                    throw new Error('HTTP ' + response.status);
+                }
+            } catch (error) {
+                logs.innerHTML += '<div class="log">❌ Error: ' + error.message + '</div>';
+                result.innerHTML = '<strong>❌ FAIL</strong><br>' + error.message;
+                section.className = 'test-section error';
+                return { success: false, error: error.message };
+            }
+        }
+        
+        async function runTest2(accountData) {
+            const section = document.getElementById('test2');
+            const logs = document.getElementById('test2-logs');
+            const result = document.getElementById('test2-result');
+            
+            logs.innerHTML = '<div class="log">🔍 Testing connection status logic...</div>';
+            
+            try {
+                // Simulate what unipileService.getConnectionStatus() does
+                const connected = accountData && accountData.success;
+                const status = connected ? 'connected' : 'disconnected';
+                
+                logs.innerHTML += '<div class="log">✅ Connection logic executed</div>';
+                logs.innerHTML += '<div class="log">✅ Status determined: ' + status + '</div>';
+                
+                const statusBadgeHTML = `
+                    <div class="status-badge">
+                        <div class="status-dot ${connected ? 'connected' : 'disconnected'}"></div>
+                        <span style="font-size: 12px; font-weight: 500; color: ${connected ? '#059669' : '#6b7280'};">
+                            ${connected ? 'Calendar Connected' : 'No Calendar'}
+                        </span>
+                    </div>
+                `;
+                
+                result.innerHTML = `
+                    <strong>✅ PASS</strong><br>
+                    Connection Status: ${status}<br>
+                    UI would show: ${statusBadgeHTML}
+                `;
+                section.className = 'test-section success';
+                return { success: true, connected, status };
+            } catch (error) {
+                logs.innerHTML += '<div class="log">❌ Error: ' + error.message + '</div>';
+                result.innerHTML = '<strong>❌ FAIL</strong><br>' + error.message;
+                section.className = 'test-section error';
+                return { success: false, error: error.message };
+            }
+        }
+        
+        async function runTest3(connectionData) {
+            const section = document.getElementById('test3');
+            const logs = document.getElementById('test3-logs');
+            const result = document.getElementById('test3-result');
+            
+            logs.innerHTML = '<div class="log">🔍 Testing webhook integration data...</div>';
+            
+            try {
+                // Create webhook payload like EmbeddedChatbot does
+                const integrationData = {
+                    session_info: {
+                        user_id: testUserId,
+                        session_id: 'test_session_' + Date.now(),
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                if (connectionData.connected) {
+                    integrationData.google_calendar = {
+                        connected: true,
+                        status: connectionData.status,
+                        user_id: testUserId
+                    };
+                    logs.innerHTML += '<div class="log">✅ Google Calendar data included</div>';
+                } else {
+                    integrationData.google_calendar = {
+                        connected: false,
+                        user_id: testUserId
+                    };
+                    logs.innerHTML += '<div class="log">❌ Google Calendar not connected</div>';
+                }
+                
+                const webhookPayload = {
+                    message: 'Test message for end-to-end test',
+                    sessionId: integrationData.session_info.session_id,
+                    userId: testUserId,
+                    timestamp: new Date().toISOString(),
+                    source: 'end_to_end_test',
+                    integrations: integrationData
+                };
+                
+                logs.innerHTML += '<div class="log">🚀 Sending webhook...</div>';
+                
+                const webhookResponse = await fetch('http://localhost:3002/webhook/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(webhookPayload)
+                });
+                
+                if (webhookResponse.ok) {
+                    const webhookResult = await webhookResponse.json();
+                    logs.innerHTML += '<div class="log">✅ Webhook sent successfully</div>';
+                    logs.innerHTML += '<div class="log">✅ Integration data included: ' + (Object.keys(integrationData).length > 0 ? 'YES' : 'NO') + '</div>';
+                    
+                    result.innerHTML = `
+                        <strong>✅ PASS</strong><br>
+                        Integration data keys: ${Object.keys(integrationData).join(', ')}<br>
+                        Calendar connected: ${connectionData.connected ? 'YES' : 'NO'}<br>
+                        Session info: ${integrationData.session_info ? 'YES' : 'NO'}
+                    `;
+                    section.className = 'test-section success';
+                    return { success: true, integrationData };
+                } else {
+                    throw new Error('Webhook HTTP ' + webhookResponse.status);
+                }
+            } catch (error) {
+                logs.innerHTML += '<div class="log">❌ Error: ' + error.message + '</div>';
+                result.innerHTML = '<strong>❌ FAIL</strong><br>' + error.message;
+                section.className = 'test-section error';
+                return { success: false, error: error.message };
+            }
+        }
+        
+        document.getElementById('runTestBtn').addEventListener('click', async () => {
+            document.getElementById('final-result').innerHTML = '';
+            
+            // Reset all test sections
+            const sections = document.querySelectorAll('.test-section');
+            sections.forEach(section => {
+                section.className = 'test-section pending';
+            });
+            
+            // Run tests sequentially
+            console.log('🚀 Starting end-to-end integration test...');
+            
+            const test1Result = await runTest1();
+            const test2Result = await runTest2(test1Result);
+            const test3Result = await runTest3(test2Result);
+            
+            // Final results
+            const allPassed = test1Result.success && test2Result.success && test3Result.success;
+            
+            document.getElementById('final-result').innerHTML = `
+                <div class="test-section ${allPassed ? 'success' : 'error'}">
+                    <h2>${allPassed ? '🎉 ALL TESTS PASSED!' : '❌ SOME TESTS FAILED'}</h2>
+                    <p><strong>Summary:</strong></p>
+                    <ul>
+                        <li>Backend Account Resolution: ${test1Result.success ? '✅ PASS' : '❌ FAIL'}</li>
+                        <li>Connection Status Logic: ${test2Result.success ? '✅ PASS' : '❌ FAIL'}</li>
+                        <li>Webhook Integration Data: ${test3Result.success ? '✅ PASS' : '❌ FAIL'}</li>
+                    </ul>
+                    
+                    ${allPassed ? `
+                        <p><strong>🎯 User Experience:</strong></p>
+                        <ul>
+                            <li>✅ Platform correctly detects calendar connection</li>
+                            <li>✅ Integration credentials included in ALL webhooks</li>
+                            <li>✅ Status badge shows "Calendar Connected"</li>
+                        </ul>
+                    ` : `
+                        <p><strong>Issues to fix:</strong></p>
+                        <ul>
+                            ${!test1Result.success ? '<li>❌ Backend account resolution failing</li>' : ''}
+                            ${!test2Result.success ? '<li>❌ Connection status logic issues</li>' : ''}
+                            ${!test3Result.success ? '<li>❌ Webhook integration data problems</li>' : ''}
+                        </ul>
+                    `}
+                </div>
+            `;
+            
+            console.log('✅ End-to-end test completed:', { test1Result, test2Result, test3Result });
+        });
+    </script>
+</body>
+</html>

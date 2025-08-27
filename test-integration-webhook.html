@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Integration Webhook Flow</title>
+</head>
+<body>
+    <h1>Test Integration Webhook Flow</h1>
+    <button id="testBtn">Send Test Message with Integration Data</button>
+    <div id="result"></div>
+    <div id="logs"></div>
+
+    <script>
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            const logsDiv = document.getElementById('logs');
+            resultDiv.innerHTML = 'Testing...';
+            logsDiv.innerHTML = '';
+            
+            // Simulate a real user ID that has calendar integration
+            const userId = 'f55cad59-27e0-4a10-8764-3cf24999e25c'; // From backend logs
+            const sessionId = 'test_session_' + Date.now();
+            
+            try {
+                // Test the integration data collection (similar to EmbeddedChatbot)
+                let integrationData = {};
+                
+                // Always include session info
+                integrationData.session_info = {
+                    user_id: userId,
+                    session_id: sessionId,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Try to get calendar connection status
+                try {
+                    const calendarResponse = await fetch('http://localhost:3001/api/integrations/unipile/token-resolve', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            user_id: userId
+                        })
+                    });
+                    
+                    if (calendarResponse.ok) {
+                        const calendarData = await calendarResponse.json();
+                        integrationData.google_calendar = {
+                            connected: true,
+                            account_id: calendarData.account_id,
+                            user_id: userId,
+                            status: 'connected'
+                        };
+                        logsDiv.innerHTML += '<p>✅ Google Calendar integration found</p>';
+                        console.log('Calendar integration found:', calendarData);
+                    } else {
+                        integrationData.google_calendar = {
+                            connected: false,
+                            user_id: userId
+                        };
+                        logsDiv.innerHTML += '<p>❌ No Google Calendar integration found</p>';
+                        console.log('No calendar connection found');
+                    }
+                } catch (error) {
+                    integrationData.google_calendar = {
+                        connected: false,
+                        user_id: userId,
+                        error: error.message
+                    };
+                    logsDiv.innerHTML += '<p>❌ Calendar check error: ' + error.message + '</p>';
+                    console.log('Calendar check error:', error);
+                }
+                
+                // Create the webhook payload exactly like EmbeddedChatbot does
+                const webhookPayload = {
+                    message: 'Test message from user with integrations',
+                    sessionId: sessionId,
+                    userId: userId,
+                    timestamp: new Date().toISOString(),
+                    source: 'embedded_chat_test',
+                    integrations: integrationData  // Always include this
+                };
+                
+                logsDiv.innerHTML += '<p>📤 Sending webhook payload...</p>';
+                console.log('Sending webhook payload:', webhookPayload);
+                
+                // Send to our test receiver
+                const webhookResponse = await fetch('http://localhost:3002/webhook/test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(webhookPayload)
+                });
+                
+                const result = await webhookResponse.json();
+                
+                resultDiv.innerHTML = `
+                    <h3>Test Result:</h3>
+                    <p><strong>Integration Data Included:</strong> ${Object.keys(integrationData).length > 0 ? 'YES' : 'NO'}</p>
+                    <p><strong>Calendar Connected:</strong> ${integrationData.google_calendar?.connected ? 'YES' : 'NO'}</p>
+                    <p><strong>Session Info:</strong> ${integrationData.session_info ? 'YES' : 'NO'}</p>
+                    <p><strong>Response:</strong> ${JSON.stringify(result, null, 2)}</p>
+                    <details>
+                        <summary>Full Integration Data Sent</summary>
+                        <pre>${JSON.stringify(integrationData, null, 2)}</pre>
+                    </details>
+                    <details>
+                        <summary>Complete Webhook Payload</summary>
+                        <pre>${JSON.stringify(webhookPayload, null, 2)}</pre>
+                    </details>
+                `;
+                
+                logsDiv.innerHTML += '<p>✅ Test completed! Check console for details.</p>';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+                logsDiv.innerHTML += '<p>❌ Test failed: ' + error.message + '</p>';
+                console.error('Test error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

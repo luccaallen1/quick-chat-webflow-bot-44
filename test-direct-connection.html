@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Connection Test</title>
+</head>
+<body>
+    <h1>Direct Connection Test</h1>
+    <button id="testBtn">Test getUserAccount()</button>
+    <div id="result"></div>
+
+    <script type="module">
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing...';
+            
+            try {
+                // Simulate what happens in the frontend
+                const mockUser = {
+                    id: 'f55cad59-27e0-4a10-8764-3cf24999e25c',
+                    email: 'lucca@toratech.ai'
+                };
+                
+                // Test the getUserAccount logic by making direct API calls
+                console.log('🔍 Testing getUserAccount logic...');
+                
+                // First test: Check with provider_type = 'calendar'
+                const withProviderType = await fetch('http://localhost:3001/api/debug-mappings');
+                const debugData = await withProviderType.json();
+                
+                const userMappingsWithType = debugData.mappings.filter(m => 
+                    m.user_identifier === mockUser.id && 
+                    m.provider === 'GOOGLE' && 
+                    m.provider_type === 'calendar' &&
+                    m.status === 'connected'
+                );
+                
+                console.log('Mappings with provider_type=calendar:', userMappingsWithType);
+                
+                // Second test: Check without provider_type filter
+                const userMappingsWithoutType = debugData.mappings.filter(m => 
+                    m.user_identifier === mockUser.id && 
+                    m.provider === 'GOOGLE' && 
+                    m.status === 'connected'
+                );
+                
+                console.log('Mappings without provider_type filter:', userMappingsWithoutType);
+                
+                // Expected result
+                const shouldFindMapping = userMappingsWithType.length > 0 || userMappingsWithoutType.length > 0;
+                const foundMapping = userMappingsWithoutType[0]; // Should find the existing one
+                
+                result.innerHTML = `
+                    <h3>Connection Detection Test Results:</h3>
+                    <p><strong>Should find mapping:</strong> ${shouldFindMapping ? 'YES' : 'NO'}</p>
+                    <p><strong>Found mapping with provider_type='calendar':</strong> ${userMappingsWithType.length}</p>
+                    <p><strong>Found mapping without provider_type filter:</strong> ${userMappingsWithoutType.length}</p>
+                    
+                    ${foundMapping ? `
+                        <h4>Found Mapping Details:</h4>
+                        <pre>${JSON.stringify(foundMapping, null, 2)}</pre>
+                        
+                        <h4>Expected Connection Status:</h4>
+                        <p>Connected: ${foundMapping.status === 'connected' ? 'YES' : 'NO'}</p>
+                        <p>Account ID: ${foundMapping.account_id}</p>
+                        <p>Provider Type: ${foundMapping.provider_type || 'NOT SET (legacy)'}</p>
+                    ` : ''}
+                    
+                    <h4>All Mappings for Debug:</h4>
+                    <pre>${JSON.stringify(debugData.mappings, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                result.innerHTML = `Error: ${error.message}`;
+                console.error('Test error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Integration Flow</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            background: #fafafa;
+        }
+        .success { border-color: #10b981; background: #f0fdf4; }
+        .error { border-color: #ef4444; background: #fef2f2; }
+        .pending { border-color: #f59e0b; background: #fffbeb; }
+        .step { margin: 10px 0; padding: 10px; border-left: 4px solid #3b82f6; background: white; }
+        button { 
+            background: #3b82f6; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        button:disabled { background: #9ca3af; cursor: not-allowed; }
+        .log { 
+            background: #1f2937; 
+            color: #f3f4f6; 
+            padding: 15px; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔄 Complete Integration Flow Test</h1>
+    <p>Testing the complete Google Calendar integration flow with fixed backend integration.</p>
+    
+    <div class="test-section pending" id="step1">
+        <h3>Step 1: Check Integration Status Before Connection</h3>
+        <div class="step">
+            <p>First, let's check if any calendar integration exists for our test user.</p>
+            <button onclick="checkStatus('step1')">Check Current Status</button>
+            <div id="step1-result"></div>
+        </div>
+    </div>
+
+    <div class="test-section pending" id="step2">
+        <h3>Step 2: Initiate Google Calendar Connection</h3>
+        <div class="step">
+            <p>Start the OAuth flow to connect Google Calendar through Unipile.</p>
+            <button onclick="initiateConnection('step2')">Start Google Calendar Connection</button>
+            <div id="step2-result"></div>
+        </div>
+    </div>
+
+    <div class="test-section pending" id="step3">
+        <h3>Step 3: Verify Integration After Connection</h3>
+        <div class="step">
+            <p>After completing OAuth flow, check if calendar shows as connected.</p>
+            <button onclick="verifyConnection('step3')">Verify Connection Status</button>
+            <div id="step3-result"></div>
+        </div>
+    </div>
+
+    <div class="test-section pending" id="step4">
+        <h3>Step 4: Test Webhook Integration Data</h3>
+        <div class="step">
+            <p>Check if integration credentials are included in webhook payloads.</p>
+            <button onclick="testWebhookData('step4')">Test Webhook Integration</button>
+            <div id="step4-result"></div>
+        </div>
+    </div>
+
+    <div class="log" id="debugLog"></div>
+
+    <script>
+        const backendUrl = 'http://localhost:3001';
+        const mockUser = { 
+            id: 'f55cad59-27e0-4a10-8764-3cf24999e25c',
+            email: 'lucca@toratech.ai'
+        };
+
+        function log(message) {
+            const debugLog = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            debugLog.innerHTML += `[${timestamp}] ${message}\n`;
+            debugLog.scrollTop = debugLog.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStepStatus(stepId, status, content) {
+            const step = document.getElementById(stepId);
+            step.className = `test-section ${status}`;
+            document.getElementById(`${stepId}-result`).innerHTML = content;
+        }
+
+        async function checkStatus(stepId) {
+            log('🔍 Checking current integration status...');
+            
+            try {
+                const response = await fetch(`${backendUrl}/api/integrations/get-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userId: mockUser.id,
+                        sessionId: mockUser.id
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log(`✅ Status check response: ${JSON.stringify(data, null, 2)}`);
+                
+                const isConnected = data.google_calendar_connected;
+                const integrationData = data.integrations;
+                
+                updateStepStatus(stepId, isConnected ? 'success' : 'pending', `
+                    <div>
+                        <strong>Connection Status:</strong> ${isConnected ? '✅ Connected' : '❌ Not Connected'}<br>
+                        <strong>Integration Status:</strong> ${data.integration_status}<br>
+                        ${isConnected ? `
+                            <strong>Calendar Email:</strong> ${integrationData?.google_calendar?.email || 'N/A'}<br>
+                            <strong>Account ID:</strong> ${integrationData?.google_calendar?.account_id || 'N/A'}
+                        ` : ''}
+                        <details style="margin-top: 10px;">
+                            <summary>Raw Data</summary>
+                            <pre style="background: #f3f4f6; padding: 10px; margin-top: 5px; border-radius: 4px; font-size: 11px;">${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    </div>
+                `);
+                
+            } catch (error) {
+                log(`❌ Status check failed: ${error.message}`);
+                updateStepStatus(stepId, 'error', `<div style="color: red;"><strong>Error:</strong> ${error.message}</div>`);
+            }
+        }
+
+        async function initiateConnection(stepId) {
+            log('🚀 Initiating Google Calendar connection...');
+            
+            try {
+                const response = await fetch(`${backendUrl}/api/integrations/unipile/init`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: mockUser.id,
+                        provider: 'GOOGLE',
+                        providerType: 'calendar',
+                        successRedirect: `${window.location.origin}/integrations/success?redirect=test-integration-flow&config=default`,
+                        failureRedirect: `${window.location.origin}/integrations/failure?redirect=test-integration-flow`
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const authData = await response.json();
+                log(`✅ Auth URL received: ${authData.url}`);
+                
+                updateStepStatus(stepId, 'success', `
+                    <div>
+                        <p><strong>✅ Connection initiated successfully!</strong></p>
+                        <p>Authorization URL: <code>${authData.url}</code></p>
+                        <p>Expires: ${new Date(authData.expiresOn).toLocaleString()}</p>
+                        <br>
+                        <button onclick="window.open('${authData.url}', '_blank')" style="background: #059669;">
+                            🔗 Open Authorization Page
+                        </button>
+                        <br><br>
+                        <div style="background: #dbeafe; padding: 10px; border-radius: 4px; font-size: 14px;">
+                            <strong>Next Steps:</strong><br>
+                            1. Click the authorization button above<br>
+                            2. Complete Google OAuth flow<br>
+                            3. You'll be redirected back to this page<br>
+                            4. Then test Step 3 to verify connection
+                        </div>
+                    </div>
+                `);
+                
+            } catch (error) {
+                log(`❌ Connection initiation failed: ${error.message}`);
+                updateStepStatus(stepId, 'error', `<div style="color: red;"><strong>Error:</strong> ${error.message}</div>`);
+            }
+        }
+
+        async function verifyConnection(stepId) {
+            log('🔍 Verifying connection after OAuth...');
+            
+            // Wait a moment for any background sync to complete
+            setTimeout(async () => {
+                await checkStatus(stepId);
+                
+                // Also check if the BusinessIntegrations component would detect the connection
+                try {
+                    const response = await fetch(`${backendUrl}/api/integrations/sync-to-config`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            userId: mockUser.id, 
+                            configId: 'default' 
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const syncResult = await response.json();
+                        log(`✅ Sync to config successful: ${JSON.stringify(syncResult, null, 2)}`);
+                    } else {
+                        log(`⚠️  Sync to config failed: ${response.status}`);
+                    }
+                } catch (syncError) {
+                    log(`⚠️  Sync to config error: ${syncError.message}`);
+                }
+            }, 2000);
+        }
+
+        async function testWebhookData(stepId) {
+            log('🎯 Testing webhook integration data inclusion...');
+            
+            try {
+                const response = await fetch(`${backendUrl}/api/integrations/get-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userId: mockUser.id,
+                        sessionId: mockUser.id
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log(`📡 Webhook payload would include: ${JSON.stringify(data, null, 2)}`);
+                
+                const hasIntegrations = data.integrations && Object.keys(data.integrations).length > 0;
+                const hasCalendarIntegration = data.integrations?.google_calendar?.connected;
+                
+                updateStepStatus(stepId, hasIntegrations ? 'success' : 'error', `
+                    <div>
+                        <strong>Webhook Integration Data:</strong> ${hasIntegrations ? '✅ Present' : '❌ Missing'}<br>
+                        <strong>Google Calendar Data:</strong> ${hasCalendarIntegration ? '✅ Available' : '❌ Not Available'}<br>
+                        <br>
+                        <div style="background: #f3f4f6; padding: 10px; border-radius: 4px; font-size: 12px;">
+                            <strong>Integration credentials that would be sent in webhooks:</strong>
+                            <pre>${JSON.stringify(data.integrations, null, 2)}</pre>
+                        </div>
+                        ${hasIntegrations ? `
+                            <div style="background: #dcfce7; padding: 10px; border-radius: 4px; margin-top: 10px;">
+                                <strong>✅ SUCCESS:</strong> Integration credentials are now properly included in webhook payloads!
+                            </div>
+                        ` : `
+                            <div style="background: #fee2e2; padding: 10px; border-radius: 4px; margin-top: 10px;">
+                                <strong>❌ ISSUE:</strong> Integration credentials are missing from webhook payloads.
+                            </div>
+                        `}
+                    </div>
+                `);
+                
+            } catch (error) {
+                log(`❌ Webhook test failed: ${error.message}`);
+                updateStepStatus(stepId, 'error', `<div style="color: red;"><strong>Error:</strong> ${error.message}</div>`);
+            }
+        }
+
+        // Check if we're coming back from a redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('redirect') === 'test-integration-flow') {
+            log('🔄 Detected return from OAuth flow, starting verification...');
+            setTimeout(() => {
+                verifyConnection('step3');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

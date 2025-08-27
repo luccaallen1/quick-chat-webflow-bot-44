@@ -38,7 +38,9 @@ export interface ConnectionStatus {
 }
 
 class MultiProviderService {
-  private backendUrl = 'https://quick-chat-webflow-bot-44-production.up.railway.app';
+  private backendUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://quick-chat-webflow-bot-44-production.up.railway.app'
+    : 'http://localhost:3001'; // Use local backend in development
 
   /**
    * Get all available provider configurations

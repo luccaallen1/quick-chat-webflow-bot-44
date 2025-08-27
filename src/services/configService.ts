@@ -168,5 +168,102 @@ export const configService = {
       bookingWorkflow: dbConfig.booking_workflow,
       planPrice: dbConfig.plan_price,
     };
+  },
+
+  // Sync integration status to business configuration
+  async syncIntegrationToConfig(configId: string, integrationData: any): Promise<void> {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        throw new Error('User not authenticated');
+      }
+
+      console.log('🔄 Syncing integration data to config:', configId, integrationData);
+
+      // Call the database function to sync integration status
+      const { error } = await supabase.rpc('sync_integration_status_to_config', {
+        config_user_id: userData.user.id
+      });
+
+      if (error) {
+        console.error('❌ Error syncing integration to config:', error);
+        throw error;
+      }
+
+      console.log('✅ Successfully synced integration data to configuration');
+    } catch (error) {
+      console.error('❌ ConfigService syncIntegrationToConfig error:', error);
+      throw error;
+    }
+  },
+
+  // Get configuration with current integration status
+  async getConfigurationWithIntegrations(configId: string): Promise<any> {
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        throw new Error('User not authenticated');
+      }
+
+      const { data, error } = await supabase.rpc('get_business_config_with_integrations', {
+        config_user_id: userData.user.id
+      });
+
+      if (error) {
+        console.error('❌ Error getting configuration with integrations:', error);
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('❌ ConfigService getConfigurationWithIntegrations error:', error);
+      throw error;
+    }
+  },
+
+  // Update integration fields in bot configuration
+  async updateIntegrationFields(configId: string, integrationFields: {
+    googleCalendarConnected?: boolean;
+    googleCalendarAccountId?: string;
+    googleCalendarEmail?: string;
+    integrationStatus?: string;
+    connectedIntegrations?: object;
+  }): Promise<void> {
+    try {
+      const updateData: any = {};
+
+      if (integrationFields.googleCalendarConnected !== undefined) {
+        updateData.google_calendar_connected = integrationFields.googleCalendarConnected;
+      }
+      if (integrationFields.googleCalendarAccountId) {
+        updateData.google_calendar_account_id = integrationFields.googleCalendarAccountId;
+      }
+      if (integrationFields.googleCalendarEmail) {
+        updateData.google_calendar_email = integrationFields.googleCalendarEmail;
+      }
+      if (integrationFields.integrationStatus) {
+        updateData.integration_status = integrationFields.integrationStatus;
+      }
+      if (integrationFields.connectedIntegrations) {
+        updateData.connected_integrations = integrationFields.connectedIntegrations;
+      }
+
+      updateData.last_integration_sync = new Date().toISOString();
+
+      const { error } = await supabase
+        .from('bot_configurations')
+        .update(updateData)
+        .eq('id', configId);
+
+      if (error) {
+        console.error('❌ Error updating integration fields:', error);
+        throw error;
+      }
+
+      console.log('✅ Successfully updated integration fields in configuration');
+    } catch (error) {
+      console.error('❌ ConfigService updateIntegrationFields error:', error);
+      throw error;
+    }
   }
 };

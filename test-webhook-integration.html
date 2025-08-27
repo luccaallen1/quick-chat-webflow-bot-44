@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Webhook Integration Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+        .test-container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header { 
+            background: linear-gradient(135deg, #2563eb, #1d4ed8); 
+            color: white; 
+            padding: 20px; 
+            text-align: center;
+        }
+        .content { padding: 20px; }
+        button { 
+            background: #2563eb; 
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        button:hover { background: #1d4ed8; }
+        button:disabled { background: #9ca3af; cursor: not-allowed; }
+        .log { 
+            background: #f3f4f6; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 6px; 
+            padding: 15px; 
+            margin: 15px 0;
+            font-family: monospace; 
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status { 
+            padding: 15px; 
+            border-radius: 6px; 
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        .success { background: #dcfce7; border: 1px solid #22c55e; color: #15803d; }
+        .error { background: #fee2e2; border: 1px solid #ef4444; color: #dc2626; }
+        .info { background: #dbeafe; border: 1px solid #3b82f6; color: #1d4ed8; }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .message-box {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .message-box input { flex: 1; margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🎯 Webhook Integration Test</h1>
+            <p>Testing if integration credentials are included in webhook payloads</p>
+        </div>
+        
+        <div class="content">
+            <div class="info">
+                <strong>🔍 What this tests:</strong><br>
+                • Sends a message to the webhook capture endpoint<br>
+                • Uses the same integration logic as the embedded chat<br>
+                • Shows exactly what data n8n would receive<br>
+                • Verifies Google Calendar integration is included
+            </div>
+            
+            <div class="message-box">
+                <input type="text" id="messageInput" placeholder="Type your test message..." 
+                       value="I need to book an appointment for tomorrow at 2pm">
+                <button onclick="sendTestMessage()" id="sendBtn">Send Test Message</button>
+            </div>
+            
+            <button onclick="clearLog()">Clear Log</button>
+            
+            <div id="statusDiv"></div>
+            <div class="log" id="logDiv">Ready to test webhook integration...\n</div>
+        </div>
+    </div>
+
+    <script>
+        const userId = 'f55cad59-27e0-4a10-8764-3cf24999e25c'; // Known user with Google Calendar
+        const sessionId = userId;
+        
+        function log(message) {
+            const logDiv = document.getElementById('logDiv');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function setStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('statusDiv');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function clearLog() {
+            document.getElementById('logDiv').innerHTML = '';
+            document.getElementById('statusDiv').innerHTML = '';
+        }
+        
+        async function sendTestMessage() {
+            const sendBtn = document.getElementById('sendBtn');
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                setStatus('Please enter a message to test', 'error');
+                return;
+            }
+            
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+            setStatus('🔄 Preparing webhook payload with integration data...', 'info');
+            
+            try {
+                log('🚀 Starting webhook integration test...');
+                log(`📝 Message: "${message}"`);
+                log(`👤 User ID: ${userId}`);
+                log(`🔗 Session ID: ${sessionId}`);
+                
+                // Step 1: Get integration data (same as embedded chat)
+                log('📡 Step 1: Fetching integration data...');
+                
+                const integrationResponse = await fetch('http://localhost:3001/api/integrations/get-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, sessionId })
+                });
+                
+                let integrationData = {};
+                if (integrationResponse.ok) {
+                    const integrationResult = await integrationResponse.json();
+                    integrationData = integrationResult.integrations || {};
+                    log(`✅ Integration data retrieved: ${Object.keys(integrationData).length} integrations found`);
+                    log(`📅 Google Calendar connected: ${integrationData.google_calendar?.connected ? 'YES' : 'NO'}`);
+                } else {
+                    log(`❌ Failed to fetch integration data: ${integrationResponse.status}`);
+                }
+                
+                // Step 2: Build complete webhook payload (same as embedded chat)
+                log('🔧 Step 2: Building webhook payload...');
+                
+                const webhookPayload = {
+                    message: message,
+                    userId: userId,
+                    sessionId: sessionId,
+                    timestamp: new Date().toISOString(),
+                    source: 'embedded_chat',
+                    clinicName: 'Test Clinic',
+                    clinicId: 'test-clinic-123',
+                    agentName: 'Alex',
+                    url: window.location.href,
+                    userAgent: navigator.userAgent,
+                    integrations: integrationData // This is the key field!
+                };
+                
+                log(`📦 Webhook payload prepared (${JSON.stringify(webhookPayload).length} bytes)`);
+                
+                // Step 3: Send to webhook capture endpoint
+                log('📡 Step 3: Sending to webhook capture endpoint...');
+                
+                const webhookResponse = await fetch('http://localhost:3001/api/webhook/capture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(webhookPayload)
+                });
+                
+                if (webhookResponse.ok) {
+                    const responseData = await webhookResponse.json();
+                    log('✅ Webhook sent successfully!');
+                    log(`🤖 Bot Response: "${responseData[0]?.output || 'No response'}"`);
+                    
+                    const hasIntegrations = integrationData && Object.keys(integrationData).length > 0;
+                    const hasGoogleCalendar = integrationData.google_calendar?.connected;
+                    
+                    if (hasIntegrations && hasGoogleCalendar) {
+                        setStatus('🎉 SUCCESS! Integration credentials are included in webhook payloads and Google Calendar is connected!', 'success');
+                    } else if (hasIntegrations) {
+                        setStatus('⚠️ Integration data included but Google Calendar not connected', 'error');
+                    } else {
+                        setStatus('❌ Integration data missing from webhook payload', 'error');
+                    }
+                    
+                } else {
+                    const errorText = await webhookResponse.text();
+                    log(`❌ Webhook failed: ${webhookResponse.status} - ${errorText}`);
+                    setStatus('❌ Webhook request failed', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Test failed: ${error.message}`);
+                setStatus(`❌ Test failed: ${error.message}`, 'error');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send Test Message';
+            }
+        }
+        
+        // Allow Enter key to send message
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendTestMessage();
+            }
+        });
+    </script>
+</body>
+</html>
