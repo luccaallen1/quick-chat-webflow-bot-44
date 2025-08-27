@@ -146,21 +146,30 @@ export const EmbeddedChatbot: React.FC<EmbeddedChatbotProps> = ({
     setIsLoading(true);
 
     try {
-      // Get Unipile calendar connection if available
-      let calendarData = null;
+      // Get all integration data if available
+      let integrationData = null;
       try {
-        const connectionStatus = await unipileService.getConnectionStatus();
-        if (connectionStatus.connected && connectionStatus.selectedCalendar) {
-          calendarData = {
-            connected: true,
-            email: connectionStatus.email,
-            selected_calendar_id: connectionStatus.selectedCalendar.calendar_id,
-            selected_calendar_name: connectionStatus.selectedCalendar.summary,
-            user_id: userId || sessionId.current // Pass user_id for n8n token resolution
-          };
+        // Import the multiProviderService
+        const { multiProviderService } = await import('@/services/multiProviderService');
+        integrationData = await multiProviderService.getIntegrationDataForWebhook();
+        
+        // Also try legacy calendar connection for backwards compatibility
+        if (!integrationData || Object.keys(integrationData).length === 0) {
+          const connectionStatus = await unipileService.getConnectionStatus();
+          if (connectionStatus.connected && connectionStatus.selectedCalendar) {
+            integrationData = {
+              legacy_calendar: {
+                connected: true,
+                email: connectionStatus.email,
+                selected_calendar_id: connectionStatus.selectedCalendar.calendar_id,
+                selected_calendar_name: connectionStatus.selectedCalendar.summary,
+                user_id: userId || sessionId.current
+              }
+            };
+          }
         }
       } catch (error) {
-        console.log('No calendar connection available:', error);
+        console.log('No integrations available:', error);
       }
       const response = await fetch(webhookUrl, {
         method: 'POST',
@@ -200,9 +209,9 @@ export const EmbeddedChatbot: React.FC<EmbeddedChatbotProps> = ({
             bookingWorkflow: botConfiguration.bookingWorkflow,
             planPrice: botConfiguration.planPrice
           }),
-          // Calendar connection data (if connected via Unipile)
-          ...(calendarData && {
-            calendar_integration: calendarData
+          // All integration data (calendar, email, messaging)
+          ...(integrationData && {
+            integrations: integrationData
           })
         })
       });

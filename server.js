@@ -27,15 +27,25 @@ if (!UNIPILE_API_KEY || UNIPILE_API_KEY === 'your_unipile_api_key_here') {
   console.warn('⚠️  UNIPILE_API_KEY not configured. Set VITE_UNIPILE_API_KEY in .env');
 }
 
-// 1. POST /api/integrations/unipile/google/init
-// Generate Unipile hosted auth URL
-app.post('/api/integrations/unipile/google/init', async (req, res) => {
+// 1. POST /api/integrations/unipile/init  
+// Generate Unipile hosted auth URL for any provider
+app.post('/api/integrations/unipile/init', async (req, res) => {
   try {
-    const { userId, successRedirect, failureRedirect } = req.body;
+    const { userId, provider, providerType, successRedirect, failureRedirect } = req.body;
 
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
     }
+
+    if (!provider) {
+      return res.status(400).json({ error: 'provider is required' });
+    }
+
+    if (!providerType) {
+      return res.status(400).json({ error: 'providerType is required' });
+    }
+
+    console.log('Initializing connection for provider:', { userId, provider, providerType });
 
     if (!UNIPILE_API_KEY || UNIPILE_API_KEY === 'your_unipile_api_key_here') {
       return res.status(500).json({ error: 'Unipile API key not configured' });
@@ -46,15 +56,33 @@ app.post('/api/integrations/unipile/google/init', async (req, res) => {
     expiresOn.setHours(expiresOn.getHours() + 24);
 
     // Use Unipile Hosted Auth Wizard as documented
+    // Map provider types to Unipile provider names
+    const providerMapping = {
+      'GOOGLE_calendar': ['GOOGLE'],
+      'GOOGLE_email': ['GOOGLE'],
+      'MICROSOFT_calendar': ['MICROSOFT'],
+      'MICROSOFT_email': ['MICROSOFT'],
+      'IMAP_email': ['IMAP'],
+      'WHATSAPP_messaging': ['WHATSAPP'],
+      'LINKEDIN_messaging': ['LINKEDIN'],
+      'INSTAGRAM_messaging': ['INSTAGRAM'],
+      'MESSENGER_messaging': ['MESSENGER'],
+      'TWITTER_messaging': ['TWITTER'],
+      'TELEGRAM_messaging': ['TELEGRAM']
+    };
+
+    const providerKey = `${provider}_${providerType}`;
+    const unipileProviders = providerMapping[providerKey] || [provider];
+
     const hostedAuthPayload = {
       type: 'create',
-      providers: ['GOOGLE'],
+      providers: unipileProviders,
       api_url: UNIPILE_API_URL,
       expiresOn: expiresOn.toISOString(),
       notify_url: `${req.protocol}://${req.get('host')}/api/integrations/unipile/notify`,
       success_redirect_url: successRedirect || `${req.protocol}://${req.get('host')}/integrations/success`,
       failure_redirect_url: failureRedirect || `${req.protocol}://${req.get('host')}/integrations/failure`,
-      name: userId // Our internal user ID
+      name: `${userId}:${provider}:${providerType}` // Include provider info in name
     };
 
     const response = await fetch(`${UNIPILE_API_URL}/api/v1/hosted/accounts/link`, {
@@ -204,9 +232,22 @@ app.get('/api/integrations/google/callback', async (req, res) => {
 app.post('/api/integrations/unipile/notify', async (req, res) => {
   try {
     const { status, account_id, name } = req.body;
-    const userId = name; // We use user ID as the name in the hosted auth
+    
+    // Parse the enhanced name format: userId:provider:providerType
+    let userId, provider, providerType;
+    if (name && name.includes(':')) {
+      const parts = name.split(':');
+      userId = parts[0];
+      provider = parts[1] || 'GOOGLE';
+      providerType = parts[2] || 'calendar';
+    } else {
+      // Fallback for legacy format
+      userId = name;
+      provider = 'GOOGLE';
+      providerType = 'calendar';
+    }
 
-    console.log('Unipile notify webhook:', { status, account_id, userId });
+    console.log('Unipile notify webhook:', { status, account_id, userId, provider, providerType });
 
     if (status === 'CREATION_SUCCESS') {
       // First, try to create/update user if needed
@@ -485,23 +526,43 @@ app.post('/api/integrations/unipile/token-resolve', async (req, res) => {
   }
 });
 
-// 6. POST /api/integrations/unipile/google/disconnect
-// Disconnect Google Calendar
-app.post('/api/integrations/unipile/google/disconnect', async (req, res) => {
+// 6. POST /api/integrations/unipile/disconnect
+// Disconnect any provider  
+app.post('/api/integrations/unipile/disconnect', async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId, provider, providerType } = req.body;
 
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
     }
 
-    // Delete from google_calendars table
-    await supabase
-      .from('google_calendars')
-      .delete()
-      .eq('user_id', userId);
+    if (!provider) {
+      return res.status(400).json({ error: 'provider is required' });
+    }
 
-    // Update unipile_accounts status to 'disconnected'
+    if (!providerType) {
+      return res.status(400).json({ error: 'providerType is required' });
+    }
+
+    console.log('Disconnecting provider:', { userId, provider, providerType });
+
+    // Delete from provider-specific tables
+    if (provider === 'GOOGLE' && providerType === 'calendar') {
+      await supabase
+        .from('google_calendars')
+        .delete()
+        .eq('user_id', userId);
+    }
+
+    // Delete from account mappings table
+    const { error: mappingError } = await supabaseAdmin
+      .from('unipile_account_mappings')
+      .delete()
+      .eq('user_identifier', userId)
+      .eq('provider', provider);
+      // Note: provider_type column doesn't exist yet, will be added in migration
+
+    // Update main unipile_accounts status to 'disconnected' (fallback)
     const { error } = await supabase
       .from('unipile_accounts')
       .update({ 
@@ -509,7 +570,11 @@ app.post('/api/integrations/unipile/google/disconnect', async (req, res) => {
         updated_at: new Date().toISOString()
       })
       .eq('user_id', userId)
-      .eq('provider', 'GOOGLE');
+      .eq('provider', provider);
+
+    if (mappingError) {
+      console.error('Mapping delete error:', mappingError);
+    }
 
     if (error) {
       console.error('Disconnect error:', error);

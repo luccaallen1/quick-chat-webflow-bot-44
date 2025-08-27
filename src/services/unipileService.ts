@@ -270,13 +270,15 @@ class UnipileService {
       throw new Error('User not authenticated');
     }
 
-    const response = await fetch(`${this.backendUrl}/api/integrations/unipile/google/disconnect`, {
+    const response = await fetch(`${this.backendUrl}/api/integrations/unipile/disconnect`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId: userData.user.id
+        userId: userData.user.id,
+        provider: 'GOOGLE',
+        providerType: 'calendar'
       })
     });
 

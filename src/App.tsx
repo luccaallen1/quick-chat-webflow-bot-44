@@ -16,6 +16,7 @@ import SaaS from "./pages/SaaS";
 import GoogleCallback from "./pages/GoogleCallback";
 import IntegrationSuccess from "./pages/IntegrationSuccess";
 import IntegrationFailure from "./pages/IntegrationFailure";
+import { Integrations } from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/saas" element={<SaaS />} />
             <Route path="/auth/google/callback" element={<GoogleCallback />} />
+            <Route path="/integrations" element={<Integrations />} />
             <Route path="/integrations/success" element={<IntegrationSuccess />} />
             <Route path="/integrations/failure" element={<IntegrationFailure />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
