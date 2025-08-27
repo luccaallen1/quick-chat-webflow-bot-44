@@ -40,7 +40,7 @@ export const FAQSection: React.FC = () => {
     },
     {
       question: "Is there a voice-based chatbot option available?",
-      answer: "Yes. We offer AI voice agent integration via third-party services like Vapi, Twilio, or Eleven Labs, allowing users to interact with the bot via voice."
+      answer: "Yes. We offer integrated AI voice agent capabilities, allowing users to interact with the bot via voice for a more natural conversation experience."
     },
     {
       question: "Do you offer support and onboarding?",

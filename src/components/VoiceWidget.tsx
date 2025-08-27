@@ -87,16 +87,40 @@ export const VoiceWidget: React.FC<VoiceWidgetProps> = ({
 
   const startVoiceConversation = async () => {
     try {
-      // Request microphone permission
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Request microphone permission with better audio settings
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 48000
+        }
+      });
+      
+      // Monitor audio stream health
+      const audioTrack = stream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.onended = () => {
+          console.warn('Microphone disconnected during call');
+          endVoiceConversation();
+        };
+        
+        // Check if track is enabled
+        if (!audioTrack.enabled) {
+          console.warn('Microphone track is disabled');
+        }
+      }
       
       // Start the conversation
       const id = await conversation.startSession({ agentId });
       setConversationId(id);
       setIsConversationOpen(true);
+      
+      // Store stream reference for cleanup
+      (window as any).voiceStream = stream;
     } catch (error) {
       console.error('Failed to start conversation:', error);
-      alert('Failed to start voice conversation. Please check your microphone permissions and agent ID.');
+      alert('Failed to start voice conversation. Please check your microphone permissions and ensure the agent ID is correct.');
     }
   };
 
@@ -105,6 +129,13 @@ export const VoiceWidget: React.FC<VoiceWidgetProps> = ({
       await conversation.endSession();
       setConversationId(null);
       setIsConversationOpen(false);
+      
+      // Clean up audio stream
+      if ((window as any).voiceStream) {
+        const stream = (window as any).voiceStream;
+        stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+        (window as any).voiceStream = null;
+      }
     } catch (error) {
       console.error('Failed to end conversation:', error);
     }

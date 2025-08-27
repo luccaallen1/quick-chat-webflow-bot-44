@@ -218,164 +218,42 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
   const [isNotificationEnabled, setIsNotificationEnabled] = useState(true);
   const [suggestionsDisabled, setSuggestionsDisabled] = useState(false);
-  const [dynamicHeight, setDynamicHeight] = useState<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const editingTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const chatWindowRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Messenger-like scroll behavior states
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [showNewMessageIndicator, setShowNewMessageIndicator] = useState(false);
 
-  // Enhanced mobile viewport height management
+  // Mobile detection state
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isSmallMobile, setIsSmallMobile] = useState(window.innerWidth <= 480);
+
+  // Simple mobile detection
   useEffect(() => {
-    const updateViewportHeight = () => {
-      if (typeof window !== 'undefined') {
-        // Use window.innerHeight for accurate mobile viewport
-        const vh = window.innerHeight;
-        const vw = window.innerWidth;
-
-        // Set both standard and mobile-specific viewport heights
-        setDynamicHeight(vh);
-        document.documentElement.style.setProperty('--chatbot-vh', `${vh}px`);
-        document.documentElement.style.setProperty('--chatbot-mobile-vh', `${vh}px`);
-
-        // Detect if we're likely on mobile
-        const isMobile = vw <= 768;
-        if (isMobile) {
-          // Use fill-available for better mobile support
-          document.documentElement.style.setProperty('--chatbot-mobile-vh', '-webkit-fill-available');
-        }
-        console.log('Viewport updated:', {
-          vh,
-          vw,
-          isMobile
-        });
-      }
-    };
-
-    // Initial height setup
-    updateViewportHeight();
-
-    // Keyboard detection for mobile
     const handleResize = () => {
-      updateViewportHeight();
-
-      // Detect keyboard on mobile (viewport height change)
-      if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-        const currentHeight = window.innerHeight;
-        const isKeyboardOpen = currentHeight < window.screen.height * 0.75;
-        const container = document.querySelector('.chatbot-widget-container');
-        if (container) {
-          if (isKeyboardOpen) {
-            container.classList.add('keyboard-open');
-          } else {
-            container.classList.remove('keyboard-open');
-          }
-        }
-      }
+      const vw = window.innerWidth;
+      setIsMobile(vw <= 768);
+      setIsSmallMobile(vw <= 480);
     };
 
-    // Enhanced event listeners for mobile
+    handleResize();
     window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', () => {
-      // Delay to allow orientation change to complete
-      setTimeout(updateViewportHeight, 100);
-      setTimeout(updateViewportHeight, 300); // Double check after animation
-    });
-
-    // Visual viewport API support for modern browsers
-    if (window.visualViewport) {
-      const handleVisualViewportChange = () => {
-        const vh = window.visualViewport.height;
-        document.documentElement.style.setProperty('--chatbot-mobile-vh', `${vh}px`);
-
-        // Detect keyboard based on visual viewport
-        const isKeyboardOpen = vh < window.innerHeight * 0.8;
-        const container = document.querySelector('.chatbot-widget-container');
-        if (container) {
-          if (isKeyboardOpen) {
-            container.classList.add('keyboard-open');
-          } else {
-            container.classList.remove('keyboard-open');
-          }
-        }
-      };
-      window.visualViewport.addEventListener('resize', handleVisualViewportChange);
-      window.visualViewport.addEventListener('scroll', handleVisualViewportChange);
-      return () => {
-        window.removeEventListener('resize', handleResize);
-        window.removeEventListener('orientationchange', updateViewportHeight);
-        window.visualViewport.removeEventListener('resize', handleVisualViewportChange);
-        window.visualViewport.removeEventListener('scroll', handleVisualViewportChange);
-      };
-    }
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', updateViewportHeight);
-    };
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Enhanced input focus handling for mobile keyboard with iOS Safari fixes
+  // Simplified input focus handling - no viewport manipulation
   useEffect(() => {
     const handleInputFocus = () => {
-      // iOS Safari keyboard handling with double-timeout technique
-      setTimeout(() => {
-        // Force layout recalculation
-        if (window.innerWidth <= 768) {
-          const container = document.querySelector('.chatbot-widget-container');
-          if (container) {
-            container.classList.add('keyboard-open');
-          }
-        }
-        
-        setTimeout(() => {
-          scrollToBottom();
-          
-          // Scroll input into view on mobile with momentum considerations
-          if (inputRef.current && window.innerWidth <= 768) {
-            inputRef.current.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-              inline: 'nearest'
-            });
-            
-            // Additional iOS Safari viewport adjustment
-            setTimeout(() => {
-              const container = chatWindowRef.current;
-              if (container) {
-                container.scrollTop = container.scrollHeight;
-              }
-            }, 100);
-          }
-        }, 50);
-      }, 0);
-      
-      // Additional check for slower devices with enhanced viewport detection
-      setTimeout(() => {
-        if (inputRef.current && window.innerWidth <= 768) {
-          const rect = inputRef.current.getBoundingClientRect();
-          const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-          const isVisible = rect.bottom <= viewportHeight;
-          if (!isVisible) {
-            inputRef.current.scrollIntoView({
-              behavior: 'smooth',
-              block: 'end'
-            });
-          }
-        }
-      }, 300);
+      // Don't manipulate viewport or scroll position
+      // Just let the browser handle keyboard naturally
     };
 
     const handleInputBlur = () => {
-      // Clean up keyboard detection with momentum preservation
-      setTimeout(() => {
-        const container = document.querySelector('.chatbot-widget-container');
-        if (container) {
-          container.classList.remove('keyboard-open');
-        }
-        // Preserve scroll momentum while cleaning up
-        setTimeout(() => {
-          scrollToBottom();
-        }, 100);
-      }, 150);
+      // Nothing to clean up
     };
 
     const inputElement = inputRef.current;
@@ -383,17 +261,9 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       inputElement.addEventListener('focus', handleInputFocus);
       inputElement.addEventListener('blur', handleInputBlur);
 
-      // Enhanced iOS zoom prevention
-      inputElement.addEventListener('touchstart', e => {
-        // Prevent zoom by ensuring font-size is 16px+ and using manipulation
-        e.preventDefault();
-        inputElement.focus();
-      });
-
       return () => {
         inputElement.removeEventListener('focus', handleInputFocus);
         inputElement.removeEventListener('blur', handleInputBlur);
-        inputElement.removeEventListener('touchstart', () => {});
       };
     }
   }, [isOpen]);
@@ -452,23 +322,53 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       console.warn('Chatbot container not found. Styles not applied.');
     }
   }, [primaryColor, secondaryColor, chatBackground, botTextColor, userTextColor, headerGradientColor, headerMainColor, logoBackgroundColor, logoBorderColor]);
-  const scrollToBottom = () => {
-    // Double-timeout technique for optimal mobile scrolling
-    setTimeout(() => {
-      const messagesContainer = document.querySelector('.chatbot-widget-messages');
-      if (messagesContainer) {
-        // Force layout recalculation first
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Then apply smooth scrolling
-        setTimeout(() => {
-          messagesContainer.scroll({
-            top: messagesContainer.scrollHeight,
-            behavior: 'smooth'
-          });
-        }, 50);
-      }
-    }, 0);
+  // Messenger-like scroll detection
+  const checkIfAtBottom = () => {
+    const container = messagesContainerRef.current;
+    if (!container) return true;
+    
+    // Check if user is within 50px of bottom (threshold for "at bottom")
+    const threshold = 50;
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+    return isNearBottom;
+  };
+
+  // Handle scroll events to detect position
+  const handleScroll = () => {
+    const atBottom = checkIfAtBottom();
+    setIsAtBottom(atBottom);
+    
+    // Hide new message indicator if scrolled to bottom
+    if (atBottom && showNewMessageIndicator) {
+      setShowNewMessageIndicator(false);
+    }
+  };
+
+  // Smart scroll to bottom (only if already at bottom or forced)
+  const scrollToBottom = (force = false) => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    
+    // Only scroll if at bottom or forced
+    if (!isAtBottom && !force) {
+      // Show new message indicator instead
+      setShowNewMessageIndicator(true);
+      return;
+    }
+    
+    // Smooth scroll animation
+    requestAnimationFrame(() => {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      });
+    });
+  };
+  
+  // Scroll to bottom when user clicks new message indicator
+  const handleNewMessageClick = () => {
+    scrollToBottom(true);
+    setShowNewMessageIndicator(false);
   };
 
   // Add MutationObserver for auto-scroll on content changes
@@ -493,18 +393,15 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   }, [isOpen]);
 
   useEffect(() => {
+    // Smart scroll on new messages
     scrollToBottom();
   }, [messages]);
   useEffect(() => {
     if (isOpen) {
       setHasUnreadMessages(false);
-      // Ensure proper viewport height when opening
+      // Scroll to bottom when opening chat
       setTimeout(() => {
-        if (typeof window !== 'undefined') {
-          const vh = window.innerHeight;
-          setDynamicHeight(vh);
-          document.documentElement.style.setProperty('--chatbot-vh', `${vh}px`);
-        }
+        scrollToBottom(true);
       }, 100);
     }
   }, [isOpen]);
@@ -735,6 +632,10 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       e.preventDefault();
       if (inputMessage.trim() && !isTyping) {
         sendMessage(inputMessage);
+        // Reset textarea height after sending
+        if (inputRef.current) {
+          inputRef.current.style.height = '44px';
+        }
       }
     }
   };
@@ -834,8 +735,10 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   >
       {/* Chat Window */}
       {isOpen && <div ref={chatWindowRef} className="chatbot-widget-window chatbot-widget-animate-in" style={{
-      height: window.innerWidth <= 768 ? '100vh' : dynamicHeight > 0 ? `min(${dynamicHeight * 0.9}px, 600px)` : '600px',
-      maxHeight: window.innerWidth <= 768 ? '100vh' : dynamicHeight > 0 ? `${dynamicHeight * 0.9}px` : '600px'
+      height: isMobile ? '100vh' : '600px',
+      maxHeight: isMobile ? '100vh' : '600px',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
           {/* Header */}
           <div className="chatbot-widget-header" style={{
@@ -941,14 +844,52 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                         </p>
                       </div>
                     </div> : <>
-                    <div className="chatbot-widget-messages chatbot-widget-scrollbar" style={{
-            backgroundColor: chatBackground,
-            flex: 1,
-            overflowY: 'auto',
-            paddingBottom: window.innerWidth <= 768 ? undefined : '1rem'
-          }}>
+                    <div 
+                      ref={messagesContainerRef}
+                      className="chatbot-widget-messages chatbot-widget-scrollbar" 
+                      style={{
+                        backgroundColor: chatBackground,
+                        flex: '1 1 auto',
+                        overflowY: 'auto',
+                        overflowX: 'hidden',
+                        padding: '1rem',
+                        paddingBottom: '1rem',
+                        position: 'relative',
+                        minHeight: 0 // Important for flexbox
+                      }}
+                      onScroll={handleScroll}
+                    >
+                      {/* New Messages Indicator */}
+                      {showNewMessageIndicator && (
+                        <button
+                          onClick={handleNewMessageClick}
+                          style={{
+                            position: 'absolute',
+                            bottom: '20px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            backgroundColor: primaryColor,
+                            color: '#ffffff',
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                            zIndex: 10,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            animation: 'chatbot-fade-in 0.3s ease-out'
+                          }}
+                        >
+                          ↓ New Messages
+                        </button>
+                      )}
+                      
                       <div className="chatbot-widget-messages-content">
-                        {messages.map(message => <div key={message.id} className={`chatbot-widget-message ${message.sender === 'user' ? 'chatbot-widget-message-user' : 'chatbot-widget-message-bot'} ${editingMessageId === message.id ? 'editing' : ''}`}>
+                        {messages.map(message => <div key={message.id} className={`chatbot-widget-message ${message.sender === 'user' ? 'chatbot-widget-message-user' : 'chatbot-widget-message-bot'} ${editingMessageId === message.id ? 'editing' : ''} chatbot-message-animate`}>
                             <div className={`chatbot-widget-message-bubble ${message.sender === 'user' ? 'chatbot-widget-message-bubble-user' : 'chatbot-widget-message-bubble-bot'} ${editingMessageId === message.id ? 'editing' : ''}`} style={{
                   backgroundColor: message.sender === 'user' ? primaryColor : secondaryColor,
                   color: message.sender === 'user' ? userTextColor : botTextColor,
@@ -1107,7 +1048,11 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
           
                     {/* Enhanced Input with conditional Voice Controls */}
                     <div className="chatbot-widget-input" style={{
-            position: 'relative'
+            flex: '0 0 auto',
+            padding: '0.75rem',
+            backgroundColor: chatBackground,
+            borderTop: '1px solid #e5e7eb',
+            boxShadow: '0 -2px 10px rgba(0,0,0,0.05)'
           }}>
                       {/* Call AI Voice Agent Button - only show if no user messages sent yet and ElevenLabs is enabled */}
                       {!messages.some(msg => msg.sender === 'user') && isElevenLabsEnabled && elevenLabsAgentId && (
@@ -1125,11 +1070,44 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                         </button>
                       )}
                       
-                      <div className="chatbot-widget-input-container">
-                        <input ref={inputRef} value={inputMessage} onChange={e => setInputMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder={isVoiceEnabled && isRecording ? 'Listening...' : isVoiceEnabled && isProcessing ? 'Processing...' : placeholder} disabled={isLoading || isVoiceEnabled && (isRecording || isProcessing)} className="chatbot-widget-input-field" style={{
-                color: botTextColor,
-                opacity: isVoiceEnabled && (isRecording || isProcessing) ? 0.7 : 1
-              }} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" />
+                      <div className="chatbot-widget-input-container" style={{
+                        display: 'flex',
+                        gap: '0.5rem',
+                        alignItems: 'flex-end'
+                      }}>
+                        <textarea 
+                          ref={inputRef} 
+                          value={inputMessage} 
+                          onChange={e => {
+                            setInputMessage(e.target.value);
+                            // Simple auto-resize
+                            if (inputRef.current) {
+                              inputRef.current.style.height = '44px';
+                              const newHeight = Math.min(inputRef.current.scrollHeight, 100);
+                              inputRef.current.style.height = newHeight + 'px';
+                            }
+                          }} 
+                          onKeyDown={handleKeyPress}
+                          placeholder={isVoiceEnabled && isRecording ? 'Listening...' : isVoiceEnabled && isProcessing ? 'Processing...' : placeholder} 
+                          disabled={isLoading || isVoiceEnabled && (isRecording || isProcessing)} 
+                          className="chatbot-widget-input-field" 
+                          style={{
+                            color: botTextColor,
+                            opacity: isVoiceEnabled && (isRecording || isProcessing) ? 0.7 : 1,
+                            minHeight: '44px',
+                            maxHeight: '100px',
+                            resize: 'none',
+                            overflow: 'auto',
+                            lineHeight: '1.5',
+                            padding: '0.75rem 1rem',
+                            fontSize: '16px' // Prevent zoom on iOS
+                          }} 
+                          autoComplete="off" 
+                          autoCorrect="off" 
+                          autoCapitalize="sentences" 
+                          spellCheck="true" 
+                          rows={1}
+                        />
                         
                         {/* Voice Controls - only show if voice is enabled */}
                         {isVoiceEnabled && <VoiceControls isRecording={isRecording} isProcessing={isProcessing} recordingTimer={recordingTimer} isSpeaking={isSpeaking} voicePermissionDenied={voicePermissionDenied} isVoiceEnabled={isVoiceMode} onStartRecording={startRecording} onStopRecording={stopRecording} onStopSpeaking={stopSpeaking} onToggleVoice={toggleVoiceMode} primaryColor={primaryColor} />}
@@ -1138,9 +1116,15 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                         <button onClick={() => {
                 if (inputMessage.trim() && !isTyping) {
                   sendMessage(inputMessage);
+                  // Reset textarea height after sending
+                  if (inputRef.current) {
+                    inputRef.current.style.height = '44px';
+                  }
                 }
               }} disabled={isLoading || !inputMessage.trim() || isVoiceEnabled && (isRecording || isProcessing)} className="chatbot-widget-send-button" style={{
-                backgroundColor: primaryColor
+                backgroundColor: primaryColor,
+                alignSelf: 'flex-end',
+                marginBottom: '2px'
               }}>
                           <Send style={{
                   width: '14px',
@@ -1160,23 +1144,23 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       {!isOpen && <div className="voice-chat-widget" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999 }}>
         <div className="chat-bubble" style={{
           background: '#ffffff',
-          borderRadius: '24px',
-          padding: '16px 20px',
+          borderRadius: isSmallMobile ? '18px' : isMobile ? '20px' : '24px',
+          padding: isSmallMobile ? '10px 14px' : isMobile ? '12px 16px' : '16px 20px',
           boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)',
-          maxWidth: '380px',
+          maxWidth: isSmallMobile ? '240px' : isMobile ? '280px' : '380px',
           cursor: 'pointer'
         }} onClick={handleChatButtonClick}>
           {/* Header with avatar and message */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '12px',
-            marginBottom: '16px'
+            gap: isSmallMobile ? '8px' : isMobile ? '10px' : '12px',
+            marginBottom: isSmallMobile ? '10px' : isMobile ? '12px' : '16px'
           }}>
             {/* Avatar circle */}
             <div style={{
-              width: '48px',
-              height: '48px',
+              width: isSmallMobile ? '32px' : isMobile ? '36px' : '48px',
+              height: isSmallMobile ? '32px' : isMobile ? '36px' : '48px',
               background: avatarSrc ? (logoBackgroundColor || 'transparent') : primaryColor,
               borderRadius: '50%',
               display: 'flex',
@@ -1204,7 +1188,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
               ) : (
                 <div style={{
                   color: '#ffffff',
-                  fontSize: '11px',
+                  fontSize: isSmallMobile ? '8px' : isMobile ? '9px' : '11px',
                   fontWeight: '600',
                   textAlign: 'center',
                   lineHeight: '1.2'
@@ -1218,13 +1202,16 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             <div style={{ flex: 1 }}>
               <p style={{
                 color: '#1a1a1a',
-                fontSize: '15px',
+                fontSize: isSmallMobile ? '12px' : isMobile ? '13px' : '15px',
                 lineHeight: '1.4',
                 margin: 0,
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                {welcomeTooltipMessage || `Hey! I'm ${agentName}, your AI assistant. Feel free to chat with me and ask any questions!`}
+                {isSmallMobile 
+                  ? `Hi! I'm ${agentName}.`
+                  : `Hey! I'm ${agentName}. Ask me anything!`
+                }
               </p>
             </div>
           </div>
@@ -1234,15 +1221,15 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             background: primaryColor,
             color: '#ffffff',
             border: 'none',
-            borderRadius: '24px',
-            padding: '14px 24px',
-            fontSize: '16px',
+            borderRadius: isSmallMobile ? '18px' : isMobile ? '20px' : '24px',
+            padding: isSmallMobile ? '10px 16px' : isMobile ? '12px 18px' : '14px 24px',
+            fontSize: isSmallMobile ? '13px' : isMobile ? '14px' : '16px',
             fontWeight: '600',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '10px',
+            gap: isSmallMobile ? '6px' : isMobile ? '8px' : '10px',
             width: '100%',
             transition: 'all 0.2s ease'
           }} onMouseEnter={e => {
@@ -1252,8 +1239,11 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             e.currentTarget.style.background = primaryColor;
             e.currentTarget.style.transform = 'translateY(0)';
           }}>
-            <MessageCircle style={{ width: '20px', height: '20px' }} />
-            {callToAction || 'Start a conversation'}
+            <MessageCircle style={{ 
+              width: isSmallMobile ? '14px' : isMobile ? '16px' : '20px', 
+              height: isSmallMobile ? '14px' : isMobile ? '16px' : '20px' 
+            }} />
+            {isSmallMobile ? 'Chat' : isMobile ? 'Chat' : (callToAction || 'Start a conversation')}
           </button>
         </div>
       </div>}

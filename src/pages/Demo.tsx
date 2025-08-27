@@ -27,12 +27,9 @@ const Demo = () => {
           <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto leading-relaxed text-gray-700">
             Turn every customer touchpoint into a sales opportunity. Deploy one intelligent AI chat system across every franchise location — Instagram, Facebook, TikTok, websites, QR codes, and SMS.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex justify-center">
             <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-lg">
               Get Started Today <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button size="lg" variant="outline" className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-8 py-4 text-lg font-semibold">
-              Watch Demo
             </Button>
           </div>
         </div>
@@ -321,11 +318,11 @@ const Demo = () => {
             💬 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Don't Forget to Test Our Chat Widget!</span>
           </h3>
           <p className="text-gray-700 text-lg mb-6">
-            While you're here, try out our text-based AI assistant. You'll find Jack, our ToraTech AI assistant, ready to chat in the <strong>bottom-right corner</strong> of your screen.
+            While you're here, try out our text-based AI assistant. You'll find Stacey, our The Joint Chiropractic AI assistant, ready to chat in the <strong>bottom-right corner</strong> of your screen.
           </p>
           <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
             <span>💡</span>
-            <span>Ask about our services, pricing, or anything else - Jack is trained and ready to help!</span>
+            <span>Ask about our services, pricing, or anything else - Stacey is trained and ready to help!</span>
           </div>
         </div>
       </section>
@@ -342,7 +339,7 @@ const Demo = () => {
         botTextColor="#1f2937"
         userTextColor="#ffffff"
         chatBackground="#ffffff"
-        welcomeMessage="Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?"
+        welcomeMessage="Hey, this is Stacey, the Virtual Assistant from The Joint Chiropractic. How can I help you today?"
         admin={false}
         isVoiceEnabled={false}
         isElevenLabsEnabled={true}
@@ -356,6 +353,8 @@ const Demo = () => {
         welcomeTooltipMessage="Click to start chatting with our AI assistant!"
         logoUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
         avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
+        agentName="Stacey"
+        companyName="The Joint Chiropractic"
       />
     </div>
   );

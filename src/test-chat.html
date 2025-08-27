@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chat with Calendar Data</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Test Calendar Integration</h1>
+    <button id="testBtn">Test Message with Calendar Data</button>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('testBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                // Simulate what the EmbeddedChatbot does
+                let calendarData = null;
+                
+                // Try to get calendar connection status
+                try {
+                    const response = await fetch('http://localhost:3001/api/integrations/unipile/token-resolve', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            user_id: '123e4567-e89b-12d3-a456-426614174000' 
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        calendarData = {
+                            connected: true,
+                            account_id: data.account_id,
+                            user_id: '123e4567-e89b-12d3-a456-426614174000'
+                        };
+                        console.log('Calendar connection found:', calendarData);
+                    } else {
+                        console.log('No calendar connection found');
+                    }
+                } catch (error) {
+                    console.log('Calendar check error:', error);
+                }
+                
+                // Send webhook with calendar data
+                const webhookPayload = {
+                    message: 'Test message from linked user',
+                    userId: '123e4567-e89b-12d3-a456-426614174000',
+                    sessionId: 'session_test_linked',
+                    timestamp: new Date().toISOString(),
+                    source: 'test_chat'
+                };
+                
+                // Add calendar data if available
+                if (calendarData) {
+                    webhookPayload.calendar_integration = calendarData;
+                }
+                
+                console.log('Sending webhook payload:', webhookPayload);
+                
+                const webhookResponse = await fetch('https://luccatora.app.n8n.cloud/webhook/webbot-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(webhookPayload)
+                });
+                
+                const result = await webhookResponse.json();
+                resultDiv.innerHTML = `
+                    <h3>Test Result:</h3>
+                    <p><strong>Calendar Data Included:</strong> ${calendarData ? 'YES' : 'NO'}</p>
+                    <p><strong>Response:</strong> ${JSON.stringify(result, null, 2)}</p>
+                    <details>
+                        <summary>Payload Sent</summary>
+                        <pre>${JSON.stringify(webhookPayload, null, 2)}</pre>
+                    </details>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+                console.error('Test error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
