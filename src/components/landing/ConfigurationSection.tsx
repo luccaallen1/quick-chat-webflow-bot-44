@@ -281,73 +281,103 @@ ${reactConfig.split('\n').map(line => '                ' + line.trim().replace(/
 })();
 </script>${elevenLabsEmbed}`;
       case 'react-ts':
-        return `import React from 'react';
-import { ChatbotWidget } from './components/ChatbotWidget';
+        return `// App.tsx
+import { useEffect } from 'react';
+import 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      {/* Your app content */}
-      
-      <ChatbotWidget
-${reactConfig}
-      />
-    </div>
-  );
-};
+export const App = () => {
+  useEffect(() => {
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+    document.head.appendChild(link);
 
-export default App;`;
+    // Load and initialize ChatbotWidget
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js';
+    script.onload = () => {
+      if (window.ChatbotWidget) {
+        window.ChatbotWidget.init({
+${reactConfig.split('\n').map(line => '          ' + line.trim()).join('\n')}
+        });
+      }
+    };
+    document.body.appendChild(script);
+
+    // Cleanup
+    return () => {
+      if (window.ChatbotWidget) {
+        window.ChatbotWidget.destroy();
+      }
+    };
+  }, []);
+
+  return <div></div>;
+};`;
       case 'react-js':
-        return `import React from 'react';
-import { ChatbotWidget } from './components/ChatbotWidget';
+        return `// App.jsx
+import { useEffect } from 'react';
 
-const App = () => {
-  return (
-    <div className="App">
-      {/* Your app content */}
-      
-      <ChatbotWidget
-${reactConfig}
-      />
-    </div>
-  );
-};
+export const App = () => {
+  useEffect(() => {
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+    document.head.appendChild(link);
 
-export default App;`;
+    // Load and initialize ChatbotWidget
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js';
+    script.onload = () => {
+      if (window.ChatbotWidget) {
+        window.ChatbotWidget.init({
+${reactConfig.split('\n').map(line => '          ' + line.trim()).join('\n')}
+        });
+      }
+    };
+    document.body.appendChild(script);
+
+    // Cleanup
+    return () => {
+      if (window.ChatbotWidget) {
+        window.ChatbotWidget.destroy();
+      }
+    };
+  }, []);
+
+  return <div></div>;
+};`;
       case 'vue':
-        return `<template>
-  <div id="app">
-    <!-- Your app content -->
-    
-    <ChatbotWidget
-      :webhook-url="'${baseConfig.webhookUrl}'"
-      :title="'${baseConfig.title}'"
-      :bio="'${baseConfig.bio}'"
-      :placeholder="'${baseConfig.placeholder}'"
-      :position="'${baseConfig.position}'"
-      :primary-color="'${baseConfig.primaryColor}'"
-      :secondary-color="'${baseConfig.secondaryColor}'"
-      :text-color="'${baseConfig.textColor}'"
-      :user-text-color="'${baseConfig.userTextColor}'"
-      :chat-background="'${baseConfig.chatBackground}'"
-      :welcome-message="'${baseConfig.welcomeMessage}'"
-      :admin="${baseConfig.admin}"
-      :is-voice-enabled="${baseConfig.isVoiceEnabled}"${baseConfig.logoFile ? `
-      :logo-file="'${baseConfig.logoFile}'"` : ''}
-    />
-  </div>
-</template>
+        return `<script lang="ts" setup>
+// App.vue
+import { onMounted } from 'vue';
 
-<script>
-import ChatbotWidget from './components/ChatbotWidget.vue';
+onMounted(() => {
+  // Load CSS
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+  document.head.appendChild(link);
 
-export default {
-  name: 'App',
-  components: {
-    ChatbotWidget
-  }
-};
-</script>`;
+  // Load and initialize ChatbotWidget
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js';
+  script.onload = () => {
+    if (window.ChatbotWidget) {
+      window.ChatbotWidget.init({
+${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
+      });
+    }
+  };
+  document.body.appendChild(script);
+});
+</script>
+
+<template>
+  <div></div>
+</template>`;
       case 'dotnet':
         return `@* Add this to your layout or page *@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css">
