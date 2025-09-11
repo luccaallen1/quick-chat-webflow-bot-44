@@ -847,12 +847,11 @@ app.post('/api/integrations/get-status', async (req, res) => {
     
     console.log('Getting integration status for:', { userId, sessionId });
     
-    // Get user's integration data from mappings
+    // Get user's integration data from mappings (both Google and Instagram)
     const { data: integrationMappings, error: integrationError } = await supabaseAdmin
       .from('unipile_account_mappings')
       .select('*')
       .eq('user_identifier', identifier)
-      .eq('provider', 'GOOGLE')
       .eq('status', 'connected');
     
     if (integrationError) {
@@ -860,14 +859,16 @@ app.post('/api/integrations/get-status', async (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch integration data' });
     }
     
-    const googleCalendarIntegration = integrationMappings?.[0];
-    const isConnected = !!googleCalendarIntegration;
+    const googleCalendarIntegration = integrationMappings?.find(m => m.provider === 'GOOGLE');
+    const instagramIntegration = integrationMappings?.find(m => m.provider === 'INSTAGRAM');
+    const isGoogleConnected = !!googleCalendarIntegration;
+    const isInstagramConnected = !!instagramIntegration;
     
-    console.log('Found integration data:', { isConnected, integration: googleCalendarIntegration });
+    console.log('Found integration data:', { isGoogleConnected, isInstagramConnected, googleCalendar: googleCalendarIntegration, instagram: instagramIntegration });
     
     // If connected but email is missing, try to fetch it from Unipile
     let emailAddress = googleCalendarIntegration?.email;
-    if (isConnected && !emailAddress && googleCalendarIntegration?.account_id) {
+    if (isGoogleConnected && !emailAddress && googleCalendarIntegration?.account_id) {
       try {
         console.log('Fetching email from Unipile account info...');
         const unipileResponse = await fetch(`${UNIPILE_API_URL}/api/v1/accounts/${googleCalendarIntegration.account_id}`, {
@@ -900,9 +901,50 @@ app.post('/api/integrations/get-status', async (req, res) => {
       }
     }
     
+    // Fetch Instagram profile info if connected
+    let instagramProfile = null;
+    if (isInstagramConnected && instagramIntegration?.account_id) {
+      try {
+        console.log('Fetching Instagram profile from Unipile...');
+        const unipileResponse = await fetch(`${UNIPILE_API_URL}/api/v1/accounts/${instagramIntegration.account_id}`, {
+          headers: {
+            'X-API-KEY': UNIPILE_API_KEY
+          }
+        });
+        
+        if (unipileResponse.ok) {
+          const accountInfo = await unipileResponse.json();
+          instagramProfile = {
+            username: accountInfo.name || accountInfo.connection_params?.messaging?.username,
+            profile_id: instagramIntegration.account_id
+          };
+          console.log('📸 Retrieved Instagram profile:', instagramProfile);
+          
+          // Update our database with the profile info for future use
+          if (instagramProfile.username) {
+            const { error: updateError } = await supabaseAdmin
+              .from('unipile_account_mappings')
+              .update({ 
+                email: instagramProfile.username,
+                profile_data: JSON.stringify(instagramProfile)
+              })
+              .eq('id', instagramIntegration.id);
+            
+            if (updateError) {
+              console.log('⚠️  Could not update Instagram profile in database:', updateError.message);
+            } else {
+              console.log('✅ Updated Instagram profile in database');
+            }
+          }
+        }
+      } catch (profileError) {
+        console.log('⚠️  Could not fetch Instagram profile from Unipile:', profileError.message);
+      }
+    }
+    
     // Get selected calendar information from bot_configurations
     let selectedCalendarInfo = null;
-    if (isConnected) {
+    if (isGoogleConnected) {
       try {
         const { data: configData } = await supabaseAdmin
           .from('bot_configurations')
@@ -934,8 +976,8 @@ app.post('/api/integrations/get-status', async (req, res) => {
       }
     }
 
-    const integrationData = isConnected ? {
-      google_calendar: {
+    const integrationData = {
+      google_calendar: isGoogleConnected ? {
         connected: true,
         account_id: googleCalendarIntegration.account_id,
         email: emailAddress || null,
@@ -943,20 +985,27 @@ app.post('/api/integrations/get-status', async (req, res) => {
         provider_type: googleCalendarIntegration.provider_type || 'calendar',
         unipile_api_key: UNIPILE_API_KEY, // Include for webhooks
         selected_calendar: selectedCalendarInfo // Include selected calendar for n8n
-      },
+      } : { connected: false },
+      instagram: isInstagramConnected ? {
+        connected: true,
+        account_id: instagramIntegration.account_id,
+        username: instagramProfile?.username || instagramIntegration.email || null,
+        profile_id: instagramProfile?.profile_id || instagramIntegration.account_id,
+        status: instagramIntegration.status,
+        provider_type: instagramIntegration.provider_type || 'messaging',
+        unipile_api_key: UNIPILE_API_KEY // Include for webhooks
+      } : { connected: false },
       session_info: {
         user_id: identifier,
         timestamp: new Date().toISOString()
       }
-    } : { 
-      google_calendar: { connected: false },
-      session_info: { user_id: identifier, timestamp: new Date().toISOString() }
     };
     
     res.json({
       success: true,
-      integration_status: isConnected ? 'connected' : 'none',
-      google_calendar_connected: isConnected,
+      integration_status: (isGoogleConnected || isInstagramConnected) ? 'connected' : 'none',
+      google_calendar_connected: isGoogleConnected,
+      instagram_connected: isInstagramConnected,
       integrations: integrationData
     });
     
@@ -1390,6 +1439,302 @@ app.post('/api/integrations/auth/google', async (req, res) => {
   }
 });
 
+// Instagram Integration Auth Endpoint
+// Generate hosted auth link for any provider (following Unipile docs)
+app.post('/api/integrations/hosted-auth', async (req, res) => {
+  try {
+    const { userId, providers, successRedirect, failureRedirect } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+    
+    if (!providers) {
+      return res.status(400).json({ error: 'providers is required' });
+    }
+    
+    console.log('🎯 Creating Unipile hosted auth link for user:', userId, 'providers:', providers);
+    
+    // Set expiration to 1 hour from now
+    const expiresOn = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    
+    // Create the hosted auth payload following Unipile's documentation
+    // Use "*" for all providers or specify the ones we want to support
+    const supportedProviders = providers === "*" ? "*" : (Array.isArray(providers) ? providers : [providers]);
+    
+    const payload = {
+      type: "create",
+      providers: supportedProviders,
+      api_url: UNIPILE_API_URL,
+      expiresOn: expiresOn,
+      notify_url: `https://quick-chat-webflow-bot-44-production.up.railway.app/api/integrations/hosted-callback`,
+      name: userId, // User identifier for callback matching
+      success_redirect_url: successRedirect || `${process.env.NODE_ENV === 'production' ? 'https://quick-chat-widget-bot.netlify.app' : 'http://localhost:8081'}/integrations/success`,
+      failure_redirect_url: failureRedirect || `${process.env.NODE_ENV === 'production' ? 'https://quick-chat-widget-bot.netlify.app' : 'http://localhost:8081'}/integrations/failure`
+    };
+    
+    console.log('📋 Hosted auth payload:', JSON.stringify(payload, null, 2));
+    
+    const response = await fetch(`${UNIPILE_API_URL}/api/v1/hosted/accounts/link`, {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': UNIPILE_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Unipile hosted auth error:', response.status, errorText);
+      throw new Error(`Unipile API error: ${response.status} ${errorText}`);
+    }
+    
+    const result = await response.json();
+    console.log('✅ Hosted auth URL created:', result.url);
+    
+    res.json({
+      success: true,
+      auth_url: result.url,
+      expires_on: expiresOn
+    });
+    
+  } catch (error) {
+    console.error('❌ Hosted auth error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to create hosted auth link',
+      details: error.message 
+    });
+  }
+});
+
+// Test Unipile API connection
+app.get('/api/test-unipile', async (req, res) => {
+  try {
+    console.log('🔍 Testing Unipile API connection...');
+    console.log('API URL:', UNIPILE_API_URL);
+    console.log('API Key:', UNIPILE_API_KEY ? 'Present' : 'Missing');
+    
+    // Test a simple API call to check connection
+    const response = await fetch(`${UNIPILE_API_URL}/api/v1/accounts`, {
+      headers: {
+        'X-API-KEY': UNIPILE_API_KEY
+      }
+    });
+    
+    console.log('Response status:', response.status);
+    const data = await response.json();
+    
+    res.json({
+      status: response.status,
+      api_url: UNIPILE_API_URL,
+      has_api_key: !!UNIPILE_API_KEY,
+      response_data: data
+    });
+  } catch (error) {
+    console.error('❌ Unipile API test error:', error);
+    res.status(500).json({ 
+      error: 'API test failed',
+      details: error.message,
+      api_url: UNIPILE_API_URL,
+      has_api_key: !!UNIPILE_API_KEY
+    });
+  }
+});
+
+// Hosted Auth Callback - Webhook handler for successful connections
+app.post('/api/integrations/hosted-callback', async (req, res) => {
+  try {
+    const { status, account_id, name } = req.body;
+    
+    console.log('🔔 Received hosted auth callback:', { status, account_id, name });
+    
+    if (!account_id || !name) {
+      console.error('❌ Missing account_id or name in callback');
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
+    // Extract user ID from name parameter
+    const userId = name;
+    
+    if (status === 'CREATION_SUCCESS' || status === 'RECONNECTED') {
+      console.log('✅ Account connected successfully, fetching account details...');
+      
+      // Fetch account details from Unipile
+      const accountResponse = await fetch(`${UNIPILE_API_URL}/api/v1/accounts/${account_id}`, {
+        headers: {
+          'X-API-KEY': UNIPILE_API_KEY
+        }
+      });
+      
+      if (!accountResponse.ok) {
+        console.error('❌ Failed to fetch account details from Unipile');
+        return res.status(500).json({ error: 'Failed to fetch account details' });
+      }
+      
+      const accountInfo = await accountResponse.json();
+      console.log('📋 Account info received:', JSON.stringify(accountInfo, null, 2));
+      
+      // Determine provider type based on account info
+      let provider = null;
+      let providerType = null;
+      let email = null;
+      let profileData = {};
+      
+      if (accountInfo.providers) {
+        // Handle different provider types
+        if (accountInfo.providers.includes('GOOGLE')) {
+          provider = 'GOOGLE';
+          providerType = 'calendar';
+          email = accountInfo.connection_params?.calendar?.username || accountInfo.name;
+        } else if (accountInfo.providers.includes('INSTAGRAM')) {
+          provider = 'INSTAGRAM';
+          providerType = 'messaging';
+          email = accountInfo.connection_params?.messaging?.username || accountInfo.name;
+          profileData = {
+            username: accountInfo.connection_params?.messaging?.username || accountInfo.name,
+            profile_id: account_id
+          };
+        } else if (accountInfo.providers.includes('LINKEDIN')) {
+          provider = 'LINKEDIN';
+          providerType = 'messaging';
+          email = accountInfo.connection_params?.messaging?.username || accountInfo.name;
+        } else if (accountInfo.providers.includes('WHATSAPP')) {
+          provider = 'WHATSAPP';
+          providerType = 'messaging';
+          email = accountInfo.connection_params?.messaging?.username || accountInfo.name;
+        }
+      }
+      
+      if (!provider) {
+        console.error('❌ Could not determine provider type from account info');
+        return res.status(400).json({ error: 'Unknown provider type' });
+      }
+      
+      // Store or update the account mapping in our database
+      const { data: existingMapping } = await supabaseAdmin
+        .from('unipile_account_mappings')
+        .select('*')
+        .eq('user_identifier', userId)
+        .eq('provider', provider)
+        .eq('provider_type', providerType)
+        .single();
+      
+      const mappingData = {
+        user_identifier: userId,
+        account_id: account_id,
+        provider: provider,
+        provider_type: providerType,
+        status: 'connected',
+        email: email,
+        profile_data: Object.keys(profileData).length > 0 ? JSON.stringify(profileData) : null,
+        connected_at: new Date().toISOString(),
+        last_sync: new Date().toISOString()
+      };
+      
+      if (existingMapping) {
+        // Update existing mapping
+        const { error: updateError } = await supabaseAdmin
+          .from('unipile_account_mappings')
+          .update(mappingData)
+          .eq('id', existingMapping.id);
+          
+        if (updateError) {
+          console.error('❌ Failed to update account mapping:', updateError);
+          return res.status(500).json({ error: 'Failed to update account mapping' });
+        }
+        
+        console.log('✅ Updated existing account mapping');
+      } else {
+        // Create new mapping
+        const { error: insertError } = await supabaseAdmin
+          .from('unipile_account_mappings')
+          .insert([mappingData]);
+          
+        if (insertError) {
+          console.error('❌ Failed to create account mapping:', insertError);
+          return res.status(500).json({ error: 'Failed to create account mapping' });
+        }
+        
+        console.log('✅ Created new account mapping');
+      }
+      
+      console.log(`🎉 Successfully processed ${provider} connection for user ${userId}`);
+    } else {
+      console.log('⚠️ Received non-success status:', status);
+    }
+    
+    // Always respond with success to acknowledge receipt
+    res.json({ success: true, message: 'Callback processed' });
+    
+  } catch (error) {
+    console.error('❌ Hosted auth callback error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Instagram Disconnect Endpoint
+app.post('/api/integrations/disconnect/instagram', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+    
+    // Find Instagram account for this user
+    const { data: accountData, error: accountError } = await supabaseAdmin
+      .from('unipile_accounts')
+      .select('account_id')
+      .eq('user_id', userId)
+      .eq('provider', 'INSTAGRAM')
+      .single();
+
+    if (accountError || !accountData) {
+      console.log('No Instagram account found for user:', userId);
+      return res.json({ success: true, message: 'No Instagram account to disconnect' });
+    }
+
+    // Delete from Unipile
+    try {
+      const deleteResponse = await fetch(`${UNIPILE_API_URL}/api/v1/accounts/${accountData.account_id}`, {
+        method: 'DELETE',
+        headers: {
+          'X-API-KEY': UNIPILE_API_KEY,
+        }
+      });
+
+      if (deleteResponse.ok) {
+        console.log('✅ Instagram account deleted from Unipile');
+      } else {
+        console.warn('⚠️ Failed to delete from Unipile, but continuing with local cleanup');
+      }
+    } catch (unipileError) {
+      console.warn('⚠️ Unipile deletion failed:', unipileError);
+    }
+
+    // Delete from our database
+    const { error: deleteError } = await supabaseAdmin
+      .from('unipile_accounts')
+      .delete()
+      .eq('user_id', userId)
+      .eq('provider', 'INSTAGRAM');
+
+    if (deleteError) {
+      console.error('❌ Database deletion error:', deleteError);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    console.log('✅ Instagram account disconnected for user:', userId);
+    return res.json({ success: true });
+    
+  } catch (error) {
+    console.error('❌ Instagram disconnect error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Unipile Callback Endpoint (notify_url)
 app.post('/api/integrations/callback', async (req, res) => {
   try {
@@ -1398,8 +1743,18 @@ app.post('/api/integrations/callback', async (req, res) => {
     console.log('📡 Unipile callback received:', { status, account_id, name });
     
     if (status === 'SUCCESS' && account_id && name) {
-      // Extract userId from the name field
-      const userId = name;
+      // Determine provider and userId from the name field
+      let userId, provider;
+      
+      if (name.includes('_instagram')) {
+        userId = name.replace('_instagram', '');
+        provider = 'INSTAGRAM';
+        console.log('📷 Instagram connection for user:', userId);
+      } else {
+        userId = name;
+        provider = 'GOOGLE';
+        console.log('📅 Google Calendar connection for user:', userId);
+      }
       
       // Store the account mapping
       const { error } = await supabaseAdmin
@@ -1407,7 +1762,7 @@ app.post('/api/integrations/callback', async (req, res) => {
         .upsert({
           user_identifier: userId,
           account_id: account_id,
-          provider: 'GOOGLE',
+          provider: provider,
           status: 'connected',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -1418,7 +1773,36 @@ app.post('/api/integrations/callback', async (req, res) => {
       if (error) {
         console.error('❌ Failed to store account mapping:', error);
       } else {
-        console.log('✅ Account mapping stored for user:', userId);
+        console.log(`✅ ${provider} account mapping stored for user:`, userId);
+        
+        // Try to fetch additional profile info for Instagram
+        if (provider === 'INSTAGRAM') {
+          try {
+            const profileResponse = await fetch(`${UNIPILE_API_URL}/api/v1/accounts/${account_id}/instagram/profile`, {
+              headers: {
+                'X-API-KEY': UNIPILE_API_KEY
+              }
+            });
+
+            if (profileResponse.ok) {
+              const profileData = await profileResponse.json();
+              // Update the mapping with Instagram profile info
+              await supabaseAdmin
+                .from('unipile_account_mappings')
+                .update({ 
+                  metadata: {
+                    username: profileData.username,
+                    profile_id: profileData.id,
+                    followers_count: profileData.followers_count
+                  }
+                })
+                .eq('account_id', account_id);
+              console.log('✅ Instagram profile data added:', profileData.username);
+            }
+          } catch (profileError) {
+            console.warn('⚠️ Could not fetch Instagram profile:', profileError);
+          }
+        }
       }
     }
     

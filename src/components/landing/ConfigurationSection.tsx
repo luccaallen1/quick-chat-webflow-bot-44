@@ -239,23 +239,44 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
 <script src="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js"></script>
 <script>
 (function() {
+    var retryCount = 0;
+    var maxRetries = 50; // 5 seconds max
+    
     function initChatbot() {
-        if (typeof ChatbotWidget !== 'undefined') {
-            ChatbotWidget.init({
+        console.log('Attempting to initialize ChatbotWidget, attempt:', retryCount + 1);
+        
+        if (typeof window !== 'undefined' && window.ChatbotWidget && typeof window.ChatbotWidget.init === 'function') {
+            console.log('ChatbotWidget found! Initializing...');
+            window.ChatbotWidget.init({
 ${reactConfig.split('\n').map(line => '                ' + line.trim().replace(/^/, '')).join('\n')}
             });
+            console.log('ChatbotWidget initialized successfully!');
+            return true;
         } else {
-            // Retry after 100ms if widget not loaded
-            setTimeout(initChatbot, 100);
+            console.log('ChatbotWidget not ready yet, retrying...', {
+                window: typeof window,
+                ChatbotWidget: typeof window?.ChatbotWidget,
+                init: typeof window?.ChatbotWidget?.init
+            });
+            
+            retryCount++;
+            if (retryCount < maxRetries) {
+                setTimeout(initChatbot, 100);
+            } else {
+                console.error('Failed to initialize ChatbotWidget after', maxRetries, 'attempts');
+            }
+            return false;
         }
     }
 
     // Start initialization when DOM is ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initChatbot);
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initChatbot, 100);
+        });
     } else {
-        // DOM already loaded, wait a bit for React/frameworks
-        setTimeout(initChatbot, 500);
+        // DOM already loaded, wait a bit for React/frameworks then start
+        setTimeout(initChatbot, 100);
     }
 })();
 </script>${elevenLabsEmbed}`;

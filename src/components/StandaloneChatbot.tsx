@@ -108,30 +108,36 @@ class ChatbotManager {
 // Create the manager instance for backward compatibility
 const manager = new ChatbotManager();
 
-// Initialize global object immediately
-if (typeof globalThis !== 'undefined') {
-  globalThis.ChatbotWidget = {
-    ChatbotManager: ChatbotManager,
-    init: (config) => manager.init(config),
-    destroy: () => manager.destroy()
-  };
-}
+// Create widget object
+const ChatbotWidgetAPI = {
+  ChatbotManager: ChatbotManager,
+  init: (config) => manager.init(config),
+  destroy: () => manager.destroy()
+};
 
-// Also set on window for browser environments
+// Expose globally in multiple ways for maximum compatibility
 if (typeof window !== 'undefined') {
-  window.ChatbotWidget = {
-    ChatbotManager: ChatbotManager,
-    init: (config) => manager.init(config),
-    destroy: () => manager.destroy()
-  };
+  window.ChatbotWidget = ChatbotWidgetAPI;
+  window.chatbotWidget = ChatbotWidgetAPI; // Alternative lowercase
   
-  console.log('ChatbotWidget methods available:', {
+  console.log('ChatbotWidget initialized successfully!', {
     ChatbotManager: typeof window.ChatbotWidget.ChatbotManager,
     init: typeof window.ChatbotWidget.init,
     destroy: typeof window.ChatbotWidget.destroy
   });
   
+  // Debug logging
+  console.log('ChatbotWidget object:', window.ChatbotWidget);
   console.log('New features included: suggestion buttons with icons, line break rendering, toggle button visibility fix');
+}
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.ChatbotWidget = ChatbotWidgetAPI;
+}
+
+// Also expose as module export
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = ChatbotWidgetAPI;
 }
 
 export { ChatbotManager };

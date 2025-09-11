@@ -1,11 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, MessageCircle, X, Bot, Edit, Check, Calendar, HelpCircle, Bell, Phone, Shield } from 'lucide-react';
+import { Send, MessageCircle, X, Bot, Edit, Check, Calendar, HelpCircle, Bell, Shield } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
-import { useVoiceChat } from '../hooks/useVoiceChat';
-import { VoiceControls } from './VoiceControls';
-import { VoiceSettings } from './VoiceSettings';
-import { CallInterface } from './CallInterface';
-import { WelcomeScreen } from './WelcomeScreen';
 import './ChatbotWidget.css';
 interface Message {
   id: string;
@@ -13,13 +8,6 @@ interface Message {
   sender: 'user' | 'bot';
   timestamp: Date;
   showSuggestions?: boolean;
-}
-
-interface WelcomeButton {
-  id: string;
-  text: string;
-  message: string;
-  icon?: string;
 }
 interface ChatbotWidgetProps {
   webhookUrl?: string;
@@ -44,9 +32,6 @@ interface ChatbotWidgetProps {
   welcomeMessage?: string;
   welcomeTooltipMessage?: string;
   admin?: boolean;
-  isVoiceEnabled?: boolean;
-  isElevenLabsEnabled?: boolean;
-  elevenLabsAgentId?: string;
   logoBackgroundColor?: string;
   logoBorderColor?: string;
   headerButtonColor?: string;
@@ -54,9 +39,6 @@ interface ChatbotWidgetProps {
   companyName?: string;
   agentName?: string;
   callToAction?: string;
-  showWelcomeScreen?: boolean;
-  companyLogo?: string;
-  welcomeButtons?: WelcomeButton[];
 }
 
 // Helper function to render text with line breaks
@@ -127,23 +109,12 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   welcomeMessage = 'Hi! I\'m your medical assistant. How can I help you today?',
   welcomeTooltipMessage = 'Click to start chatting with our AI assistant!',
   admin = false,
-  isVoiceEnabled = true,
-  isElevenLabsEnabled = false,
-  elevenLabsAgentId = 'agent_01k04zwwq3fv5acgzdwmbvfk8k',
   logoBackgroundColor = 'transparent',
   logoBorderColor = '#e5e7eb',
   headerButtonColor = '#ffffff',
   companyName = 'MediFlow',
   agentName = 'Medical Assistant',
-  callToAction = 'Start a conversation',
-  showWelcomeScreen = true,
-  companyLogo,
-  welcomeButtons = [
-    { id: '1', text: 'Ask a Question', message: 'I have a medical question' },
-    { id: '2', text: 'Book Appointment', message: 'I would like to book an appointment' },
-    { id: '3', text: 'Get Health Info', message: 'I need health information' },
-    { id: '4', text: 'Contact Support', message: 'I need to contact support' }
-  ]
+  callToAction = 'Start a conversation'
 }) => {
   // Create logo URL from file if provided
   const [logoSrc, setLogoSrc] = useState<string>(logoUrl);
@@ -168,38 +139,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       setAvatarSrc(avatarUrl);
     }
   }, [avatarFile, avatarUrl]);
-  // Voice functionality - only initialize if voice is enabled
-  const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const [autoPlayResponses, setAutoPlayResponses] = useState(true);
 
-  // NEW: Call interface state for ElevenLabs voice agent
-  const [isCallMode, setIsCallMode] = useState(false);
-
-  // Voice chat hook - only use if voice is enabled
-  const voiceChat = useVoiceChat({
-    onTranscription: (text: string) => {
-      if (text.trim()) {
-        sendMessage(text);
-      }
-    },
-    isVoiceEnabled: isVoiceEnabled && isVoiceMode,
-    autoPlayResponses: isVoiceEnabled ? autoPlayResponses : false
-  });
-
-  // Conditionally destructure voice chat properties
-  const {
-    isRecording = false,
-    isProcessing = false,
-    recordingTimer = 0,
-    isSpeaking = false,
-    voicePermissionDenied = false,
-    selectedVoice = 'bark',
-    startRecording = () => {},
-    stopRecording = () => {},
-    speakText = () => {},
-    stopSpeaking = () => {},
-    setSelectedVoice = () => {}
-  } = isVoiceEnabled ? voiceChat : {};
 
   // Add error state
   const [hasError, setHasError] = useState(false);
@@ -228,7 +168,6 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [showingWelcomeScreen, setShowingWelcomeScreen] = useState(showWelcomeScreen && messages.length === 0);
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
@@ -523,13 +462,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     setSuggestionsDisabled(true);
   };
 
-  // Handle welcome button clicks
-  const handleWelcomeButtonClick = (message: string) => {
-    setShowingWelcomeScreen(false);
-    sendMessage(message);
-  };
-
-  // Enhanced sendMessage function with conditional voice response
+  // Enhanced sendMessage function
   const sendMessage = async (messageText?: string, retryCount = 0) => {
     const textToSend = messageText || inputMessage.trim();
     if (!textToSend || isLoading) return;
@@ -545,7 +478,6 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     setIsTyping(true);
     setHasError(false);
     setSuggestionsDisabled(true);
-    setShowingWelcomeScreen(false);
     try {
       if (!webhookUrl) {
         throw new Error('Webhook URL not configured');
@@ -596,12 +528,6 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       };
       setMessages(prev => [...prev, botMessage]);
 
-      // Auto-play response if voice is enabled and voice mode is on
-      if (isVoiceEnabled && isVoiceMode && autoPlayResponses && !isSpeaking) {
-        setTimeout(() => {
-          speakText(botResponse);
-        }, 500);
-      }
 
       // Show notification if widget is closed
       if (!isOpen && isNotificationEnabled) {
@@ -706,20 +632,6 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     }
   };
   const isEditingTextValid = editingText.trim().length > 0;
-  const toggleVoiceMode = () => {
-    if (!isVoiceEnabled) return; // Don't allow toggle if voice is disabled
-    setIsVoiceMode(!isVoiceMode);
-    if (isVoiceMode && stopSpeaking) {
-      stopSpeaking();
-    }
-  };
-  const toggleAutoPlay = () => {
-    if (!isVoiceEnabled) return; // Don't allow toggle if voice is disabled
-    setAutoPlayResponses(!autoPlayResponses);
-    if (!autoPlayResponses && stopSpeaking) {
-      stopSpeaking();
-    }
-  };
 
   // Truncate session ID for display (show first 8 characters)
   const displaySessionId = sessionId.length > 8 ? `${sessionId.substring(0, 8)}...` : sessionId;
@@ -740,27 +652,27 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   return (
     <div 
       className={`chatbot-widget-container chatbot-widget-${position}`} 
-    style={{
-      position: 'fixed',
-      bottom: '1.5rem',
-      right: position === 'bottom-right' ? '1.5rem' : 'auto',
-      left: position === 'bottom-left' ? '1.5rem' : 'auto',
-      top: 'auto',
-      zIndex: 2147483647
-    }}
-    ref={(el) => {
-      if (el) {
-        console.log('Widget position:', {
-          position: position,
-          computedStyle: window.getComputedStyle(el),
-          bottom: window.getComputedStyle(el).bottom,
-          top: window.getComputedStyle(el).top,
-          right: window.getComputedStyle(el).right,
-          left: window.getComputedStyle(el).left
-        });
-      }
-    }}
-  >
+      style={{
+        position: 'fixed',
+        bottom: '1.5rem',
+        right: position === 'bottom-right' ? '1.5rem' : 'auto',
+        left: position === 'bottom-left' ? '1.5rem' : 'auto',
+        top: 'auto',
+        zIndex: 2147483647
+      }}
+      ref={(el) => {
+        if (el) {
+          console.log('Widget position:', {
+            position: position,
+            computedStyle: window.getComputedStyle(el),
+            bottom: window.getComputedStyle(el).bottom,
+            top: window.getComputedStyle(el).top,
+            right: window.getComputedStyle(el).right,
+            left: window.getComputedStyle(el).left
+          });
+        }
+      }}
+    >
       {/* Chat Window */}
       {isOpen && <div ref={chatWindowRef} className="chatbot-widget-window chatbot-widget-animate-in" style={{
       height: isMobile ? '100vh' : '600px',
@@ -785,39 +697,10 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 <h3 className="chatbot-widget-header-title">{title}</h3>
                 <p className="chatbot-widget-header-subtitle">
                   {bio}
-                  {isVoiceEnabled && isVoiceMode && <span style={{
-                marginLeft: '8px',
-                fontSize: '10px'
-              }}>🎤 Voice Mode</span>}
                 </p>
               </div>
             </div>
             <div className="chatbot-widget-header-actions">
-              {/* NEW: Voice Agent Call Button - only show if ElevenLabs is enabled */}
-              {isElevenLabsEnabled && elevenLabsAgentId && (
-                <button className="chatbot-widget-button" onClick={() => setIsCallMode(true)} title="Start a call" style={{
-              marginRight: '2px',
-              width: '48px',
-              height: '48px',
-              padding: '0',
-              display: 'flex !important',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderRadius: '50%',
-              cursor: 'pointer',
-              opacity: '1',
-              visibility: 'visible'
-            }}>
-                  <Phone style={{
-                width: '26px',
-                height: '26px',
-                color: '#1f2937 !important'
-              }} className="bg-transparent" />
-                </button>
-              )}
-
               {/* Privacy Policy Button */}
               <button 
                 className="chatbot-widget-button" 
@@ -857,8 +740,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             </div>
           </div>
           
-          {/* NEW: Conditional rendering for Call Interface or Regular Chat */}
-        {isCallMode ? <CallInterface primaryColor={primaryColor} secondaryColor={secondaryColor} textColor={botTextColor} chatBackground={chatBackground} logoUrl={avatarUrl} agentId={elevenLabsAgentId} onBackToChat={() => setIsCallMode(false)} /> : <>
+          {/* Messages and Chat Interface */}
               {/* Messages */}
               {hasError ? <div className="chatbot-widget-messages chatbot-widget-scrollbar" style={{
           backgroundColor: chatBackground,
@@ -917,38 +799,6 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                       )}
                       
                       <div className="chatbot-widget-messages-content">
-                        {showingWelcomeScreen ? (
-                          <WelcomeScreen
-                            avatarUrl={avatarSrc}
-                            title={title}
-                            bio={bio}
-                            welcomeMessage={welcomeMessage}
-                            buttons={welcomeButtons}
-                            primaryColor={primaryColor}
-                            secondaryColor={secondaryColor}
-                            chatBackground={chatBackground}
-                            textColor={botTextColor}
-                            headerGradientColor={headerGradientColor}
-                            onButtonClick={handleWelcomeButtonClick}
-                            isMobile={isMobile}
-                          />
-                        ) : (
-                          <>
-                        {/* Disclaimer appears before first bot message */}
-                        {messages.length > 1 && messages.some(msg => msg.sender === 'bot') && (
-                          <div style={{
-                            fontSize: '11px',
-                            color: botTextColor,
-                            opacity: 0.7,
-                            textAlign: 'center',
-                            padding: '8px 16px',
-                            fontStyle: 'italic',
-                            marginBottom: '12px'
-                          }}>
-                            I'm an AI Agent, I do my best, I can answer questions and make bookings, but always verify important concerns with a human
-                          </div>
-                        )}
-                        
                         {messages.map(message => <div key={message.id} className={`chatbot-widget-message ${message.sender === 'user' ? 'chatbot-widget-message-user' : 'chatbot-widget-message-bot'} ${editingMessageId === message.id ? 'editing' : ''} chatbot-message-animate`}>
                             <div className={`chatbot-widget-message-bubble ${message.sender === 'user' ? 'chatbot-widget-message-bubble-user' : 'chatbot-widget-message-bubble-bot'} ${editingMessageId === message.id ? 'editing' : ''}`} style={{
                   backgroundColor: message.sender === 'user' ? primaryColor : secondaryColor,
@@ -1102,13 +952,11 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                               </div>
                             </div>
                           </div>}
-                          </>
-                        )}
                         <div ref={messagesEndRef} />
                       </div>
                     </div>
           
-                    {/* Enhanced Input with conditional Voice Controls */}
+                    {/* Input Controls */
                     <div className="chatbot-widget-input" style={{
             flex: '0 0 auto',
             padding: '0.75rem',
@@ -1116,21 +964,6 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             borderTop: '1px solid #e5e7eb',
             boxShadow: '0 -2px 10px rgba(0,0,0,0.05)'
           }}>
-                      {/* Call AI Voice Agent Button - only show if no user messages sent yet and ElevenLabs is enabled */}
-                      {!messages.some(msg => msg.sender === 'user') && isElevenLabsEnabled && elevenLabsAgentId && (
-                        <button 
-                          onClick={() => setIsCallMode(true)}
-                          className="w-full mb-3 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
-                          style={{
-                            backgroundColor: primaryColor,
-                            fontSize: '16px',
-                            fontWeight: '600'
-                          }}
-                        >
-                          <Phone style={{ width: '20px', height: '20px' }} />
-                          Call our AI Voice Agent
-                        </button>
-                      )}
                       
                       <div className="chatbot-widget-input-container" style={{
                         display: 'flex',
@@ -1150,12 +983,11 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                             }
                           }} 
                           onKeyDown={handleKeyPress}
-                          placeholder={isVoiceEnabled && isRecording ? 'Listening...' : isVoiceEnabled && isProcessing ? 'Processing...' : placeholder} 
-                          disabled={isLoading || isVoiceEnabled && (isRecording || isProcessing)} 
+                          placeholder={placeholder} 
+                          disabled={isLoading} 
                           className="chatbot-widget-input-field" 
                           style={{
                             color: botTextColor,
-                            opacity: isVoiceEnabled && (isRecording || isProcessing) ? 0.7 : 1,
                             minHeight: '44px',
                             maxHeight: '100px',
                             resize: 'none',
@@ -1171,10 +1003,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                           rows={1}
                         />
                         
-                        {/* Voice Controls - only show if voice is enabled */}
-                        {isVoiceEnabled && <VoiceControls isRecording={isRecording} isProcessing={isProcessing} recordingTimer={recordingTimer} isSpeaking={isSpeaking} voicePermissionDenied={voicePermissionDenied} isVoiceEnabled={isVoiceMode} onStartRecording={startRecording} onStopRecording={stopRecording} onStopSpeaking={stopSpeaking} onToggleVoice={toggleVoiceMode} primaryColor={primaryColor} />}
-                        
-                        {/* Send Button */}
+                        {/* Send Button */
                         <button onClick={() => {
                 if (inputMessage.trim() && !isTyping) {
                   sendMessage(inputMessage);
@@ -1183,7 +1012,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                     inputRef.current.style.height = '44px';
                   }
                 }
-              }} disabled={isLoading || !inputMessage.trim() || isVoiceEnabled && (isRecording || isProcessing)} className="chatbot-widget-send-button" style={{
+              }} disabled={isLoading || !inputMessage.trim()} className="chatbot-widget-send-button" style={{
                 backgroundColor: primaryColor,
                 alignSelf: 'flex-end',
                 marginBottom: '2px'
@@ -1194,16 +1023,11 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 }} />
                         </button>
                       </div>
-          
-                      {/* Voice Settings - only show when voice mode is enabled */}
-                      {isVoiceEnabled && isVoiceMode && <VoiceSettings selectedVoice={selectedVoice} onVoiceChange={setSelectedVoice} autoPlayResponses={autoPlayResponses} onAutoPlayToggle={toggleAutoPlay} primaryColor={primaryColor} />}
                     </div>
-                  </>}
-            </>}
         </div>}
 
-      {/* Chat Bubble Widget - Only show when chat is closed */}
-      {!isOpen && <div className="voice-chat-widget" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999 }}>
+        {/* Chat Bubble Widget - Only show when chat is closed */}
+        {!isOpen && <div className="chat-widget" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999 }}>
         <div className="chat-bubble" style={{
           background: '#ffffff',
           borderRadius: isSmallMobile ? '18px' : isMobile ? '20px' : '24px',
@@ -1278,7 +1102,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
             </div>
           </div>
           
-          {/* Call button */}
+          {/* Chat button */}
           <button style={{
             background: primaryColor,
             color: '#ffffff',

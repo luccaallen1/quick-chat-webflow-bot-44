@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { VoiceAgentSection } from '@/components/VoiceAgentSection';
+import DeepgramVoiceAgent from '@/components/DeepgramVoiceAgent';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -38,7 +38,11 @@ const VoiceAgent = () => {
         </header>
 
         {/* Voice Agent Section */}
-        <VoiceAgentSection isDarkMode={isDarkMode} />
+        <div className="py-8">
+          <DeepgramVoiceAgent 
+            apiKey="ed3fc0b2215c858ded6af1a2bba90f10cfb4f5cb"
+          />
+        </div>
       </div>
     </div>
   );

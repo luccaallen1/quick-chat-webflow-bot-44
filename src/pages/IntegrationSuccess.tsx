@@ -68,11 +68,11 @@ const IntegrationSuccess: React.FC = () => {
         </div>
 
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          Google Calendar Connected!
+          Integration Connected!
         </h2>
 
         <p className="text-gray-600 mb-6">
-          Your Google Calendar has been successfully connected. You can now use calendar booking features in your chatbot.
+          Your integration has been successfully connected via Unipile's secure authentication. You can now use enhanced features in your chatbot.
         </p>
 
         <div className="space-y-3">
@@ -107,9 +107,9 @@ const IntegrationSuccess: React.FC = () => {
             <h4 className="font-semibold text-green-800 text-sm">What's Next?</h4>
           </div>
           <ul className="text-green-700 text-sm space-y-1">
-            <li>• Select your preferred calendar for bookings</li>
-            <li>• Test your chatbot with calendar integration</li>
-            <li>• Customers can now book appointments automatically</li>
+            <li>• Configure your integration settings as needed</li>
+            <li>• Test your chatbot with the new integration</li>
+            <li>• Enhanced functionality is now available to your customers</li>
           </ul>
         </div>
       </div>

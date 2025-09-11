@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { EmbeddedChatbot } from '@/components/EmbeddedChatbot';
 import { AuthModal } from '@/components/Auth/AuthModal';
 import { GoogleCalendarConnection } from '@/components/GoogleCalendarConnection';
-import { BusinessIntegrations } from '@/components/BusinessIntegrations';
+import { UnifiedIntegrations } from '@/components/UnifiedIntegrations';
+import DeepgramVoiceAgent from '@/components/DeepgramVoiceAgent';
 import { useAuth } from '@/contexts/AuthContext';
 import { BotConfiguration } from '@/types/botConfiguration';
 import { configService, DatabaseBotConfiguration } from '@/services/configService';
@@ -346,6 +347,16 @@ const SaaS = () => {
               >
                 Chatbot Preview
               </button>
+              <button
+                onClick={() => setActiveTab('voice')}
+                className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'voice'
+                    ? 'border-blue-600 text-blue-600 bg-blue-50'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                }`}
+              >
+                🎤 Voice AI
+              </button>
             </div>
           </div>
 
@@ -556,10 +567,8 @@ const SaaS = () => {
                   <p className="text-gray-600">Connect external services for {botConfig.clinicName || 'your business'}</p>
                 </div>
                 
-                <BusinessIntegrations 
-                  configurationId={activeConfigId} 
-                  onIntegrationChange={setGoogleCalendarConnected}
-                  className="bg-gray-50 p-6 rounded-lg"
+                <UnifiedIntegrations 
+                  configurationId={activeConfigId}
                 />
               </div>
             )}
@@ -623,6 +632,28 @@ const SaaS = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Voice AI Tab */}
+            {activeTab === 'voice' && (
+              <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Deepgram Voice AI Assistant</h3>
+                  <p className="text-gray-600">
+                    Experience real-time voice conversations with your AI assistant powered by Deepgram
+                  </p>
+                </div>
+                
+                <DeepgramVoiceAgent 
+                  apiKey="ed3fc0b2215c858ded6af1a2bba90f10cfb4f5cb"
+                  onSessionStart={(sessionId) => {
+                    console.log('Deepgram voice session started:', sessionId);
+                  }}
+                  onSessionEnd={() => {
+                    console.log('Deepgram voice session ended');
+                  }}
+                />
               </div>
             )}
 

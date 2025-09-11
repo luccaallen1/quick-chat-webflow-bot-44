@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, MessageSquare, Zap, QrCode, Globe, Users, TrendingUp, Clock, Star, Phone } from 'lucide-react';
 import { SecuritySection } from '../components/landing/SecuritySection';
 import { FAQSection } from '../components/landing/FAQSection';
-import { VoiceWidget } from '../components/VoiceWidget';
+import { RevenueCalculatorSection } from '../components/landing/RevenueCalculatorSection';
+// Voice widget removed - now using Deepgram Voice Agent
 
 const Demo = () => {
   useEffect(() => {
@@ -34,6 +35,9 @@ const Demo = () => {
           </div>
         </div>
       </section>
+
+      {/* Revenue Calculator Section */}
+      <RevenueCalculatorSection />
 
       {/* Interactive Demo Section */}
       <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
@@ -88,21 +92,21 @@ const Demo = () => {
             </p>
           </div>
           <div className="flex justify-center">
-            <VoiceWidget
-              agentId="agent_01k04zwwq3fv5acgzdwmbvfk8k"
-              buttonText="Talk to AI Agent"
-              buttonColor="#000000"
-              backgroundColor="#ffffff"
-              textColor="#000000"
-              secondaryTextColor="#666666"
-              borderColor="#e5e7eb"
-              shadowColor="rgba(0,0,0,0.08)"
-              statusBgColor="#f0fdf4"
-              statusTextColor="#15803d"
-              title="AI Voice Assistant"
-              description="Get instant answers to your questions. Our AI assistant is ready to help you 24/7."
-              avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
-            />
+            <div className="bg-white rounded-2xl p-8 shadow-xl border max-w-md">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Phone className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">AI Voice Assistant</h3>
+                <p className="text-gray-600 mb-6">Get instant answers to your questions. Our AI assistant is ready to help you 24/7.</p>
+                <Button 
+                  onClick={() => window.location.href = '/voice-agent'}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
+                >
+                  🎤 Try Voice Agent
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -350,7 +354,6 @@ const Demo = () => {
         logoBorderColor="none"
         headerButtonColor="#ffffff"
         fontFamily="Inter"
-        welcomeTooltipMessage="Click to start chatting with our AI assistant!"
         logoUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
         avatarUrl="/lovable-uploads/0bece050-e33f-47c2-aeba-0088a17e5b93.png"
         agentName="Stacey"

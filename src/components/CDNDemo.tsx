@@ -1,5 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
+
+interface WelcomeButton {
+  id: string;
+  text: string;
+  message: string;
+  icon?: string;
+}
 import { ChatbotWidget } from './ChatbotWidget';
 import { Button } from '@/components/ui/button';
 import { Moon, Sun } from 'lucide-react';
@@ -10,7 +17,8 @@ import { SecuritySection } from './landing/SecuritySection';
 import { IntegrationSection } from './landing/IntegrationSection';
 import { ConfigurationSection } from './landing/ConfigurationSection';
 import { FAQSection } from './landing/FAQSection';
-import { VoiceAgentSection } from './VoiceAgentSection';
+import { RevenueCalculatorSection } from './landing/RevenueCalculatorSection';
+// VoiceAgentSection removed - now using Deepgram Voice Agent
 
 export const CDNDemo = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -42,6 +50,15 @@ export const CDNDemo = () => {
   const [fontFamily, setFontFamily] = useState('Inter');
   const [copySuccessMessage, setCopySuccessMessage] = useState('Code Copied!');
   const [welcomeTooltipMessage, setWelcomeTooltipMessage] = useState('Click to start chatting with our AI assistant!');
+  const [disclaimerText, setDisclaimerText] = useState('AI chatbot - I do my best, I can answer any questions and make bookings, but always verify important details with a human.');
+  
+  // Welcome buttons configuration
+  const [welcomeButtons, setWelcomeButtons] = useState([
+    { id: '1', text: 'Book Appointment', message: 'I would like to book an appointment', icon: '📅' },
+    { id: '2', text: 'Get Pricing Info', message: 'Can you tell me about your pricing?', icon: '💰' },
+    { id: '3', text: 'Ask Questions', message: 'I have questions about your services', icon: '❓' },
+    { id: '4', text: 'Location & Hours', message: 'What are your hours and location?', icon: '📍' }
+  ]);
 
   // Apply dark mode to document
   useEffect(() => {
@@ -143,7 +160,7 @@ export const CDNDemo = () => {
       <FAQSection />
 
       {/* Voice Agent Section */}
-      <VoiceAgentSection isDarkMode={isDarkMode} />
+      {/* Voice agent section moved to dedicated page */}
 
       {/* Configuration Section */}
       <ConfigurationSection
@@ -199,6 +216,10 @@ export const CDNDemo = () => {
         setCopySuccessMessage={setCopySuccessMessage}
         welcomeTooltipMessage={welcomeTooltipMessage}
         setWelcomeTooltipMessage={setWelcomeTooltipMessage}
+        welcomeButtons={welcomeButtons}
+        setWelcomeButtons={setWelcomeButtons}
+        disclaimerText={disclaimerText}
+        setDisclaimerText={setDisclaimerText}
       />
 
       {/* The actual chatbot widget */}
@@ -225,10 +246,12 @@ export const CDNDemo = () => {
         avatarUrl={avatarFile ? undefined : defaultAvatarUrl}
         welcomeMessage={welcomeMessage}
         welcomeTooltipMessage={welcomeTooltipMessage}
+        welcomeButtons={welcomeButtons}
         admin={admin}
         isVoiceEnabled={isVoiceEnabled}
         isElevenLabsEnabled={isElevenLabsEnabled}
         elevenLabsAgentId={elevenLabsAgentId}
+        disclaimerText={disclaimerText}
       />
     </div>
   );

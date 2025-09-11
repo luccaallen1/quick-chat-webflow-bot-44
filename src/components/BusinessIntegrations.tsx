@@ -22,15 +22,23 @@ export const BusinessIntegrations: React.FC<BusinessIntegrationsProps> = ({
     email: '',
     calendars: []
   });
+  const [instagramStatus, setInstagramStatus] = useState({
+    connected: false,
+    status: 'none',
+    username: '',
+    profile_id: ''
+  });
   const [availableCalendars, setAvailableCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const [loading, setLoading] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [instagramConnecting, setInstagramConnecting] = useState(false);
   const [calendarsLoading, setCalendarsLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
       checkConnectionStatus();
+      checkInstagramStatus();
     }
   }, [user, configurationId]);
 
@@ -99,6 +107,68 @@ export const BusinessIntegrations: React.FC<BusinessIntegrationsProps> = ({
         status: 'error',
         email: '',
         calendars: []
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkInstagramStatus = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      
+      // Check Instagram integration status
+      let status = null;
+      
+      try {
+        const response = await fetch('http://localhost:3001/api/integrations/get-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            userId: user.id, 
+            sessionId: user.id,
+            configId: configurationId 
+          })
+        });
+        
+        if (response.ok) {
+          const statusData = await response.json();
+          console.log('🔍 BusinessIntegrations - Instagram status data:', statusData);
+          
+          status = {
+            connected: statusData.integrations?.instagram?.connected || false,
+            status: statusData.integrations?.instagram?.status || 'none',
+            username: statusData.integrations?.instagram?.username || '',
+            profile_id: statusData.integrations?.instagram?.profile_id || ''
+          };
+          
+          console.log('🔍 BusinessIntegrations - Instagram processed status:', status);
+        }
+      } catch (statusError) {
+        console.log('🔍 Instagram status check failed:', statusError.message);
+      }
+      
+      // Fallback status if API call failed
+      if (!status) {
+        status = {
+          connected: false,
+          status: 'none',
+          username: '',
+          profile_id: ''
+        };
+      }
+      
+      setInstagramStatus(status);
+      
+    } catch (error) {
+      console.error('❌ BusinessIntegrations - Error checking Instagram status:', error);
+      setInstagramStatus({
+        connected: false,
+        status: 'error',
+        username: '',
+        profile_id: ''
       });
     } finally {
       setLoading(false);
@@ -228,35 +298,40 @@ export const BusinessIntegrations: React.FC<BusinessIntegrationsProps> = ({
   const handleConnect = async () => {
     if (!user) {
       console.error('❌ BusinessIntegrations - No user found');
-      alert('Please sign in first to connect Google Calendar.');
+      alert('Please sign in first to connect accounts.');
       return;
     }
 
     try {
       setConnecting(true);
-      console.log('🚀 Connecting Google Calendar for user:', user.id);
+      console.log('🚀 Opening Unipile connection wizard for user:', user.id);
       
-      // Simple call to backend
-      const response = await fetch('http://localhost:3001/api/integrations/auth/google', {
+      // Call backend to generate hosted auth URL with all supported providers
+      const response = await fetch('http://localhost:3001/api/integrations/hosted-auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id })
+        body: JSON.stringify({ 
+          userId: user.id,
+          providers: ["*"], // Let Unipile show all available providers
+          successRedirect: `${window.location.origin}/integrations/success`,
+          failureRedirect: `${window.location.origin}/integrations/failure`
+        })
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || error.error || 'Failed to get auth URL');
+        throw new Error(error.details || error.error || 'Failed to get auth URL');
       }
 
-      const { url } = await response.json();
-      console.log('🌐 Redirecting to Unipile auth:', url);
+      const { auth_url } = await response.json();
+      console.log('🌐 Redirecting to Unipile hosted auth wizard:', auth_url);
       
-      // Redirect to Unipile hosted auth
-      window.location.href = url;
+      // Redirect to Unipile hosted auth wizard
+      window.location.href = auth_url;
       
     } catch (error) {
       console.error('❌ Connection error:', error);
-      alert(`Failed to connect Google Calendar: ${error.message}`);
+      alert(`Failed to open connection wizard: ${error.message}`);
       setConnecting(false);
     }
   };
@@ -306,6 +381,84 @@ export const BusinessIntegrations: React.FC<BusinessIntegrationsProps> = ({
     } catch (error) {
       console.error('❌ BusinessIntegrations - Refresh error:', error);
       alert('Failed to refresh calendars. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInstagramConnect = async () => {
+    if (!user) {
+      console.error('❌ BusinessIntegrations - No user found for Instagram');
+      alert('Please sign in first to connect Instagram.');
+      return;
+    }
+
+    try {
+      setInstagramConnecting(true);
+      console.log('🚀 Connecting Instagram for user:', user.id);
+      
+      // Call backend to generate hosted auth URL for Instagram
+      const response = await fetch('http://localhost:3001/api/integrations/hosted-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          userId: user.id,
+          providers: ['LINKEDIN'], // Try LinkedIn instead of Instagram for now
+          successRedirect: `${window.location.origin}/integrations/success`,
+          failureRedirect: `${window.location.origin}/integrations/failure`
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.details || error.error || 'Failed to get Instagram auth URL');
+      }
+
+      const { auth_url } = await response.json();
+      console.log('🌐 Redirecting to Instagram hosted auth:', auth_url);
+      
+      // Redirect to Unipile hosted auth wizard for Instagram
+      window.location.href = auth_url;
+      
+    } catch (error) {
+      console.error('❌ Instagram connection error:', error);
+      alert(`Failed to connect Instagram: ${error.message}`);
+      setInstagramConnecting(false);
+    }
+  };
+
+  const handleInstagramDisconnect = async () => {
+    if (!user) return;
+
+    if (!confirm('Are you sure you want to disconnect Instagram? This will disable Instagram messaging functionality.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Call backend to disconnect Instagram
+      const response = await fetch('http://localhost:3001/api/integrations/disconnect/instagram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      });
+
+      if (response.ok) {
+        setInstagramStatus({
+          connected: false,
+          status: 'none',
+          username: '',
+          profile_id: ''
+        });
+        alert('Instagram disconnected successfully');
+      } else {
+        throw new Error('Failed to disconnect Instagram');
+      }
+      
+    } catch (error) {
+      console.error('❌ Instagram disconnect error:', error);
+      alert('Failed to disconnect Instagram. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -492,24 +645,82 @@ export const BusinessIntegrations: React.FC<BusinessIntegrationsProps> = ({
         </div>
       </div>
 
-      <div className="p-4 rounded-lg border-2 border-gray-200 bg-gray-50 opacity-75">
+      {/* Instagram Integration */}
+      <div className={`p-4 rounded-lg border-2 ${instagramStatus.connected ? 'bg-pink-50 border-pink-200' : instagramStatus.status === 'error' ? 'bg-red-50 border-red-200' : 'bg-gray-50 border-gray-200'}`}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-xl">💬</span>
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <span className="text-xl text-white">📷</span>
             </div>
             <div>
-              <h5 className="font-medium text-gray-600">Messaging Integration</h5>
-              <p className="text-sm text-gray-500">WhatsApp, Instagram, Facebook (Coming Soon)</p>
+              <h5 className="font-medium text-gray-900">Instagram Integration</h5>
+              <p className="text-sm text-gray-600">
+                {instagramStatus.connected ? 
+                  `Connected${instagramStatus.username ? ` as @${instagramStatus.username}` : ' (Account verified)'}` :
+                  'Connect your Instagram for direct messaging'
+                }
+              </p>
             </div>
           </div>
-          <button
-            disabled
-            className="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed text-sm"
-          >
-            Coming Soon
-          </button>
+
+          <div className="flex items-center space-x-2">
+            {instagramStatus.connected ? (
+              <button
+                onClick={handleInstagramDisconnect}
+                disabled={loading}
+                className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 disabled:opacity-50"
+              >
+                {loading ? 'Disconnecting...' : 'Disconnect'}
+              </button>
+            ) : (
+              <button
+                onClick={handleInstagramConnect}
+                disabled={instagramConnecting || loading}
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-sm"
+              >
+                {instagramConnecting ? 'Connecting...' : 'Connect LinkedIn'}
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Instagram Connection Details */}
+        {instagramStatus.connected && (
+          <div className="mt-3 p-3 bg-white rounded border">
+            <h6 className="text-sm font-medium text-gray-700 mb-2">Instagram Integration Details:</h6>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <span className="text-gray-500">Status:</span>
+                <span className="ml-2 text-green-600 font-medium">✅ Connected</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Username:</span>
+                <span className="ml-2 text-gray-900">@{instagramStatus.username || 'Account verified'}</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Features:</span>
+                <span className="ml-2 text-gray-900">DM, Posts, Profile</span>
+              </div>
+              <div>
+                <span className="text-gray-500">Config:</span>
+                <span className="ml-2 text-gray-900">{configurationId || 'Default'}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Instagram Benefits */}
+        {!instagramStatus.connected && (
+          <div className="mt-3 p-3 bg-purple-50 rounded border border-purple-200">
+            <h6 className="text-sm font-medium text-purple-800 mb-1">Why Connect Instagram?</h6>
+            <ul className="text-sm text-purple-700 space-y-1">
+              <li>• Respond to Instagram DMs through your chatbot</li>
+              <li>• Manage customer inquiries from Instagram</li>
+              <li>• Unified messaging across all platforms</li>
+              <li>• Automated responses for Instagram messages</li>
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Integration Status Summary */}
@@ -517,22 +728,36 @@ export const BusinessIntegrations: React.FC<BusinessIntegrationsProps> = ({
         <div className="flex items-center space-x-2">
           <span className="text-blue-800 font-medium">Integration Status:</span>
           <span className={`px-2 py-1 rounded text-sm font-medium ${
-            connectionStatus.connected ? 
+            (connectionStatus.connected || instagramStatus.connected) ? 
             'bg-green-100 text-green-800' : 
             'bg-yellow-100 text-yellow-800'
           }`}>
-            {connectionStatus.connected ? 
-              'Ready for Automated Booking' : 
+            {(connectionStatus.connected || instagramStatus.connected) ? 
+              `${connectionStatus.connected && instagramStatus.connected ? 'Fully Integrated' : 'Partially Integrated'}` : 
               'Manual Configuration Only'
             }
           </span>
         </div>
-        <p className="text-sm text-blue-700 mt-1">
-          {connectionStatus.connected ? 
-            'Your chatbot can now automatically book appointments and check availability.' :
-            'Connect integrations to enable automated booking and enhanced functionality.'
-          }
-        </p>
+        <div className="text-sm text-blue-700 mt-1 space-y-1">
+          <div className="flex items-center space-x-4">
+            <span className={`flex items-center space-x-1 ${connectionStatus.connected ? 'text-green-700' : 'text-gray-500'}`}>
+              <span>{connectionStatus.connected ? '✅' : '⭕'}</span>
+              <span>Google Calendar {connectionStatus.connected ? 'Connected' : 'Not Connected'}</span>
+            </span>
+            <span className={`flex items-center space-x-1 ${instagramStatus.connected ? 'text-green-700' : 'text-gray-500'}`}>
+              <span>{instagramStatus.connected ? '✅' : '⭕'}</span>
+              <span>Instagram {instagramStatus.connected ? 'Connected' : 'Not Connected'}</span>
+            </span>
+          </div>
+          <p className="text-blue-600">
+            {(connectionStatus.connected && instagramStatus.connected) ? 
+              'Your chatbot can book appointments and manage Instagram messages automatically.' :
+              (connectionStatus.connected || instagramStatus.connected) ?
+                'Some integrations are active. Connect more for enhanced functionality.' :
+                'Connect integrations to enable automated booking and messaging.'
+            }
+          </p>
+        </div>
       </div>
     </div>
   );
