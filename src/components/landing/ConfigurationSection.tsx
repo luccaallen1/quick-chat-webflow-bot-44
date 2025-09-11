@@ -1,4 +1,11 @@
 import React, { useState } from 'react';
+
+interface WelcomeButton {
+  id: string;
+  text: string;
+  message: string;
+  icon?: string;
+}
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, Palette, Settings, Upload, Edit3 } from 'lucide-react';
+import { Copy, Palette, Settings, Upload, Edit3, Plus, Trash2, Move } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageCropper } from '@/components/ui/image-cropper';
@@ -64,6 +71,10 @@ interface ConfigurationSectionProps {
   setWelcomeTooltipMessage: (message: string) => void;
   copySuccessMessage: string;
   setCopySuccessMessage: (message: string) => void;
+  welcomeButtons: WelcomeButton[];
+  setWelcomeButtons: (buttons: WelcomeButton[]) => void;
+  disclaimerText: string;
+  setDisclaimerText: (text: string) => void;
 }
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   webhookUrl,
@@ -117,7 +128,11 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   welcomeTooltipMessage,
   setWelcomeTooltipMessage,
   copySuccessMessage,
-  setCopySuccessMessage
+  setCopySuccessMessage,
+  welcomeButtons,
+  setWelcomeButtons,
+  disclaimerText,
+  setDisclaimerText
 }) => {
   const {
     toast
@@ -223,18 +238,16 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot Integration</title>
-    <link rel="stylesheet" href="https://your-cdn.com/chatbot-widget.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css">
 </head>
 <body>
     <!-- Your page content -->
     
     <!-- Chatbot Widget -->
-    <div id="chatbot-container"></div>
-    
-    <script src="https://your-cdn.com/chatbot-widget.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js"></script>
     <script>
         // Initialize the chatbot
-        window.initChatbot({
+        ChatbotWidget.init({
 ${reactConfig.split('\n').map(line => '            ' + line.trim().replace(/^/, '')).join('\n')}
         });
     </script>${elevenLabsEmbed}
@@ -310,13 +323,13 @@ export default {
 </script>`;
       case 'dotnet':
         return `@* Add this to your layout or page *@
-<div id="chatbot-container"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css">
 
 @* Add these scripts before closing body tag *@
-<script src="https://your-cdn.com/chatbot-widget.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        window.initChatbot({
+        ChatbotWidget.init({
 ${reactConfig.split('\n').map(line => '            ' + line.trim()).join('\n')}
         });
     });
@@ -352,11 +365,17 @@ ${reactConfig.split('\n').map(line => '    ' + line.trim()).join('\n')}
   };
 
   initChatbot() {
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+    document.head.appendChild(link);
+
     // Load chatbot widget
     const script = document.createElement('script');
-    script.src = 'https://your-cdn.com/chatbot-widget.js';
+    script.src = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js';
     script.onload = () => {
-      (window as any).initChatbot(this.config);
+      (window as any).ChatbotWidget.init(this.config);
     };
     document.head.appendChild(script);
   }
@@ -447,6 +466,142 @@ export class AppComponent implements OnInit {
                 <Label htmlFor="welcomeTooltipMessage" className="text-sm font-medium">Button Tooltip Message</Label>
                 <Input id="welcomeTooltipMessage" value={welcomeTooltipMessage} onChange={e => setWelcomeTooltipMessage(e.target.value)} placeholder="Click to start chatting with our AI assistant!" className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
                 <p className="text-xs text-gray-500">Tooltip message that appears on the chat button</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="disclaimerText" className="text-sm font-medium">Disclaimer Text</Label>
+                <Textarea 
+                  id="disclaimerText" 
+                  value={disclaimerText} 
+                  onChange={e => setDisclaimerText(e.target.value)} 
+                  placeholder="AI chatbot - I do my best, I can answer any questions and make bookings, but always verify important details with a human." 
+                  className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" 
+                />
+                <p className="text-xs text-gray-500">Disclaimer text shown above messages after conversation starts</p>
+              </div>
+
+              {/* Welcome Buttons Configuration */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">Welcome Screen Buttons</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newButton: WelcomeButton = {
+                        id: Date.now().toString(),
+                        text: 'New Button',
+                        message: 'New button message',
+                        icon: '💬'
+                      };
+                      setWelcomeButtons([...welcomeButtons, newButton]);
+                    }}
+                    className="flex items-center gap-1"
+                  >
+                    <Plus className="w-3 h-3" />
+                    Add Button
+                  </Button>
+                </div>
+                
+                <div className="space-y-3">
+                  {welcomeButtons.map((button, index) => (
+                    <div key={button.id} className="flex gap-2 p-3 bg-gray-50 rounded-lg">
+                      <div className="flex-1 space-y-2">
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <Label className="text-xs text-gray-600">Icon</Label>
+                            <Input
+                              value={button.icon || ''}
+                              onChange={(e) => {
+                                const newButtons = [...welcomeButtons];
+                                newButtons[index] = { ...button, icon: e.target.value };
+                                setWelcomeButtons(newButtons);
+                              }}
+                              placeholder="💬"
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                          <div className="col-span-2">
+                            <Label className="text-xs text-gray-600">Button Text</Label>
+                            <Input
+                              value={button.text}
+                              onChange={(e) => {
+                                const newButtons = [...welcomeButtons];
+                                newButtons[index] = { ...button, text: e.target.value };
+                                setWelcomeButtons(newButtons);
+                              }}
+                              placeholder="Button text"
+                              className="h-8 text-sm"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-gray-600">Message to send</Label>
+                          <Input
+                            value={button.message}
+                            onChange={(e) => {
+                              const newButtons = [...welcomeButtons];
+                              newButtons[index] = { ...button, message: e.target.value };
+                              setWelcomeButtons(newButtons);
+                            }}
+                            placeholder="Message to send when clicked"
+                            className="h-8 text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (index > 0) {
+                              const newButtons = [...welcomeButtons];
+                              [newButtons[index], newButtons[index - 1]] = [newButtons[index - 1], newButtons[index]];
+                              setWelcomeButtons(newButtons);
+                            }
+                          }}
+                          className="h-6 w-6 p-0"
+                          disabled={index === 0}
+                        >
+                          <Move className="w-3 h-3 rotate-180" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (index < welcomeButtons.length - 1) {
+                              const newButtons = [...welcomeButtons];
+                              [newButtons[index], newButtons[index + 1]] = [newButtons[index + 1], newButtons[index]];
+                              setWelcomeButtons(newButtons);
+                            }
+                          }}
+                          className="h-6 w-6 p-0"
+                          disabled={index === welcomeButtons.length - 1}
+                        >
+                          <Move className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const newButtons = welcomeButtons.filter((_, i) => i !== index);
+                            setWelcomeButtons(newButtons);
+                          }}
+                          className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500">
+                  Configure buttons shown on the welcome screen. Users can click these to send predefined messages.
+                </p>
               </div>
               
               <div className="space-y-2">
