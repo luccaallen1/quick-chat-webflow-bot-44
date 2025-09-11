@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ChatbotWidget } from './ChatbotWidget';
+import { ChatbotWidget } from './ChatbotWidget-Clean';
 import './ChatbotWidget.css';
 
 // Global interface for window object
@@ -42,6 +42,14 @@ class ChatbotManager {
     logoBorderColor?: string;
     headerButtonColor?: string;
     fontFamily?: string;
+    showWelcomeScreen?: boolean;
+    companyLogo?: string;
+    welcomeButtons?: Array<{
+      id: string;
+      text: string;
+      message: string;
+      icon?: string;
+    }>;
   }) {
     // Clean up existing instance
     this.destroy();
@@ -76,7 +84,10 @@ class ChatbotManager {
       logoBackgroundColor: config.logoBackgroundColor,
       logoBorderColor: config.logoBorderColor,
       headerButtonColor: config.headerButtonColor,
-      fontFamily: config.fontFamily
+      fontFamily: config.fontFamily,
+      showWelcomeScreen: config.showWelcomeScreen,
+      companyLogo: config.companyLogo,
+      welcomeButtons: config.welcomeButtons
     }));
 
     console.log('ChatbotWidget initialized with suggestion buttons and line break support');

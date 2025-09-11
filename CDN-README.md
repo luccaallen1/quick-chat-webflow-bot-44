@@ -1,203 +1,122 @@
+# 🤖 Chatbot Widget CDN
 
-# Chatbot Widget CDN
+Deploy your chatbot widget to any website using jsDelivr and GitHub Pages.
 
-This project can be built and deployed as a CDN widget that can be embedded into any website.
+## 🚀 Quick Setup
 
-## Building the CDN Widget
+### 1. Fork & Deploy
 
-### Prerequisites
-- Node.js and npm/yarn/bun installed
-- All project dependencies installed (`npm install`)
+1. **Fork this repository** to your GitHub account
+2. **Enable GitHub Pages** in repository settings:
+   - Go to Settings → Pages
+   - Source: GitHub Actions
+   - The workflow will automatically deploy your CDN
 
-### Build Commands
+### 2. Use Your CDN URLs
 
-```bash
-# Build the CDN widget
-node build-cdn.js
+Replace `[USERNAME]` with your GitHub username:
 
-# Or manually with environment variable
-BUILD_TARGET=cdn npm run build
-```
+**CSS:** `https://cdn.jsdelivr.net/gh/[USERNAME]/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css`
 
-This will generate:
-- `cdn/chatbot-widget.js` - The standalone widget file ready for CDN deployment
-- `cdn/chatbot-widget.css` - The minified CSS styles for the widget
+**JS:** `https://cdn.jsdelivr.net/gh/[USERNAME]/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js`
 
-### File Structure After Build
-```
-cdn/
-├── chatbot-widget.js     # Standalone widget (minified)
-└── chatbot-widget.css    # Widget styles (minified)
-cdn-example.html          # Usage example
-```
-
-## CDN Deployment
-
-### 1. Upload to CDN
-Upload both files to your CDN provider:
-- `cdn/chatbot-widget.js`
-- `cdn/chatbot-widget.css`
-
-### 2. Set CORS Headers
-Ensure your CDN serves the files with proper CORS headers:
-```
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Methods: GET
-```
-
-### 3. Enable Compression
-Enable gzip/brotli compression for JavaScript and CSS files to reduce file size.
-
-## Webhook Integration
-
-Your webhook endpoint should:
-
-1. **Accept POST requests** with this payload:
-```json
-{
-  "message": "User's message",
-  "userId": "unique-user-id",
-  "source": "WEB",
-  "source2": "TEXT",
-  "link_id": "None",
-  "clinicName": "Your Site",
-  "clinicId": "104"
-}
-```
-
-2. **Return JSON response** in this format:
-```json
-[{
-  "output": "Bot's response message"
-}]
-```
-
-## Integration Guide
-
-### Basic Integration
-Add the CSS and JS files to your website, then create an instance:
+### 3. Add to Any Website
 
 ```html
-<!-- Load the CSS -->
-<link rel="stylesheet" href="https://your-cdn.com/chatbot-widget.css">
+<!-- Include CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/[USERNAME]/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css">
 
-<!-- Load the JavaScript -->
-<script src="https://your-cdn.com/chatbot-widget.js"></script>
+<!-- Include JavaScript -->
+<script src="https://cdn.jsdelivr.net/gh/[USERNAME]/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js"></script>
 
-<!-- Initialize the widget using ChatbotManager -->
+<!-- Initialize Widget -->
 <script>
-  const instance = new window.ChatbotWidget.ChatbotManager();
-  instance.init({
-    webhookUrl: 'https://your-api.com/webhook',
-    title: 'Customer Support',
-    placeholder: 'How can we help you?',
-    position: 'bottom-right',
-    primaryColor: '#3b82f6',
-    welcomeMessage: 'Welcome! How can I assist you today?'
-  });
+ChatbotWidget.init({
+    webhookUrl: 'https://your-webhook-url.com',
+    title: 'Chat with us',
+    welcomeMessage: 'Hello! How can I help you today?',
+    primaryColor: '#6366f1',
+    secondaryColor: '#f1f5f9',
+    showWelcomeScreen: true,
+    welcomeButtons: [
+        { id: '1', text: 'Get Help', message: 'I need help' },
+        { id: '2', text: 'Book Now', message: 'I want to book something' }
+    ]
+});
 </script>
 ```
 
-### Configuration Options
+## ✨ Features
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `webhookUrl` | string | '' | Your webhook endpoint URL |
-| `title` | string | 'Chat Support' | Widget title |
-| `placeholder` | string | 'Type your message...' | Input placeholder |
-| `position` | string | 'bottom-right' | 'bottom-right' or 'bottom-left' |
-| `primaryColor` | string | '#3b82f6' | Widget theme color |
-| `logoUrl` | string | '' | Custom logo URL (optional) |
-| `welcomeMessage` | string | 'Hello! How can I help you today?' | Initial bot message |
+- 🎨 **Fully Customizable** - Colors, text, logos, positioning
+- 📱 **Mobile Responsive** - Works on all devices
+- 🚀 **Easy Integration** - Just add two lines of code
+- 💬 **Welcome Screen** - Interactive buttons and branding
+- 🔌 **Webhook Ready** - Connect to any backend/AI service
+- 🎯 **Smart Suggestions** - Built-in action buttons
 
-### Advanced Usage
+## 📋 Configuration Options
 
-#### Multiple Widgets
 ```javascript
-// Initialize multiple widgets with different configs
-const supportInstance = new window.ChatbotWidget.ChatbotManager();
-supportInstance.init({
-  webhookUrl: 'https://support-api.com/webhook',
-  title: 'Technical Support',
-  position: 'bottom-left',
-  welcomeMessage: 'Hello! I\'m here to help with technical questions.'
+ChatbotWidget.init({
+    // Required
+    webhookUrl: 'string',              // Your chat API endpoint
+    
+    // Basic Settings
+    title: 'string',                   // Widget title
+    welcomeMessage: 'string',          // Initial bot message
+    
+    // Welcome Screen
+    showWelcomeScreen: true,           // Enable welcome screen
+    avatarUrl: 'string',              // Logo/avatar image
+    welcomeButtons: [                  // Custom welcome buttons
+        { id: '1', text: 'Help', message: 'I need help' }
+    ],
+    
+    // Styling
+    position: 'bottom-right',          // Position on page
+    primaryColor: '#6366f1',          // Primary brand color
+    secondaryColor: '#f1f5f9',        // Secondary color
+    headerGradientColor: '#5856eb',    // Header gradient
+    chatBackground: '#ffffff',         // Chat background
+    botTextColor: '#374151',          // Bot text color
+    userTextColor: '#ffffff'          // User text color
 });
-
-const salesInstance = new window.ChatbotWidget.ChatbotManager();
-salesInstance.init({
-  webhookUrl: 'https://sales-api.com/webhook',
-  title: 'Sales Chat',
-  position: 'bottom-right',
-  welcomeMessage: 'Hi! Interested in our products?'
-});
 ```
 
-#### Destroy Widget
-```javascript
-// Remove the widget
-instance.destroy();
+## 🔄 Updating Your CDN
+
+1. **Make changes** to the chatbot widget code
+2. **Build the CDN** with `npm run build:cdn`
+3. **Commit and push** to your repository
+4. **GitHub Actions** will automatically deploy to Pages
+5. **jsDelivr CDN** updates within 24 hours (or use purge cache)
+
+## 🌐 Access Your Documentation
+
+After deployment, your interactive documentation will be available at:
+`https://[USERNAME].github.io/quick-chat-webflow-bot-44/`
+
+## 💡 Tips
+
+- **Cache Busting**: Add version tags to URLs for instant updates
+- **Custom Domain**: Use GitHub Pages custom domain for branded URLs  
+- **Analytics**: Add tracking to monitor widget usage
+- **Testing**: Use the documentation page to test configurations
+
+## 🛠️ Development
+
+```bash
+# Install dependencies
+npm install
+
+# Build CDN files
+npm run build:cdn
+
+# Run development server
+npm run dev
 ```
 
-#### Conditional Loading
-```javascript
-// Load widget only on specific pages
-if (window.location.pathname === '/contact') {
-  const instance = new window.ChatbotWidget.ChatbotManager();
-  instance.init({
-    // config
-  });
-}
-```
+## 📞 Support
 
-## Testing
-
-1. Build the widget: `node build-cdn.js`
-2. Open `cdn-example.html` in a browser
-3. The widget should appear and be functional (without webhook responses)
-
-## Production Checklist
-
-- [ ] Built widget with `node build-cdn.js`
-- [ ] Uploaded both `chatbot-widget.js` and `chatbot-widget.css` to CDN
-- [ ] Set up proper CORS headers
-- [ ] Enabled compression (gzip/brotli)
-- [ ] Configured webhook endpoint
-- [ ] Tested on target website
-- [ ] Set up monitoring/analytics if needed
-
-## File Sizes
-
-The built widget includes:
-- React runtime
-- All UI components
-- Styling (Tailwind CSS)
-- Icons (Lucide React)
-
-Typical sizes:
-- JavaScript: ~150-300KB (minified + gzipped)
-- CSS: ~10-20KB (minified + gzipped)
-
-## Browser Support
-
-- Chrome 60+
-- Firefox 60+
-- Safari 12+
-- Edge 79+
-
-## Troubleshooting
-
-### Widget not appearing
-- Check browser console for errors
-- Verify both CSS and JS files load correctly
-- Ensure CORS headers are set
-
-### Webhook not working
-- Test webhook endpoint directly
-- Check network tab for failed requests
-- Verify JSON response format
-
-### Styling issues
-- Ensure CSS file is loaded before JS
-- Widget uses isolated styles
-- Check for CSS conflicts
-- Verify primaryColor format (#hex)
+Need help? Create an issue in this repository or contact support.
