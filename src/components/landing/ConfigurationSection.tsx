@@ -232,27 +232,33 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
 </script>` : '';
     switch (language) {
       case 'html':
-        return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot Integration</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css">
-</head>
-<body>
-    <!-- Your page content -->
-    
-    <!-- Chatbot Widget -->
-    <script src="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js"></script>
-    <script>
-        // Initialize the chatbot
-        ChatbotWidget.init({
-${reactConfig.split('\n').map(line => '            ' + line.trim().replace(/^/, '')).join('\n')}
-        });
-    </script>${elevenLabsEmbed}
-</body>
-</html>`;
+        return `<!-- Add CSS to <head> section -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css">
+
+<!-- Add before closing </body> tag or in your component -->
+<script src="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js"></script>
+<script>
+(function() {
+    function initChatbot() {
+        if (typeof ChatbotWidget !== 'undefined') {
+            ChatbotWidget.init({
+${reactConfig.split('\n').map(line => '                ' + line.trim().replace(/^/, '')).join('\n')}
+            });
+        } else {
+            // Retry after 100ms if widget not loaded
+            setTimeout(initChatbot, 100);
+        }
+    }
+
+    // Start initialization when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initChatbot);
+    } else {
+        // DOM already loaded, wait a bit for React/frameworks
+        setTimeout(initChatbot, 500);
+    }
+})();
+</script>${elevenLabsEmbed}`;
       case 'react-ts':
         return `import React from 'react';
 import { ChatbotWidget } from './components/ChatbotWidget';
