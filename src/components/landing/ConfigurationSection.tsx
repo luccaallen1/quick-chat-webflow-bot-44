@@ -233,10 +233,10 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     switch (language) {
       case 'html':
         return `<!-- Add CSS to <head> section -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css">
+<link rel="stylesheet" href="https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css">
 
 <!-- Add before closing </body> tag or in your component -->
-<script src="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js"></script>
+<script src="https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js"></script>
 <script>
 (function() {
     var retryCount = 0;
@@ -283,19 +283,19 @@ ${reactConfig.split('\n').map(line => '                ' + line.trim().replace(/
       case 'react-ts':
         return `// App.tsx
 import { useEffect } from 'react';
-import 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+import 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
 
 export const App = () => {
   useEffect(() => {
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+    link.href = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load and initialize ChatbotWidget
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js';
+    script.src = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js';
     script.onload = () => {
       if (window.ChatbotWidget) {
         window.ChatbotWidget.init({
@@ -324,12 +324,12 @@ export const App = () => {
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+    link.href = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load and initialize ChatbotWidget
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js';
+    script.src = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js';
     script.onload = () => {
       if (window.ChatbotWidget) {
         window.ChatbotWidget.init({
@@ -358,12 +358,12 @@ onMounted(() => {
   // Load CSS
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+  link.href = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
   document.head.appendChild(link);
 
   // Load and initialize ChatbotWidget
   const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js';
+  script.src = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js';
   script.onload = () => {
     if (window.ChatbotWidget) {
       window.ChatbotWidget.init({
@@ -380,10 +380,10 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
 </template>`;
       case 'dotnet':
         return `@* Add this to your layout or page *@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css">
+<link rel="stylesheet" href="https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css">
 
 @* Add these scripts before closing body tag *@
-<script src="https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js"></script>
+<script src="https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         ChatbotWidget.init({
@@ -425,12 +425,12 @@ ${reactConfig.split('\n').map(line => '    ' + line.trim()).join('\n')}
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.css';
+    link.href = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load chatbot widget
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/gh/luccaallen1/quick-chat-webflow-bot-44@main/dist/cdn/chatbot-widget.js';
+    script.src = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js';
     script.onload = () => {
       (window as any).ChatbotWidget.init(this.config);
     };
