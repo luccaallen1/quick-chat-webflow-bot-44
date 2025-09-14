@@ -7,6 +7,7 @@ interface ChatbotBubbleProps {
   logoBackgroundColor: string;
   companyName: string;
   agentName: string;
+  welcomeMessage: string;
   callToAction?: string;
   isMobile: boolean;
   isSmallMobile: boolean;
@@ -19,6 +20,7 @@ export const ChatbotBubble: React.FC<ChatbotBubbleProps> = ({
   logoBackgroundColor,
   companyName,
   agentName,
+  welcomeMessage,
   callToAction,
   isMobile,
   isSmallMobile,
@@ -101,10 +103,7 @@ export const ChatbotBubble: React.FC<ChatbotBubbleProps> = ({
               display: 'flex',
               alignItems: 'center'
             }}>
-              {isSmallMobile 
-                ? `Hi! I'm ${agentName}.`
-                : `Hey! I'm ${agentName}. Ask me anything!`
-              }
+              {welcomeMessage}
             </p>
           </div>
         </div>

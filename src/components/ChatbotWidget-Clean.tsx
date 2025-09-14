@@ -39,6 +39,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   avatarUrl = '/lovable-uploads/1f938225-daa7-46d3-a44e-d951e492fcd4.png',
   avatarFile,
   welcomeMessage = 'Hi! I\'m your medical assistant. How can I help you today?',
+  bubbleMessage = 'Hey! I\'m your virtual assistant. How can I help you?',
   welcomeTooltipMessage = 'Click to start chatting with our AI assistant!',
   admin = false,
   isVoiceEnabled = true,
@@ -179,6 +180,18 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       });
     }
   }, [primaryColor, secondaryColor, chatBackground, botTextColor, userTextColor, headerGradientColor, headerMainColor, logoBackgroundColor, logoBorderColor]);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      const container = messagesContainerRef.current;
+      const scrollTop = container.scrollHeight - container.clientHeight;
+      container.scrollTo({
+        top: scrollTop,
+        behavior: 'smooth'
+      });
+    }
+  }, [messages]);
 
   // Message sending
   const sendMessage = async (messageText?: string, retryCount = 0) => {
@@ -520,6 +533,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
           logoBackgroundColor={logoBackgroundColor}
           companyName={companyName}
           agentName={agentName}
+          welcomeMessage={bubbleMessage}
           callToAction={callToAction}
           isMobile={isMobile}
           isSmallMobile={isSmallMobile}

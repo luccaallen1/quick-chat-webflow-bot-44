@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Landing Page - Chatbot Widget from NPM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.95;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .cta-description {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .testimonial {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 60px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .testimonial-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: #444;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .testimonial-author {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 10000;
+        }
+
+        .status-item {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .status-ok { color: #4ade80; }
+        .status-loading { color: #fbbf24; }
+        .status-error { color: #f87171; }
+    </style>
+</head>
+<body>
+    <!-- Debug Status Bar -->
+    <div class="status-bar">
+        <span class="status-item">Page: <span id="page-status" class="status-ok">✓ Loaded</span></span>
+        <span class="status-item">CSS: <span id="css-status" class="status-loading">⏳ Loading...</span></span>
+        <span class="status-item">JS: <span id="js-status" class="status-loading">⏳ Loading...</span></span>
+        <span class="status-item">Widget: <span id="widget-status" class="status-loading">⏳ Waiting...</span></span>
+        <span class="status-item">CDN: <span id="cdn-status" class="status-loading">⏳ Testing...</span></span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>Welcome to TechCorp Solutions</h1>
+            <p class="subtitle">Innovative Solutions for Modern Businesses</p>
+        </header>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3 class="feature-title">Lightning Fast</h3>
+                <p class="feature-description">Our solutions are optimized for speed and performance, ensuring your business stays ahead of the competition.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Secure by Design</h3>
+                <p class="feature-description">Enterprise-grade security built into every layer of our platform, keeping your data safe and compliant.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">Scalable Growth</h3>
+                <p class="feature-description">Grow from startup to enterprise with our flexible infrastructure that scales with your business needs.</p>
+            </div>
+        </div>
+
+        <div class="testimonial">
+            <p class="testimonial-text">"The customer support through their chat widget is exceptional. It's like having a 24/7 expert available whenever we need help. The integration was seamless!"</p>
+            <p class="testimonial-author">— Sarah Johnson, CEO of InnovateTech</p>
+        </div>
+
+        <div class="cta-section">
+            <h2 class="cta-title">Ready to Get Started?</h2>
+            <p class="cta-description">Join thousands of businesses already using our platform to accelerate their growth. Try our chat support in the bottom right corner!</p>
+            <a href="#" class="btn">Start Free Trial</a>
+        </div>
+    </div>
+
+    <!-- Chatbot Widget Integration - Local Test -->
+    <link href="http://localhost:9999/cdn/chatbot-widget.css" rel="stylesheet" />
+    <script src="http://localhost:9999/cdn/chatbot-widget.js"></script>
+
+    <script>
+        // Debug and monitoring script
+        let loadStartTime = Date.now();
+
+        // Monitor CSS loading
+        const cssLink = document.querySelector('link[href*="@luccaallen/chatbot-widget"]');
+        if (cssLink) {
+            cssLink.onload = function() {
+                document.getElementById('css-status').innerHTML = '✓ Loaded';
+                document.getElementById('css-status').className = 'status-ok';
+                console.log('✅ CSS loaded from CDN');
+            };
+            cssLink.onerror = function() {
+                document.getElementById('css-status').innerHTML = '✗ Failed';
+                document.getElementById('css-status').className = 'status-error';
+                console.error('❌ CSS failed to load');
+            };
+        }
+
+        // Monitor JS loading
+        const jsScript = document.querySelector('script[src*="@luccaallen/chatbot-widget"]');
+        if (jsScript) {
+            jsScript.onload = function() {
+                document.getElementById('js-status').innerHTML = '✓ Loaded';
+                document.getElementById('js-status').className = 'status-ok';
+                console.log('✅ JavaScript loaded from CDN');
+            };
+            jsScript.onerror = function() {
+                document.getElementById('js-status').innerHTML = '✗ Failed';
+                document.getElementById('js-status').className = 'status-error';
+                console.error('❌ JavaScript failed to load');
+            };
+        }
+
+        // Wait for ChatbotWidget to be available and initialize
+        let checkCount = 0;
+        const checkInterval = setInterval(function() {
+            checkCount++;
+
+            if (typeof ChatbotWidget !== 'undefined') {
+                clearInterval(checkInterval);
+
+                try {
+                    // The widget auto-initializes when loaded
+                    // Check if initialization happened
+                    console.log('✅ ChatbotWidget object exists:', ChatbotWidget);
+
+                    // Try both createChat (n8n style) and init methods
+                    if (typeof ChatbotWidget.createChat === 'function') {
+                        ChatbotWidget.createChat({
+                            webhookUrl: 'https://hook.us2.make.com/2bg1234example', // Example webhook
+                            title: 'TechCorp Support',
+                            welcomeMessage: 'Hello! 👋 How can I help you today?',
+                            primaryColor: '#667eea',
+                            secondaryColor: '#764ba2',
+                            showWelcomeScreen: true,
+                            position: 'bottom-right',
+                            chatBackground: '#ffffff',
+                            welcomeButtons: [
+                                { id: '1', text: 'Get Support', message: 'I need help with your product' },
+                                { id: '2', text: 'Pricing Info', message: 'Tell me about your pricing' },
+                                { id: '3', text: 'Book Demo', message: 'I want to schedule a demo' }
+                            ]
+                        });
+                        console.log('✅ Used ChatbotWidget.createChat() - n8n style!');
+                    } else if (typeof ChatbotWidget.init === 'function') {
+                        ChatbotWidget.init({
+                            webhookUrl: 'https://hook.us2.make.com/2bg1234example',
+                            title: 'TechCorp Support',
+                            welcomeMessage: 'Hello! 👋 How can I help you today?',
+                            primaryColor: '#667eea',
+                            secondaryColor: '#764ba2',
+                            showWelcomeScreen: true,
+                            position: 'bottom-right',
+                            chatBackground: '#ffffff',
+                            welcomeButtons: [
+                                { id: '1', text: 'Get Support', message: 'I need help with your product' },
+                                { id: '2', text: 'Pricing Info', message: 'Tell me about your pricing' },
+                                { id: '3', text: 'Book Demo', message: 'I want to schedule a demo' }
+                            ]
+                        });
+                        console.log('✅ Used ChatbotWidget.init() - legacy style!');
+                    } else {
+                        console.log('⚠️ Neither createChat nor init functions found');
+                        console.log('Available ChatbotWidget properties:', Object.keys(ChatbotWidget));
+                    }
+
+                    document.getElementById('widget-status').innerHTML = '✓ Loaded';
+                    document.getElementById('widget-status').className = 'status-ok';
+
+                    const loadTime = Date.now() - loadStartTime;
+                    document.getElementById('cdn-status').innerHTML = `✓ ${loadTime}ms`;
+                    document.getElementById('cdn-status').className = 'status-ok';
+
+                    console.log('✅ ChatbotWidget initialized successfully');
+                    console.log('📊 Total load time:', loadTime, 'ms');
+
+                    // Test widget presence
+                    setTimeout(() => {
+                        const widgetButton = document.querySelector('[data-chat-widget]') ||
+                                           document.querySelector('.chat-widget-toggle') ||
+                                           document.querySelector('#chat-widget-button') ||
+                                           document.querySelector('button[aria-label*="chat"]');
+
+                        if (widgetButton) {
+                            console.log('✅ Chat widget button found in DOM');
+                        } else {
+                            console.warn('⚠️ Chat widget button not found in expected locations');
+                        }
+                    }, 1000);
+
+                } catch (error) {
+                    document.getElementById('widget-status').innerHTML = '✗ Error';
+                    document.getElementById('widget-status').className = 'status-error';
+                    console.error('❌ ChatbotWidget initialization failed:', error);
+                }
+            } else if (checkCount > 100) { // 10 seconds timeout
+                clearInterval(checkInterval);
+                document.getElementById('widget-status').innerHTML = '✗ Timeout';
+                document.getElementById('widget-status').className = 'status-error';
+                document.getElementById('cdn-status').innerHTML = '✗ Failed';
+                document.getElementById('cdn-status').className = 'status-error';
+                console.error('❌ ChatbotWidget not found after 10 seconds');
+            }
+        }, 100);
+
+        // Additional debugging
+        window.addEventListener('error', function(e) {
+            if (e.filename && e.filename.includes('chatbot-widget')) {
+                console.error('❌ Runtime error in chatbot widget:', e.message);
+            }
+        });
+
+        // Log all network requests for debugging
+        if (window.performance && window.performance.getEntriesByType) {
+            setTimeout(() => {
+                const resources = window.performance.getEntriesByType('resource');
+                const widgetResources = resources.filter(r => r.name.includes('@luccaallen/chatbot-widget'));
+
+                if (widgetResources.length > 0) {
+                    console.log('📊 CDN Performance Metrics:');
+                    widgetResources.forEach(r => {
+                        console.log(`  ${r.name.split('/').pop()}: ${Math.round(r.duration)}ms`);
+                    });
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .debug {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug">
+        <h1>Debug Test - Chatbot Widget</h1>
+        <div id="status">Loading...</div>
+    </div>
+
+    <script src="http://localhost:9999/cdn/chatbot-widget.js"></script>
+
+    <script>
+        console.log('🔍 Debug Test Started');
+
+        // Check if ChatbotWidget loaded
+        setTimeout(() => {
+            const status = document.getElementById('status');
+
+            if (typeof ChatbotWidget !== 'undefined') {
+                console.log('✅ ChatbotWidget loaded successfully');
+                console.log('ChatbotWidget object:', ChatbotWidget);
+
+                status.innerHTML = `
+                    <h2>✅ Widget Loaded Successfully!</h2>
+                    <pre>${JSON.stringify(ChatbotWidget, null, 2)}</pre>
+                    <button onclick="testWidget()">Test Widget</button>
+                `;
+
+                window.testWidget = function() {
+                    console.log('🚀 Testing widget...');
+                    try {
+                        const result = ChatbotWidget.createChat({
+                            webhookUrl: 'https://hook.us2.make.com/test123',
+                            title: 'Debug Chat',
+                            primaryColor: '#ff6b6b'
+                        });
+                        console.log('✅ Widget created:', result);
+                        status.innerHTML += '<div style="color: green; margin-top: 10px;">✅ Widget created successfully! Check bottom-right corner.</div>';
+                    } catch (error) {
+                        console.error('❌ Error creating widget:', error);
+                        status.innerHTML += '<div style="color: red; margin-top: 10px;">❌ Error: ' + error.message + '</div>';
+                    }
+                };
+
+            } else {
+                console.error('❌ ChatbotWidget not found');
+                status.innerHTML = `
+                    <h2 style="color: red;">❌ Widget Failed to Load</h2>
+                    <p>ChatbotWidget is not defined</p>
+                    <p>Check browser console for errors</p>
+                `;
+            }
+        }, 1000);
+
+        // Catch any JavaScript errors
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            document.getElementById('status').innerHTML += `
+                <div style="color: red; margin-top: 10px;">
+                    <strong>Error:</strong> ${e.message}<br>
+                    <strong>File:</strong> ${e.filename}:${e.lineno}
+                </div>
+            `;
+        });
+
+        console.log('🔍 Debug setup complete, waiting for widget...');
+    </script>
+</body>
+</html>

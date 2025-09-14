@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
       plugins: [react()],
       build: {
         lib: {
-          entry: path.resolve(__dirname, isVoiceWidget ? 'src/components/StandaloneVoiceWidget.tsx' : 'src/components/StandaloneChatbot.tsx'),
+          entry: path.resolve(__dirname, isVoiceWidget ? 'src/components/StandaloneVoiceWidget.tsx' : 'src/clean-widget-entry.js'),
           name: isVoiceWidget ? 'VoiceWidget' : 'ChatbotWidget',
           fileName: isVoiceWidget ? 'voice-widget' : 'chatbot-widget',
           formats: ['iife']

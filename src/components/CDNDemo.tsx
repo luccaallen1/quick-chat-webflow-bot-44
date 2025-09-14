@@ -22,34 +22,33 @@ import { RevenueCalculatorSection } from './landing/RevenueCalculatorSection';
 
 export const CDNDemo = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [webhookUrl, setWebhookUrl] = useState('https://luccatora.app.n8n.cloud/webhook/webbot');
+  const [webhookUrl, setWebhookUrl] = useState('https://luccatora.app.n8n.cloud/webhook/lapop');
   const [title, setTitle] = useState('Chat Support');
   const [bio, setBio] = useState('Online now');
   const [placeholder, setPlaceholder] = useState('Type your message...');
   const [position, setPosition] = useState<'bottom-right' | 'bottom-left'>('bottom-right');
-  const [primaryColor, setPrimaryColor] = useState('#1f75ff');
+  const [primaryColor, setPrimaryColor] = useState('#141E29');
   const [secondaryColor, setSecondaryColor] = useState('#f3f4f6');
   const [botTextColor, setBotTextColor] = useState('#1f2937');
   const [userTextColor, setUserTextColor] = useState('#ffffff');
   const [chatBackground, setChatBackground] = useState('#ffffff');
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [defaultLogoUrl] = useState('/lovable-uploads/fd9d4dbf-9035-4de8-a3a1-81089fcac665.png');
-  const [defaultAvatarUrl] = useState('/lovable-uploads/1f938225-daa7-46d3-a44e-d951e492fcd4.png');
-  const [welcomeMessage, setWelcomeMessage] = useState('Hey, this is Jack, the Virtual Assistant from ToraTech AI. How can I help you today?');
+  const [logoUrl, setLogoUrl] = useState('https://i.postimg.cc/59ZVMY4J/lapop-image.webp');
+  const [avatarUrl, setAvatarUrl] = useState('https://i.postimg.cc/vHWpF027/Heading.webp');
+  const [welcomeMessage, setWelcomeMessage] = useState('Hey, this is Vicky, the Virtual Assistant for La Pop. How can I help you today?');
+  const [bubbleMessage, setBubbleMessage] = useState('Hey, this is Vicky, the Virtual Assistant for La Pop. How can I help you today?');
   const [admin, setAdmin] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
   const [isElevenLabsEnabled, setIsElevenLabsEnabled] = useState(false);
   const [elevenLabsAgentId, setElevenLabsAgentId] = useState('agent_01k04zwwq3fv5acgzdwmbvfk8k');
   const [gradientColor, setGradientColor] = useState('rgba(59, 130, 246, 0.9)');
-  const [headerGradientColor, setHeaderGradientColor] = useState('#002fff');
-  const [headerMainColor, setHeaderMainColor] = useState('#428bff');
+  const [headerGradientColor, setHeaderGradientColor] = useState('#141E29');
+  const [headerMainColor, setHeaderMainColor] = useState('#303f50');
   const [logoBackgroundColor, setLogoBackgroundColor] = useState('transparent');
   const [logoBorderColor, setLogoBorderColor] = useState('none');
   const [headerButtonColor, setHeaderButtonColor] = useState('#ffffff');
   const [fontFamily, setFontFamily] = useState('Inter');
   const [copySuccessMessage, setCopySuccessMessage] = useState('Code Copied!');
-  const [welcomeTooltipMessage, setWelcomeTooltipMessage] = useState('Click to start chatting with our AI assistant!');
+  const [welcomeTooltipMessage, setWelcomeTooltipMessage] = useState('Click to start chatting with our AI');
   const [disclaimerText, setDisclaimerText] = useState('AI chatbot - I do my best, I can answer any questions and make bookings, but always verify important details with a human.');
   
   // Welcome buttons configuration
@@ -184,12 +183,14 @@ export const CDNDemo = () => {
         setUserTextColor={setUserTextColor}
         chatBackground={chatBackground}
         setChatBackground={setChatBackground}
-        logoFile={logoFile}
-        setLogoFile={setLogoFile}
-        avatarFile={avatarFile}
-        setAvatarFile={setAvatarFile}
+        logoUrl={logoUrl}
+        setLogoUrl={setLogoUrl}
+        avatarUrl={avatarUrl}
+        setAvatarUrl={setAvatarUrl}
         welcomeMessage={welcomeMessage}
         setWelcomeMessage={setWelcomeMessage}
+        bubbleMessage={bubbleMessage}
+        setBubbleMessage={setBubbleMessage}
         admin={admin}
         setAdmin={setAdmin}
         isVoiceEnabled={isVoiceEnabled}
@@ -240,11 +241,10 @@ export const CDNDemo = () => {
         logoBorderColor={logoBorderColor}
         headerButtonColor={headerButtonColor}
         fontFamily={fontFamily}
-        logoFile={logoFile}
-        logoUrl={logoFile ? undefined : defaultLogoUrl}
-        avatarFile={avatarFile}
-        avatarUrl={avatarFile ? undefined : defaultAvatarUrl}
+        logoUrl={logoUrl}
+        avatarUrl={avatarUrl}
         welcomeMessage={welcomeMessage}
+        bubbleMessage={bubbleMessage}
         welcomeTooltipMessage={welcomeTooltipMessage}
         welcomeButtons={welcomeButtons}
         admin={admin}

@@ -13,11 +13,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Copy, Palette, Settings, Upload, Edit3, Plus, Trash2, Move } from 'lucide-react';
+import { Copy, Palette, Settings, Plus, Trash2, Move } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ImageCropper } from '@/components/ui/image-cropper';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 interface ConfigurationSectionProps {
   webhookUrl: string;
   setWebhookUrl: (url: string) => void;
@@ -39,12 +37,14 @@ interface ConfigurationSectionProps {
   setUserTextColor: (color: string) => void;
   chatBackground: string;
   setChatBackground: (color: string) => void;
-  logoFile: File | null;
-  setLogoFile: (file: File | null) => void;
-  avatarFile: File | null;
-  setAvatarFile: (file: File | null) => void;
+  logoUrl: string;
+  setLogoUrl: (url: string) => void;
+  avatarUrl: string;
+  setAvatarUrl: (url: string) => void;
   welcomeMessage: string;
   setWelcomeMessage: (message: string) => void;
+  bubbleMessage: string;
+  setBubbleMessage: (message: string) => void;
   admin: boolean;
   setAdmin: (admin: boolean) => void;
   isVoiceEnabled: boolean;
@@ -97,12 +97,14 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   setUserTextColor,
   chatBackground,
   setChatBackground,
-  logoFile,
-  setLogoFile,
-  avatarFile,
-  setAvatarFile,
+  logoUrl,
+  setLogoUrl,
+  avatarUrl,
+  setAvatarUrl,
   welcomeMessage,
   setWelcomeMessage,
+  bubbleMessage,
+  setBubbleMessage,
   admin,
   setAdmin,
   isVoiceEnabled,
@@ -138,8 +140,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     toast
   } = useToast();
   const [selectedLanguage, setSelectedLanguage] = useState('html');
-  const [isCropperOpen, setIsCropperOpen] = useState(false);
-  const [isAvatarCropperOpen, setIsAvatarCropperOpen] = useState(false);
   const copyCode = (language: string) => {
     const code = generateCode(language);
     navigator.clipboard.writeText(code);
@@ -172,12 +172,11 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       userTextColor,
       chatBackground,
       welcomeMessage,
+      bubbleMessage,
       admin,
       isVoiceEnabled,
-    logoFile: logoFile ? logoFile.name : null,
-    logoUrl: logoFile ? URL.createObjectURL(logoFile) : null,
-    avatarFile: avatarFile ? avatarFile.name : null,
-    avatarUrl: avatarFile ? URL.createObjectURL(avatarFile) : null,
+      logoUrl,
+      avatarUrl,
       isElevenLabsEnabled,
       elevenLabsAgentId,
       gradientColor,
@@ -201,6 +200,7 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     userTextColor: '${baseConfig.userTextColor}',
     chatBackground: '${baseConfig.chatBackground}',
     welcomeMessage: '${baseConfig.welcomeMessage}',
+    bubbleMessage: '${baseConfig.bubbleMessage}',
     admin: ${baseConfig.admin},
     isVoiceEnabled: ${baseConfig.isVoiceEnabled},
     isElevenLabsEnabled: ${baseConfig.isElevenLabsEnabled},
@@ -213,11 +213,9 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     headerButtonColor: '${baseConfig.headerButtonColor}',
     fontFamily: '${baseConfig.fontFamily}',
     welcomeTooltipMessage: '${baseConfig.welcomeTooltipMessage}',
-    copySuccessMessage: '${baseConfig.copySuccessMessage}'${baseConfig.logoFile ? `,
-    logoFile: '${baseConfig.logoFile}',
-    logoUrl: '${baseConfig.logoUrl}'` : ''}${baseConfig.avatarFile ? `,
-    avatarFile: '${baseConfig.avatarFile}',
-    avatarUrl: '${baseConfig.avatarUrl}'` : ''}`;
+    copySuccessMessage: '${baseConfig.copySuccessMessage}',
+    logoUrl: '${baseConfig.logoUrl}',
+    avatarUrl: '${baseConfig.avatarUrl}'`;
     const elevenLabsEmbed = isElevenLabsEnabled ? `
 
 <!-- ElevenLabs Voice Bot Integration -->
@@ -233,72 +231,50 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     switch (language) {
       case 'html':
         return `<!-- Add CSS to <head> section -->
-<link rel="stylesheet" href="https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css">
 
 <!-- Add before closing </body> tag or in your component -->
-<script src="https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js"></script>
 <script>
-(function() {
-    var retryCount = 0;
-    var maxRetries = 50; // 5 seconds max
-    
-    function initChatbot() {
-        console.log('Attempting to initialize ChatbotWidget, attempt:', retryCount + 1);
-        
-        if (typeof window !== 'undefined' && window.ChatbotWidget && typeof window.ChatbotWidget.init === 'function') {
-            console.log('ChatbotWidget found! Initializing...');
-            window.ChatbotWidget.init({
-${reactConfig.split('\n').map(line => '                ' + line.trim().replace(/^/, '')).join('\n')}
-            });
-            console.log('ChatbotWidget initialized successfully!');
-            return true;
-        } else {
-            console.log('ChatbotWidget not ready yet, retrying...', {
-                window: typeof window,
-                ChatbotWidget: typeof window?.ChatbotWidget,
-                init: typeof window?.ChatbotWidget?.init
-            });
-            
-            retryCount++;
-            if (retryCount < maxRetries) {
-                setTimeout(initChatbot, 100);
-            } else {
-                console.error('Failed to initialize ChatbotWidget after', maxRetries, 'attempts');
-            }
-            return false;
-        }
-    }
+    // Wait for ChatbotWidget to be available and initialize
+    let checkCount = 0;
+    const checkInterval = setInterval(function() {
+        checkCount++;
 
-    // Start initialization when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(initChatbot, 100);
-        });
-    } else {
-        // DOM already loaded, wait a bit for React/frameworks then start
-        setTimeout(initChatbot, 100);
-    }
-})();
-</script>${elevenLabsEmbed}`;
+        if (typeof ChatbotWidget !== 'undefined') {
+            clearInterval(checkInterval);
+
+            try {
+                // Use createChat method (n8n style)
+                ChatbotWidget.createChat({
+${reactConfig.split('\n').map(line => '                    ' + line.trim().replace(/^/, '')).join('\n')}
+                });
+                console.log('✅ ChatbotWidget initialized successfully!');
+            } catch (error) {
+                console.error('❌ Error initializing ChatbotWidget:', error);
+            }
+        }
+    }, 100);
+</script>`;
       case 'react-ts':
         return `// App.tsx
 import { useEffect } from 'react';
-import 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
+import 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
 
 export const App = () => {
   useEffect(() => {
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
+    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load and initialize ChatbotWidget
     const script = document.createElement('script');
-    script.src = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js';
     script.onload = () => {
-      if (window.ChatbotWidget) {
-        window.ChatbotWidget.init({
+      if (typeof ChatbotWidget !== 'undefined') {
+        ChatbotWidget.createChat({
 ${reactConfig.split('\n').map(line => '          ' + line.trim()).join('\n')}
         });
       }
@@ -307,8 +283,8 @@ ${reactConfig.split('\n').map(line => '          ' + line.trim()).join('\n')}
 
     // Cleanup
     return () => {
-      if (window.ChatbotWidget) {
-        window.ChatbotWidget.destroy();
+      if (typeof ChatbotWidget !== 'undefined') {
+        // ChatbotWidget cleanup handled automatically
       }
     };
   }, []);
@@ -324,15 +300,15 @@ export const App = () => {
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
+    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load and initialize ChatbotWidget
     const script = document.createElement('script');
-    script.src = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js';
     script.onload = () => {
-      if (window.ChatbotWidget) {
-        window.ChatbotWidget.init({
+      if (typeof ChatbotWidget !== 'undefined') {
+        ChatbotWidget.createChat({
 ${reactConfig.split('\n').map(line => '          ' + line.trim()).join('\n')}
         });
       }
@@ -341,8 +317,8 @@ ${reactConfig.split('\n').map(line => '          ' + line.trim()).join('\n')}
 
     // Cleanup
     return () => {
-      if (window.ChatbotWidget) {
-        window.ChatbotWidget.destroy();
+      if (typeof ChatbotWidget !== 'undefined') {
+        // ChatbotWidget cleanup handled automatically
       }
     };
   }, []);
@@ -358,15 +334,15 @@ onMounted(() => {
   // Load CSS
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
+  link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
   document.head.appendChild(link);
 
   // Load and initialize ChatbotWidget
   const script = document.createElement('script');
-  script.src = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js';
+  script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js';
   script.onload = () => {
-    if (window.ChatbotWidget) {
-      window.ChatbotWidget.init({
+    if (typeof ChatbotWidget !== 'undefined') {
+      ChatbotWidget.createChat({
 ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
       });
     }
@@ -380,10 +356,10 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
 </template>`;
       case 'dotnet':
         return `@* Add this to your layout or page *@
-<link rel="stylesheet" href="https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css">
 
 @* Add these scripts before closing body tag *@
-<script src="https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         ChatbotWidget.init({
@@ -425,12 +401,12 @@ ${reactConfig.split('\n').map(line => '    ' + line.trim()).join('\n')}
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.css';
+    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load chatbot widget
     const script = document.createElement('script');
-    script.src = 'https://genuine-liger-7be443.netlify.app/cdn/chatbot-widget.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js';
     script.onload = () => {
       (window as any).ChatbotWidget.init(this.config);
     };
@@ -517,6 +493,12 @@ export class AppComponent implements OnInit {
                 <Label htmlFor="welcomeMessage" className="text-sm font-medium">Welcome Message</Label>
                 <Textarea id="welcomeMessage" value={welcomeMessage} onChange={e => setWelcomeMessage(e.target.value)} placeholder="Hello! How can I help you today?" className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
                 <p className="text-xs text-gray-500">First message users see when opening the chat</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bubbleMessage" className="text-sm font-medium">Bubble Message</Label>
+                <Textarea id="bubbleMessage" value={bubbleMessage} onChange={e => setBubbleMessage(e.target.value)} placeholder="Hey! I'm your virtual assistant. How can I help you?" className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
+                <p className="text-xs text-gray-500">Message shown on the chat bubble when the widget is closed</p>
               </div>
 
               <div className="space-y-2">
@@ -662,81 +644,65 @@ export class AppComponent implements OnInit {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="logoFile" className="text-sm font-medium">Header Logo (optional)</Label>
-                <div className="space-y-3">
-                  <Dialog open={isCropperOpen} onOpenChange={setIsCropperOpen}>
-                    <DialogTrigger asChild>
-                      <Button type="button" variant="outline" className="w-full h-10 flex items-center justify-center gap-2">
-                        <Upload className="h-4 w-4" />
-                        {logoFile ? 'Change Header Logo' : 'Upload & Crop Header Logo'}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-lg">
-                      <ImageCropper onCrop={croppedFile => {
-                      setLogoFile(croppedFile);
-                      setIsCropperOpen(false);
-                    }} onCancel={() => setIsCropperOpen(false)} initialImage={logoFile} size={200} />
-                    </DialogContent>
-                  </Dialog>
-                  
-                  {logoFile && <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0">
-                        <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
-                          <img src={URL.createObjectURL(logoFile)} alt="Header logo preview" className="w-full h-full object-contain" />
-                        </div>
+                <Label htmlFor="logoUrl" className="text-sm font-medium">Header Logo URL (optional)</Label>
+                <Input
+                  id="logoUrl"
+                  type="url"
+                  placeholder="https://example.com/your-logo.png"
+                  value={logoUrl}
+                  onChange={(e) => setLogoUrl(e.target.value)}
+                  className="w-full"
+                />
+                {logoUrl && (
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
+                        <img src={logoUrl} alt="Header logo preview" className="w-full h-full object-contain" onError={(e) => {
+                          e.currentTarget.src = '/lovable-uploads/fd9d4dbf-9035-4de8-a3a1-81089fcac665.png';
+                        }} />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-600 truncate">{logoFile.name}</p>
-                        <p className="text-xs text-gray-400">Header logo preview</p>
-                      </div>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => setIsCropperOpen(true)} className="flex-shrink-0">
-                        <Edit3 className="h-4 w-4" />
-                      </Button>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => setLogoFile(null)} className="flex-shrink-0">
-                        Remove
-                      </Button>
-                    </div>}
-                </div>
-                <p className="text-xs text-gray-500">Logo displayed in the chat widget header</p>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-600 truncate">{logoUrl}</p>
+                      <p className="text-xs text-gray-400">Header logo preview</p>
+                    </div>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setLogoUrl('')} className="flex-shrink-0">
+                      Clear
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-gray-500">Logo displayed in the chat widget header. Use a publicly accessible URL.</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="avatarFile" className="text-sm font-medium">Avatar Image (optional)</Label>
-                <div className="space-y-3">
-                  <Dialog open={isAvatarCropperOpen} onOpenChange={setIsAvatarCropperOpen}>
-                    <DialogTrigger asChild>
-                      <Button type="button" variant="outline" className="w-full h-10 flex items-center justify-center gap-2">
-                        <Upload className="h-4 w-4" />
-                        {avatarFile ? 'Change Avatar' : 'Upload & Crop Avatar'}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-lg">
-                      <ImageCropper onCrop={croppedFile => {
-                      setAvatarFile(croppedFile);
-                      setIsAvatarCropperOpen(false);
-                    }} onCancel={() => setIsAvatarCropperOpen(false)} initialImage={avatarFile} size={200} />
-                    </DialogContent>
-                  </Dialog>
-                  
-                  {avatarFile && <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0">
-                        <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
-                          <img src={URL.createObjectURL(avatarFile)} alt="Avatar preview" className="w-full h-full object-contain" />
-                        </div>
+                <Label htmlFor="avatarUrl" className="text-sm font-medium">Avatar Image URL (optional)</Label>
+                <Input
+                  id="avatarUrl"
+                  type="url"
+                  placeholder="https://example.com/your-avatar.png"
+                  value={avatarUrl}
+                  onChange={(e) => setAvatarUrl(e.target.value)}
+                  className="w-full"
+                />
+                {avatarUrl && (
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-50">
+                        <img src={avatarUrl} alt="Avatar preview" className="w-full h-full object-contain" onError={(e) => {
+                          e.currentTarget.src = '/lovable-uploads/1f938225-daa7-46d3-a44e-d951e492fcd4.png';
+                        }} />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-600 truncate">{avatarFile.name}</p>
-                        <p className="text-xs text-gray-400">Avatar preview</p>
-                      </div>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => setIsAvatarCropperOpen(true)} className="flex-shrink-0">
-                        <Edit3 className="h-4 w-4" />
-                      </Button>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => setAvatarFile(null)} className="flex-shrink-0">
-                        Remove
-                      </Button>
-                    </div>}
-                </div>
-                <p className="text-xs text-gray-500">Avatar displayed in message bubbles and call interface</p>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-600 truncate">{avatarUrl}</p>
+                      <p className="text-xs text-gray-400">Avatar preview</p>
+                    </div>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setAvatarUrl('')} className="flex-shrink-0">
+                      Clear
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-gray-500">Avatar displayed in message bubbles and call interface. Use a publicly accessible URL.</p>
               </div>
               
               <div className="space-y-2">

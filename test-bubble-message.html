@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Message Test - Local Version</title>
+    <link rel="stylesheet" href="./cdn/chatbot-widget.css">
+</head>
+<body>
+    <h1>Bubble Message Test - Local Version</h1>
+    <p>This page uses the locally built widget files to test the bubble message configuration.</p>
+
+    <script src="./cdn/chatbot-widget.js"></script>
+    <script>
+        // Test with La Pop configuration including custom bubble message
+        window.ChatbotWidget.createChat({
+            webhookUrl: 'https://luccatora.app.n8n.cloud/webhook/5b58f78d-1b34-4b6b-8b02-a3c5e7e5b0b7',
+            title: 'La Pop',
+            bio: 'Virtual Assistant',
+            placeholder: 'Type your message here...',
+            position: 'bottom-right',
+            primaryColor: '#141E29',
+            secondaryColor: '#f1f5f9',
+            chatBackground: '#ffffff',
+            botTextColor: '#1f2937',
+            userTextColor: '#ffffff',
+            headerGradientColor: '#141E29',
+            headerMainColor: '#303f50',
+            logoUrl: 'https://postimg.cc/N59G9mHg',
+            avatarUrl: 'https://postimg.cc/N59G9mHg',
+            logoBackgroundColor: '#ffffff',
+            logoBorderColor: '#e5e7eb',
+            headerButtonColor: '#ffffff',
+            companyName: 'La Pop',
+            agentName: 'Vicky',
+            callToAction: 'Start a conversation',
+            welcomeMessage: 'Hello! I\'m Vicky, your Virtual Assistant for La Pop. How can I help you today?',
+            bubbleMessage: 'Hey, this is Vicky, the Virtual Assistant for La Pop. How can I help you today?',
+            admin: false,
+            isVoiceEnabled: true,
+            isElevenLabsEnabled: false,
+            showWelcomeScreen: true
+        });
+    </script>
+</body>
+</html>

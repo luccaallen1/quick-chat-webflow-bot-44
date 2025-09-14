@@ -21,6 +21,7 @@ export interface ChatbotWidgetProps {
   avatarUrl?: string;
   avatarFile?: File;
   welcomeMessage?: string;
+  bubbleMessage?: string;
   welcomeTooltipMessage?: string;
   admin?: boolean;
   isVoiceEnabled?: boolean;
