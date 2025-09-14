@@ -1,0 +1,45 @@
+{
+  "name": "@luccaallen/chatbot-widget",
+  "version": "1.0.6",
+  "description": "Customizable chatbot widget for websites - Easy to integrate, works with any backend",
+  "main": "chatbot-widget.js",
+  "module": "chatbot-widget.es.js",
+  "style": "chatbot-widget.css",
+  "files": [
+    "chatbot-widget.js",
+    "chatbot-widget.css"
+  ],
+  "keywords": [
+    "chatbot",
+    "widget",
+    "chat",
+    "customer-support",
+    "webflow",
+    "n8n",
+    "ai-chat",
+    "conversational-ui"
+  ],
+  "author": "Lucca Allen",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luccaallen1/quick-chat-webflow-bot-44.git"
+  },
+  "bugs": {
+    "url": "https://github.com/luccaallen1/quick-chat-webflow-bot-44/issues"
+  },
+  "homepage": "https://github.com/luccaallen1/quick-chat-webflow-bot-44#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": "./chatbot-widget.es.js",
+      "require": "./chatbot-widget.js",
+      "default": "./chatbot-widget.js"
+    },
+    "./style.css": "./chatbot-widget.css"
+  },
+  "jsdelivr": "chatbot-widget.js",
+  "unpkg": "chatbot-widget.js"
+}
