@@ -1,6 +1,6 @@
 {
   "name": "@luccaallen/chatbot-widget",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "Customizable chatbot widget for websites - Easy to integrate, works with any backend",
   "main": "chatbot-widget.js",
   "module": "chatbot-widget.es.js",
