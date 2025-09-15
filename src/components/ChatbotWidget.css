@@ -45,8 +45,9 @@ div.chatbot-widget-container.chatbot-widget-bottom-left,
 
 /* Clean minimal chat window */
 .chatbot-widget-window {
-  width: 400px !important;
-  height: 720px !important; /* Increased by 20% from 600px */
+  width: 450px !important;  /* Increased width from 400px */
+  height: 720px !important;  /* Already 20% taller than original 600px */
+  max-height: 90vh !important;  /* Max height constraint for smaller screens */
   margin-bottom: 1rem !important;
   border-radius: 12px !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;

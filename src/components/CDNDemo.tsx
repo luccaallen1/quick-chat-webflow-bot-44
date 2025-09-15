@@ -35,7 +35,6 @@ export const CDNDemo = () => {
   const [logoUrl, setLogoUrl] = useState('https://i.postimg.cc/59ZVMY4J/lapop-image.webp');
   const [avatarUrl, setAvatarUrl] = useState('https://i.postimg.cc/vHWpF027/Heading.webp');
   const [welcomeMessage, setWelcomeMessage] = useState('Hey, this is Vicky, the Virtual Assistant for La Pop. How can I help you today?');
-  const [bubbleMessage, setBubbleMessage] = useState('Hey, this is Vicky, the Virtual Assistant for La Pop. How can I help you today?');
   const [admin, setAdmin] = useState(false);
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);
   const [isElevenLabsEnabled, setIsElevenLabsEnabled] = useState(false);
@@ -48,8 +47,10 @@ export const CDNDemo = () => {
   const [headerButtonColor, setHeaderButtonColor] = useState('#ffffff');
   const [fontFamily, setFontFamily] = useState('Inter');
   const [copySuccessMessage, setCopySuccessMessage] = useState('Code Copied!');
-  const [welcomeTooltipMessage, setWelcomeTooltipMessage] = useState('Click to start chatting with our AI');
   const [disclaimerText, setDisclaimerText] = useState('AI chatbot - I do my best, I can answer any questions and make bookings, but always verify important details with a human.');
+  const [companyName, setCompanyName] = useState('La Pop');
+  const [agentName, setAgentName] = useState('Vicky');
+  const [bubbleText, setBubbleText] = useState('Hey, this is Vicky, the Virtual Assistant for La Pop. How can I help you today?');
   
   // Welcome buttons configuration
   const [welcomeButtons, setWelcomeButtons] = useState([
@@ -189,8 +190,6 @@ export const CDNDemo = () => {
         setAvatarUrl={setAvatarUrl}
         welcomeMessage={welcomeMessage}
         setWelcomeMessage={setWelcomeMessage}
-        bubbleMessage={bubbleMessage}
-        setBubbleMessage={setBubbleMessage}
         admin={admin}
         setAdmin={setAdmin}
         isVoiceEnabled={isVoiceEnabled}
@@ -215,12 +214,12 @@ export const CDNDemo = () => {
         setFontFamily={setFontFamily}
         copySuccessMessage={copySuccessMessage}
         setCopySuccessMessage={setCopySuccessMessage}
-        welcomeTooltipMessage={welcomeTooltipMessage}
-        setWelcomeTooltipMessage={setWelcomeTooltipMessage}
         welcomeButtons={welcomeButtons}
         setWelcomeButtons={setWelcomeButtons}
         disclaimerText={disclaimerText}
         setDisclaimerText={setDisclaimerText}
+        bubbleText={bubbleText}
+        setBubbleText={setBubbleText}
       />
 
       {/* The actual chatbot widget */}
@@ -244,14 +243,15 @@ export const CDNDemo = () => {
         logoUrl={logoUrl}
         avatarUrl={avatarUrl}
         welcomeMessage={welcomeMessage}
-        bubbleMessage={bubbleMessage}
-        welcomeTooltipMessage={welcomeTooltipMessage}
         welcomeButtons={welcomeButtons}
         admin={admin}
         isVoiceEnabled={isVoiceEnabled}
         isElevenLabsEnabled={isElevenLabsEnabled}
         elevenLabsAgentId={elevenLabsAgentId}
         disclaimerText={disclaimerText}
+        companyName={companyName}
+        agentName={agentName}
+        bubbleMessage={bubbleText}
       />
     </div>
   );

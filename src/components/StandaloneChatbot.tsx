@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ChatbotWidget } from './ChatbotWidget-Clean';
+import { ChatbotWidget } from './ChatbotWidget';
 import './ChatbotWidget.css';
 
 // Global interface for window object

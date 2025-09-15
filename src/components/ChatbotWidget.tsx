@@ -42,6 +42,7 @@ interface ChatbotWidgetProps {
   avatarUrl?: string;
   avatarFile?: File;
   welcomeMessage?: string;
+  bubbleMessage?: string;
   welcomeTooltipMessage?: string;
   admin?: boolean;
   isVoiceEnabled?: boolean;
@@ -125,6 +126,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   avatarUrl = '/lovable-uploads/1f938225-daa7-46d3-a44e-d951e492fcd4.png',
   avatarFile,
   welcomeMessage = 'Hi! I\'m your medical assistant. How can I help you today?',
+  bubbleMessage = 'Hey! I\'m your virtual assistant. How can I help you?',
   welcomeTooltipMessage = 'Click to start chatting with our AI assistant!',
   admin = false,
   isVoiceEnabled = true,
@@ -533,19 +535,24 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   const sendMessage = async (messageText?: string, retryCount = 0) => {
     const textToSend = messageText || inputMessage.trim();
     if (!textToSend || isLoading) return;
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: textToSend,
-      sender: 'user',
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
+
+    // Only add user message on first attempt (not during retries)
+    if (retryCount === 0) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        text: textToSend,
+        sender: 'user',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, userMessage]);
+      setInputMessage('');
+      setSuggestionsDisabled(true);
+      setShowingWelcomeScreen(false);
+    }
+
     setIsLoading(true);
     setIsTyping(true);
     setHasError(false);
-    setSuggestionsDisabled(true);
-    setShowingWelcomeScreen(false);
     try {
       if (!webhookUrl) {
         throw new Error('Webhook URL not configured');
@@ -633,7 +640,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
         initializationUrl: window.location.href
       });
 
-      // Retry logic
+      // Retry logic - silently retry without showing user the attempts
       if (retryCount < 2 && error instanceof Error && error.name !== 'AbortError') {
         console.log(`Retrying... Attempt ${retryCount + 1}`);
         setTimeout(() => {
@@ -641,10 +648,13 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
         }, 1000 * (retryCount + 1));
         return;
       }
-      setHasError(true);
+
+      // Only show error to user after all retries have failed
+      // Don't set hasError to true - that triggers a different error screen
+      // Instead, just add an error message as a bot response
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: retryCount >= 2 ? 'I apologize, but I\'m having trouble connecting right now. Please try again in a moment.' : 'Sorry, I encountered an error. Please try again.',
+        text: 'Sorry, there was an error, can you please refresh the page and try again',
         sender: 'bot',
         timestamp: new Date()
       };
@@ -1270,10 +1280,7 @@ export const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                {isSmallMobile 
-                  ? `Hi! I'm ${agentName}.`
-                  : `Hey! I'm ${agentName}. Ask me anything!`
-                }
+                {bubbleMessage}
               </p>
             </div>
           </div>

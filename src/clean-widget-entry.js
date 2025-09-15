@@ -1,7 +1,7 @@
 // Clean Chatbot Widget Entry Point - Uses existing clean widget
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ChatbotWidget } from './components/ChatbotWidget-Clean';
+import { ChatbotWidget } from './components/ChatbotWidget';
 import './components/ChatbotWidget.css';
 
 console.log('🤖 ChatbotWidget initialized successfully!');
@@ -47,7 +47,7 @@ if (typeof window !== 'undefined') {
     createChat,
     init,
     // Add version info like n8n
-    version: '1.0.3'
+    version: '1.0.8'
   };
 
   console.log('🌍 Global ChatbotWidget object created:', window.ChatbotWidget);

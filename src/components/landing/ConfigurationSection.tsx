@@ -43,8 +43,6 @@ interface ConfigurationSectionProps {
   setAvatarUrl: (url: string) => void;
   welcomeMessage: string;
   setWelcomeMessage: (message: string) => void;
-  bubbleMessage: string;
-  setBubbleMessage: (message: string) => void;
   admin: boolean;
   setAdmin: (admin: boolean) => void;
   isVoiceEnabled: boolean;
@@ -67,14 +65,14 @@ interface ConfigurationSectionProps {
   setHeaderButtonColor: (color: string) => void;
   fontFamily: string;
   setFontFamily: (font: string) => void;
-  welcomeTooltipMessage: string;
-  setWelcomeTooltipMessage: (message: string) => void;
   copySuccessMessage: string;
   setCopySuccessMessage: (message: string) => void;
   welcomeButtons: WelcomeButton[];
   setWelcomeButtons: (buttons: WelcomeButton[]) => void;
   disclaimerText: string;
   setDisclaimerText: (text: string) => void;
+  bubbleText: string;
+  setBubbleText: (text: string) => void;
 }
 export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   webhookUrl,
@@ -103,8 +101,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   setAvatarUrl,
   welcomeMessage,
   setWelcomeMessage,
-  bubbleMessage,
-  setBubbleMessage,
   admin,
   setAdmin,
   isVoiceEnabled,
@@ -127,14 +123,14 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
   setHeaderButtonColor,
   fontFamily,
   setFontFamily,
-  welcomeTooltipMessage,
-  setWelcomeTooltipMessage,
   copySuccessMessage,
   setCopySuccessMessage,
   welcomeButtons,
   setWelcomeButtons,
   disclaimerText,
-  setDisclaimerText
+  setDisclaimerText,
+  bubbleText,
+  setBubbleText
 }) => {
   const {
     toast
@@ -172,7 +168,7 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       userTextColor,
       chatBackground,
       welcomeMessage,
-      bubbleMessage,
+      bubbleMessage: bubbleText,
       admin,
       isVoiceEnabled,
       logoUrl,
@@ -186,7 +182,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
       logoBorderColor,
       headerButtonColor,
       fontFamily,
-      welcomeTooltipMessage,
       copySuccessMessage
     };
     const reactConfig = `  webhookUrl: '${baseConfig.webhookUrl}',
@@ -212,7 +207,6 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     logoBorderColor: '${baseConfig.logoBorderColor}',
     headerButtonColor: '${baseConfig.headerButtonColor}',
     fontFamily: '${baseConfig.fontFamily}',
-    welcomeTooltipMessage: '${baseConfig.welcomeTooltipMessage}',
     copySuccessMessage: '${baseConfig.copySuccessMessage}',
     logoUrl: '${baseConfig.logoUrl}',
     avatarUrl: '${baseConfig.avatarUrl}'`;
@@ -231,10 +225,10 @@ export const ConfigurationSection: React.FC<ConfigurationSectionProps> = ({
     switch (language) {
       case 'html':
         return `<!-- Add CSS to <head> section -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.css">
 
 <!-- Add before closing </body> tag or in your component -->
-<script src="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.js"></script>
 <script>
     // Wait for ChatbotWidget to be available and initialize
     let checkCount = 0;
@@ -259,19 +253,19 @@ ${reactConfig.split('\n').map(line => '                    ' + line.trim().repla
       case 'react-ts':
         return `// App.tsx
 import { useEffect } from 'react';
-import 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
+import 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.css';
 
 export const App = () => {
   useEffect(() => {
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
+    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load and initialize ChatbotWidget
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.js';
     script.onload = () => {
       if (typeof ChatbotWidget !== 'undefined') {
         ChatbotWidget.createChat({
@@ -300,12 +294,12 @@ export const App = () => {
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
+    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load and initialize ChatbotWidget
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.js';
     script.onload = () => {
       if (typeof ChatbotWidget !== 'undefined') {
         ChatbotWidget.createChat({
@@ -334,12 +328,12 @@ onMounted(() => {
   // Load CSS
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
+  link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.css';
   document.head.appendChild(link);
 
   // Load and initialize ChatbotWidget
   const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js';
+  script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.js';
   script.onload = () => {
     if (typeof ChatbotWidget !== 'undefined') {
       ChatbotWidget.createChat({
@@ -356,10 +350,10 @@ ${reactConfig.split('\n').map(line => '        ' + line.trim()).join('\n')}
 </template>`;
       case 'dotnet':
         return `@* Add this to your layout or page *@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.css">
 
 @* Add these scripts before closing body tag *@
-<script src="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         ChatbotWidget.init({
@@ -401,12 +395,12 @@ ${reactConfig.split('\n').map(line => '    ' + line.trim()).join('\n')}
     // Load CSS
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js@1.0.5/chatbot-widget.css';
+    link.href = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.css';
     document.head.appendChild(link);
 
     // Load chatbot widget
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.5/chatbot-widget.js';
+    script.src = 'https://cdn.jsdelivr.net/npm/@luccaallen/chatbot-widget@1.0.8/chatbot-widget.js';
     script.onload = () => {
       (window as any).ChatbotWidget.init(this.config);
     };
@@ -496,25 +490,19 @@ export class AppComponent implements OnInit {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="bubbleMessage" className="text-sm font-medium">Bubble Message</Label>
-                <Textarea id="bubbleMessage" value={bubbleMessage} onChange={e => setBubbleMessage(e.target.value)} placeholder="Hey! I'm your virtual assistant. How can I help you?" className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
-                <p className="text-xs text-gray-500">Message shown on the chat bubble when the widget is closed</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="welcomeTooltipMessage" className="text-sm font-medium">Button Tooltip Message</Label>
-                <Input id="welcomeTooltipMessage" value={welcomeTooltipMessage} onChange={e => setWelcomeTooltipMessage(e.target.value)} placeholder="Click to start chatting with our AI assistant!" className="transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
-                <p className="text-xs text-gray-500">Tooltip message that appears on the chat button</p>
+                <Label htmlFor="bubbleText" className="text-sm font-medium">Chat Bubble Text</Label>
+                <Textarea id="bubbleText" value={bubbleText} onChange={e => setBubbleText(e.target.value)} placeholder="Hey! How can I help you today?" className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" />
+                <p className="text-xs text-gray-500">Text shown on the chat bubble before opening the widget</p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="disclaimerText" className="text-sm font-medium">Disclaimer Text</Label>
-                <Textarea 
-                  id="disclaimerText" 
-                  value={disclaimerText} 
-                  onChange={e => setDisclaimerText(e.target.value)} 
-                  placeholder="AI chatbot - I do my best, I can answer any questions and make bookings, but always verify important details with a human." 
-                  className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20" 
+                <Textarea
+                  id="disclaimerText"
+                  value={disclaimerText}
+                  onChange={e => setDisclaimerText(e.target.value)}
+                  placeholder="AI chatbot - I do my best, I can answer any questions and make bookings, but always verify important details with a human."
+                  className="min-h-[80px] transition-all duration-200 focus:ring-2 focus:ring-blue-500/20"
                 />
                 <p className="text-xs text-gray-500">Disclaimer text shown above messages after conversation starts</p>
               </div>

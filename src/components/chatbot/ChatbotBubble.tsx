@@ -26,6 +26,7 @@ export const ChatbotBubble: React.FC<ChatbotBubbleProps> = ({
   isSmallMobile,
   onClick
 }) => {
+  console.log('ChatbotBubble received welcomeMessage:', welcomeMessage);
   return (
     <div className="voice-chat-widget" style={{ 
       position: 'fixed', 
